@@ -2,7 +2,35 @@
 // This game is inspired by Lee Robinson's Space Invaders, https://leerob.io/blog/space-invaders-with-python
 // And an adaptation by Simon Mendelsohn, https://zoo.cs.yale.edu/classes/cs490/19-20a/mendelsohn.simon.sjm225
 
-// import ship from './agents.js';
+// --- helper functions ---
+
+/**
+ * Create ship object
+ * @param {Phaser.Scene} scene_instance Scene instance in which to create the ship 
+ * @param {string} image_id Image ID for the ship
+ */
+function create_ship(scene_instance, image_id) {
+    return {
+        imageobj: scene_instance.add.image(50, 50, image_id),
+        direction: -1,
+        speed: 5,
+        x: 200,
+        y: 540,
+        min_x: 10,
+        max_x: 740,
+        update: function(left_cursor, right_cursor) {
+            if (left_cursor && this.x > this.min_x) {
+                this.x -= this.speed;
+            } else if (right_cursor && this.x < this.max_x) {
+                this.x += this.speed;
+            }
+            this.imageobj.x = this.x;
+            this.imageobj.y = this.y;
+        },
+    };
+}
+
+// --- actual game ---
 
 var config = {
     type: Phaser.AUTO,
@@ -23,7 +51,7 @@ var config = {
 
 var game = new Phaser.Game(config);
 var cursors;                            // keyboard access
-var ship;                               // ship
+var ship1;                              // ship1
 
 function preload ()
 {
@@ -52,49 +80,12 @@ function create ()
 {
     cursors = this.input.keyboard.createCursorKeys();
 
-    ship = {
-        image: this.add.image(50, 50, 'ship'),
-        direction: -1,
-        speed: 5,
-        x: 200,
-        y: 540,
-        min_x: 10,
-        max_x: 740,
-        update: function(left_cursor, right_cursor) {
-            if (left_cursor && this.x > this.min_x) {
-                this.x -= this.speed;
-            } else if (right_cursor && this.x < this.max_x) {
-                this.x += this.speed;
-            }
-            this.image.x = this.x;
-            this.image.y = this.y;
-        },
-    }
-
-    
-
-    // this.add.image(400, 300, 'sky');
-
-    // var particles = this.add.particles('red');
-
-    // var emitter = particles.createEmitter({
-    //     speed: 100,
-    //     scale: { start: 1, end: 0 },
-    //     blendMode: 'ADD'
-    // });
-
-    // var logo = this.physics.add.image(400, 100, 'logo');
-
-    // logo.setVelocity(100, 200);
-    // logo.setBounce(1, 1);
-    // logo.setCollideWorldBounds(true);
-
-    // emitter.startFollow(logo);
+    ship1 = create_ship(this, "ship");
 
 }
 
 function update ()
 {
-    ship.update(cursors.left.isDown, cursors.right.isDown);
+    ship1.update(cursors.left.isDown, cursors.right.isDown);
 
 }
