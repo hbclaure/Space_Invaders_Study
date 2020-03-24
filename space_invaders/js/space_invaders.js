@@ -35,7 +35,7 @@ function create_ship(image_id="ship", x = 200, y = 540, speed = 5, bullet_image_
 
     return {
         imageobj: imageobj,                                     //!< image object for the ship
-        bullets: bullets,                                       //!< bullets shot by the ship
+        bullets_group: bullets,                                 //!< bullets shot by the ship
         update(move_left, move_right, shoot)                    //!< update the ship state based on requested actions   
         {                
             // update position
@@ -46,7 +46,7 @@ function create_ship(image_id="ship", x = 200, y = 540, speed = 5, bullet_image_
             } 
             // add bullet
             if (shoot) {
-                let bullet = this.bullets.get(this.imageobj.x, this.imageobj.y - 50);
+                let bullet = this.bullets_group.get(this.imageobj.x, this.imageobj.y - 50);
                 if (bullet) {
                     // set bullet position and speed
                     bullet.body.originX = 0.5;
@@ -72,7 +72,9 @@ function create_ship(image_id="ship", x = 200, y = 540, speed = 5, bullet_image_
 }
 
 
-function create_enemies(num_horizontal = 5, x = 200, y = 540, max_vel = 30) {
+function create_enemies(num_horizontal = 5, x = 200, y = 540, max_vel = 25, bullet_image_id = "enemylaser",
+                        min_x = 10, max_x = 390) 
+{
 
     this.anims.create({
         key: 'enemy1_move',
@@ -157,7 +159,38 @@ function create_enemies(num_horizontal = 5, x = 200, y = 540, max_vel = 30) {
     Phaser.Actions.GridAlign(enemies.getChildren(), 
     { width: num_horizontal, height: 5, cellWidth: 50, cellHeight: 50, position: Phaser.Display.Align.CENTER, x: 100, y: 0 });
 
-    return enemies;
+    Phaser.Actions.Call(enemies.getChildren(), function(e) {
+        e.setVelocityX(-50)
+    })
+    canvas_width = this.sys.canvas.width
+
+    return {
+        enemies_group: enemies,     //!< enemies group
+        update(margin = 10)                    //!< update the enemies state
+        {
+            // move right?
+            left_enemy = this.enemies_group.getChildren().find(function(e){
+                return e.body.x < min_x;
+            });
+            if (typeof left_enemy != 'undefined') {
+                Phaser.Actions.Call(this.enemies_group.getChildren(), function(e) {
+                    e.setVelocityX(50)
+                })
+            } else { // move left?
+                right_enemy = this.enemies_group.getChildren().find(function(e){
+                    return e.body.x > max_x;
+                });
+                if (typeof right_enemy != 'undefined') {
+                    Phaser.Actions.Call(this.enemies_group.getChildren(), function(e) {
+                        e.setVelocityX(-50)
+                    })
+                }
+            }
+
+            // todo. make the enemies shoot bullets
+            
+        },
+    };
 }
 
 
@@ -221,11 +254,9 @@ function create ()
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     ship1 = this.create_ship("ship", this.sys.canvas.width / 4, 540);
-
     enemies1 = this.create_enemies(5, this.sys.canvas.width / 4, this.sys.canvas.height / 8); 
-    
 
-    this.physics.add.collider(enemies1, ship1.bullets, (enemy, bullet) => {
+    this.physics.add.collider(enemies1.enemies_group, ship1.bullets_group, (enemy, bullet) => {
         // destroy the enemy
         enemy.play(enemy.explote_anim, true);
         enemy.on('animationcomplete', () => {
@@ -239,5 +270,9 @@ function create ()
 
 function update ()
 {
+    // update the ship
     ship1.update(cursors.left.isDown, cursors.right.isDown, this.input.keyboard.checkDown(space_key, 500));
+
+    // update the enemies
+    enemies1.update();
 }
