@@ -72,64 +72,7 @@ function create_ship(image_id="ship", x = 200, y = 540, speed = 5, bullet_image_
 }
 
 
-// --- actual game ---
-
-var config = {
-    type: Phaser.AUTO,
-    width: 800,
-    height: 600,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 100 }
-        }
-    },
-    scene: {
-        preload: preload,
-        create: create,
-        update: update,
-        extend: {
-            create_ship: create_ship,
-        }
-    },
-    fps: 30,
-};
-
-var game = new Phaser.Game(config);
-var cursors;                            // keyboard access
-var space_key;                          // space key
-var ship1;                              // ship1
-var enemies_group1;
-
-function preload ()
-{
-
-    // load imagess
-    // this.load.setBaseURL('..');
-    this.load.image('ship', 'assets/images/ship.png');
-    this.load.image('avery', 'assets/images/avery.png');
-    this.load.image('jordan', 'assets/images/jordan.png');
-    this.load.image('mystery', 'assets/images/mystery.png');
-    this.load.image('enemy1_1', 'assets/images/enemy1_1.png');
-    this.load.image('enemy1_2', 'assets/images/enemy1_2.png');
-    this.load.image('enemy2_1', 'assets/images/enemy2_1.png');
-    this.load.image('enemy2_2', 'assets/images/enemy2_2.png');
-    this.load.image('enemy3_1', 'assets/images/enemy3_1.png');
-    this.load.image('enemy3_2', 'assets/images/enemy3_2.png');
-    this.load.image('explosionblue', 'assets/images/explosionblue.png');
-    this.load.image('explosiongreen', 'assets/images/explosiongreen.png');
-    this.load.image('explosionpurple', 'assets/images/explosionpurple.png');
-    this.load.image('laser', 'assets/images/laser.png');
-    this.load.image('enemylaser', 'assets/images/enemylaser.png');
-
-}
-
-function create ()
-{
-    cursors = this.input.keyboard.createCursorKeys();
-    space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-
-    ship1 = this.create_ship(image_id="ship", x = this.sys.canvas.width / 4, y = 540);
+function create_enemies(num_horizontal = 5, x = 200, y = 540, max_vel = 30) {
 
     this.anims.create({
         key: 'enemy1_move',
@@ -162,52 +105,133 @@ function create ()
     });
 
     this.anims.create({
-        key: 'enemy1_explote',
-        frames: [
-            { key: 'enemy1_1' },
-            { key: 'explosionpurple' },
-        ],
-        frameRate: 2,
-        repeat: 0,
-        hideOnComplete: true,
+        key: 'enemy1_exp',
+        frames: [{ key: 'explosionpurple' }],
+        frameRate: 10,
     });
 
-    enemies_group1 = this.add.group();
+    this.anims.create({
+        key: 'enemy2_exp',
+        frames: [{ key: 'explosionblue' },],
+        frameRate: 10,
+    });
+
+    this.anims.create({
+        key: 'enemy3_exp',
+        frames: [{ key: 'explosiongreen' }],
+        frameRate: 10,
+    });
+
+    enemies = this.physics.add.group();
     // add purple enemies
-    for (var i=0; i<5; i++) {
+    for (var i=0; i<num_horizontal; i++) {
         enemy1 = this.physics.add.sprite(400, 300, 'enemy1_1').play('enemy1_move');
         enemy1.setOrigin(0.5, 1.0);
         enemy1.displayWidth = 50;
         enemy1.scaleY = enemy1.scaleX;
-        // enemy1.setDisplaySize(30,30)
-        enemies_group1.add(enemy1);
+        enemy1.body.maxVelocity.y = max_vel;
+        enemy1.explote_anim = 'enemy1_exp';
+        enemies.add(enemy1);
     }
     // add cyan enemies
-    for (var i=0; i<5; i++) {
+    for (var i=0; i<num_horizontal*2; i++) {
         enemy2 = this.physics.add.sprite(400, 300, 'enemy2_1').setScale(0.5).play('enemy2_move');
         enemy2.setOrigin(0.5, 1.0);
         enemy2.displayWidth = 50;
         enemy2.scaleY = enemy2.scaleX;
-        // enemy2.setDisplaySize(30,30)
-        enemies_group1.add(enemy2);
+        enemy2.body.maxVelocity.y = max_vel;
+        enemy2.explote_anim = 'enemy2_exp';
+        enemies.add(enemy2);
     }
     // add green enemies
-    for (var i=0; i<5; i++) {
+    for (var i=0; i<num_horizontal*2; i++) {
         enemy3 = this.physics.add.sprite(400, 300, 'enemy3_1').setScale(0.5).play('enemy3_move');
         enemy3.setOrigin(0.5, 1.0);
         enemy3.displayWidth = 50;
         enemy3.scaleY = enemy3.scaleX;
-        // enemy2.setDisplaySize(30,30)
-        enemies_group1.add(enemy3);
+        enemy3.body.maxVelocity.y = max_vel;
+        enemy3.explote_anim = 'enemy3_exp';
+        enemies.add(enemy3);
     }
     // align in a grid
-    Phaser.Actions.GridAlign(enemies_group1.getChildren(), 
-    { width: 5, height: 3, cellWidth: 50, cellHeight: 50, position: Phaser.Display.Align.CENTER, x: 100, y: 0 });
+    Phaser.Actions.GridAlign(enemies.getChildren(), 
+    { width: num_horizontal, height: 5, cellWidth: 50, cellHeight: 50, position: Phaser.Display.Align.CENTER, x: 100, y: 0 });
 
-    this.physics.add.collider(enemies_group1, ship1.bullets, (enemy, bullet) => {
+    return enemies;
+}
+
+
+// --- actual game ---
+
+var config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    physics: {
+        default: 'arcade',
+        debug: true,
+        fps: 30,
+        arcade: {
+            gravity: { y: 100 }
+        }
+    },
+    scene: {
+        preload: preload,
+        create: create,
+        update: update,
+        extend: {
+            create_ship: create_ship,
+            create_enemies: create_enemies,
+        }
+    },
+};
+
+var game = new Phaser.Game(config);
+var cursors;                            // keyboard access
+var space_key;                          // space key
+var ship1;                              // ship1
+var enemies1;                           // enemies
+
+function preload ()
+{
+
+    // load imagess
+    // this.load.setBaseURL('..');
+    this.load.image('ship', 'assets/images/ship.png');
+    this.load.image('avery', 'assets/images/avery.png');
+    this.load.image('jordan', 'assets/images/jordan.png');
+    this.load.image('mystery', 'assets/images/mystery.png');
+    this.load.image('enemy1_1', 'assets/images/enemy1_1.png');
+    this.load.image('enemy1_2', 'assets/images/enemy1_2.png');
+    this.load.image('enemy2_1', 'assets/images/enemy2_1.png');
+    this.load.image('enemy2_2', 'assets/images/enemy2_2.png');
+    this.load.image('enemy3_1', 'assets/images/enemy3_1.png');
+    this.load.image('enemy3_2', 'assets/images/enemy3_2.png');
+    this.load.image('explosionblue', 'assets/images/explosionblue.png');
+    this.load.image('explosiongreen', 'assets/images/explosiongreen.png');
+    this.load.image('explosionpurple', 'assets/images/explosionpurple.png');
+    this.load.image('laser', 'assets/images/laser.png');
+    this.load.image('enemylaser', 'assets/images/enemylaser.png');
+
+}
+
+function create ()
+{
+    cursors = this.input.keyboard.createCursorKeys();
+    space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+    ship1 = this.create_ship("ship", this.sys.canvas.width / 4, 540);
+
+    enemies1 = this.create_enemies(5, this.sys.canvas.width / 4, this.sys.canvas.height / 8); 
+    
+
+    this.physics.add.collider(enemies1, ship1.bullets, (enemy, bullet) => {
         // destroy the enemy
-        enemy.destroy();
-        // move bullet to the edge.. it will become not visible automatically
+        enemy.play(enemy.explote_anim, true);
+        enemy.on('animationcomplete', () => {
+            enemy.destroy();
+        });
+        // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
     })
