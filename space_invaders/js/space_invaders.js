@@ -21,7 +21,7 @@ function create_bullets_pool(number, image_id, increase_bbox=false) {
     if (increase_bbox) {
         Phaser.Actions.Call(bullets.getChildren(), function(b) {
             // increase bullet collision bounding box in case they are going down (makes the game a bit easier)
-            b.body.setSize(b.body.width*3 , b.body.height, true);
+            b.body.setSize(b.body.width*3 , b.body.height*0.5, true);
         });
     }
     return bullets
@@ -48,12 +48,16 @@ function fire_bullet(bullets_group, x, y, direction, speed = 500) {
         // make bullet visible
         bullet.setActive(true);
         bullet.setVisible(true);
+        bullet.body.setImmovable(false);
+        bullet.body.setAllowGravity(true);
         // setup callback to hide bullet when it reaches the end of the screen
         bullet.body.onWorldBounds = true;                    
         bullet.body.world.on('worldbounds', function(body) {
             if (body.gameObject == bullet) {
                 bullet.setVisible(false);
                 bullet.setActive(false);
+                bullet.body.setImmovable(true);
+                bullet.body.setAllowGravity(false);
             }
         })
     }
@@ -128,6 +132,7 @@ function create_ship(image_id="ship", x = 200, y = 540, speed = 5, bullet_image_
     var obj_width = sprite.displayWidth;     
 
     var bullets = this.create_bullets_pool(30, bullet_image_id);
+    var sound = this.custom_sounds.fire_ship;
 
     return {
         sprite: sprite,                                         //!< image object for the ship
@@ -148,6 +153,7 @@ function create_ship(image_id="ship", x = 200, y = 540, speed = 5, bullet_image_
             // add bullet
             if (shoot) {
                 fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1);
+                sound.play();
             }
         },
     };
@@ -221,10 +227,13 @@ function create_enemies(num_horizontal = 5, x = 200, y = 540, max_vel = 5, horiz
 
     // create bullets pool
     var bullets = this.create_bullets_pool(30, bullet_image_id, true);
+    var sound = this.custom_sounds.fire_enemy;
 
     // create timer to fire enemy bullets
-    enemies.fire_timer = this.time.addEvent({ delay: Phaser.Math.Between(500, 1000), loop: true, 
-                                              callback: () => { fire_enemy_bullet(enemies, bullets) } });
+    enemies.fire_timer = this.time.addEvent({ delay: Phaser.Math.Between(700, 1000), loop: true, 
+                                              callback: () => { 
+                                                    fire_enemy_bullet(enemies, bullets);
+                                              } });
 
     return {
         enemies_group: enemies,                //!< enemies group
@@ -265,7 +274,7 @@ var config = {
         debug: true,
         fps: 30,
         arcade: {
-            debug: false, // set to true to enable physics visualization
+            debug: true, // set to true to enable physics visualization
             gravity: { y: 100 }
         }
     },
@@ -274,6 +283,7 @@ var config = {
         create: create,
         update: update,
         extend: {
+            fire_bullet: fire_bullet,
             create_bullets_pool: create_bullets_pool,
             create_ship: create_ship,
             create_enemies: create_enemies,
@@ -308,12 +318,19 @@ function preload ()
     this.load.image('laser', 'assets/images/laser.png');
     this.load.image('enemylaser', 'assets/images/enemylaser.png');
 
+    // load audio
+    this.load.audio("audio_explosion", "assets/sounds/shipexplosion.wav");
+    this.load.audio("audio_fire_ship", "assets/sounds/shoot.wav");
 }
 
 function create ()
 {
     cursors = this.input.keyboard.createCursorKeys();
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+    this.custom_sounds = {};   // add sound object so that we can easily access the sounds in the scene  
+    this.custom_sounds.explosion = this.sound.add("audio_explosion", {volume: 0.1});
+    this.custom_sounds.fire_ship = this.sound.add("audio_fire_ship", {volume: 0.1});
 
     ship1 = this.create_ship("ship", this.sys.canvas.width / 4, 540);
     enemies1 = this.create_enemies(5, this.sys.canvas.width / 4, this.sys.canvas.height / 8); 
@@ -322,6 +339,7 @@ function create ()
     // first, take care of the bullets fired by the player
     this.physics.add.collider(enemies1.enemies_group, ship1.bullets_group, (enemy, bullet) => {
         // destroy the enemy
+        this.custom_sounds.explosion.play();
         enemy.play(enemy.explote_anim, true);
         enemy.on('animationcomplete', () => {
             enemy.destroy();
