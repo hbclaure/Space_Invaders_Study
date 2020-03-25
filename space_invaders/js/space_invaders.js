@@ -265,6 +265,9 @@ function create_enemies(num_horizontal = 5, x = 200, y = 540, max_vel = 5, horiz
 
 // --- actual game ---
 
+/**
+ * Phaser 3 game configuration 
+ */
 var config = {
     type: Phaser.AUTO,
     width: 800,
@@ -291,12 +294,15 @@ var config = {
     },
 };
 
-var game = new Phaser.Game(config);
-var cursors;                            // keyboard access
-var space_key;                          // space key
-var ship1;                              // ship1
-var enemies1;                           // enemies
+var game = new Phaser.Game(config);     //!< game object
+var cursors;                            //!< keyboard access
+var space_key;                          //!< space key
+var ship1;                              //!< ship1
+var enemies1;                           //!< enemies
 
+/**
+ * Preload assets for the game
+ */
 function preload ()
 {
 
@@ -323,6 +329,9 @@ function preload ()
     this.load.audio("audio_fire_ship", "assets/sounds/shoot.wav");
 }
 
+/**
+ * Create world objects and collider functions
+ */
 function create ()
 {
     cursors = this.input.keyboard.createCursorKeys();
@@ -365,6 +374,9 @@ function create ()
     });
 }
 
+/**
+ * Update the state of the game
+ */
 function update ()
 {
     // update the ship
