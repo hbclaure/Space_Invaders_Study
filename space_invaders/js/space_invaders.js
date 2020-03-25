@@ -277,7 +277,7 @@ var config = {
         debug: true,
         fps: 30,
         arcade: {
-            debug: true, // set to true to enable physics visualization
+            debug: false, // set to true to enable physics visualization
             gravity: { y: 100 }
         }
     },
