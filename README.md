@@ -15,3 +15,24 @@ $ cd space_invaders_web # this repository
 $ cd space_invaders
 $ npm start
 ```
+
+## Code Organization
+
+The code is organized as follows:
+
+```text
+space_invaders_web/
+|   README.md
+|   
+|-- space_invaders/             # main code
+    |   index.html              # website home
+    |   index.js                # main electron JS
+    |   package.json            # manifest about the application
+    |   package-lock.json       # version of every package nneeded for teh application
+    |   assets/                 # static resources for the game (images, sounds)
+    |   ... 
+    |
+    |-- js/                     # javascript code
+        | space_invaders.js     # main game logic
+```
+
