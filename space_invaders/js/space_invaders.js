@@ -171,7 +171,7 @@ function create_ship(image_id="ship", x = 200, y = 540, speed = 5, bullet_image_
  * @param {int} max_x maximum horizontal position for an enemy (when it reaches this edge, it switches direction)
  * @param {Array} num_rows number of rows per enemy (1, 2, and 3). Must be an array with 3 ints.
  */
-function create_enemies(num_horizontal = 5, x = 200, y = 540, max_vel = 5, horizontal_speed = 10, 
+function create_enemies(num_horizontal = 5, x = 200, y = 540, g = "a", max_vel = 5, horizontal_speed = 10, 
                         bullet_image_id = "enemylaser", min_x = 10, max_x = 390, num_rows = [1, 2, 2])
 {
     var canvas_width = this.sys.canvas.width                                    //!< width of the canvas
@@ -182,28 +182,28 @@ function create_enemies(num_horizontal = 5, x = 200, y = 540, max_vel = 5, horiz
     for (var e=1; e<4; e++) {
         // animation for the enemy
         this.anims.create({
-            key: 'enemy' + e + '_move',
+            key: 'enemy' + e + g + '_move',
             frames: [
-                { key: 'enemy' + e + '_1' },
-                { key: 'enemy' + e + '_2' },
+                { key: 'enemy' + e + g + '_1' },
+                { key: 'enemy' + e + g + '_2' },
             ],
             frameRate: 2,
             repeat: -1
         });
         // animation for the enemy explosion
         this.anims.create({
-            key: 'enemy' + e + '_exp',
+            key: 'enemy' + e + g + '_exp',
             frames: [{ key: explosions[e - 1] }],
             frameRate: 10,
         });
         // add actual enemies to the enemies group 
         for (var i=0; i<num_horizontal * num_rows[e - 1]; i++) {
-            enemy = this.physics.add.sprite(400, 300, 'enemy' + e + '_1').play('enemy' + e + '_move');
+            enemy = this.physics.add.sprite(400, 300, 'enemy' + e + g + '_1').play('enemy' + e + g + '_move');
             enemy.setOrigin(0.5, 1.0);
             enemy.displayWidth = 50;
             enemy.scaleY = enemy.scaleX;
             enemy.body.maxVelocity.y = max_vel;
-            enemy.explote_anim = 'enemy' + e + '_exp';
+            enemy.explote_anim = 'enemy' + e + g + '_exp';
             // add extra parameters to know what is the position of the enemy in the grid
             enemy.grid_row = Math.floor(i / num_horizontal);
             for (var j=e-2; j >= 0; j--) {
@@ -274,7 +274,6 @@ var config = {
     height: 600,
     physics: {
         default: 'arcade',
-        debug: true,
         fps: 30,
         arcade: {
             debug: false, // set to true to enable physics visualization
@@ -312,12 +311,20 @@ function preload ()
     this.load.image('avery', 'assets/images/avery.png');
     this.load.image('jordan', 'assets/images/jordan.png');
     this.load.image('mystery', 'assets/images/mystery.png');
-    this.load.image('enemy1_1', 'assets/images/enemy1_1.png');
-    this.load.image('enemy1_2', 'assets/images/enemy1_2.png');
-    this.load.image('enemy2_1', 'assets/images/enemy2_1.png');
-    this.load.image('enemy2_2', 'assets/images/enemy2_2.png');
-    this.load.image('enemy3_1', 'assets/images/enemy3_1.png');
-    this.load.image('enemy3_2', 'assets/images/enemy3_2.png');
+
+    this.load.image('enemy1a_1', 'assets/images/enemy1_1.png');
+    this.load.image('enemy1a_2', 'assets/images/enemy1_2.png');
+    this.load.image('enemy2a_1', 'assets/images/enemy2_1.png');
+    this.load.image('enemy2a_2', 'assets/images/enemy2_2.png');
+    this.load.image('enemy3a_1', 'assets/images/enemy3_1.png');
+    this.load.image('enemy3a_2', 'assets/images/enemy3_2.png');
+    this.load.image('enemy1b_1', 'assets/images/enemy1_1.png');
+    this.load.image('enemy1b_2', 'assets/images/enemy1_2.png');
+    this.load.image('enemy2b_1', 'assets/images/enemy2_1.png');
+    this.load.image('enemy2b_2', 'assets/images/enemy2_2.png');
+    this.load.image('enemy3b_1', 'assets/images/enemy3_1.png');
+    this.load.image('enemy3b_2', 'assets/images/enemy3_2.png');
+
     this.load.image('explosionblue', 'assets/images/explosionblue.png');
     this.load.image('explosiongreen', 'assets/images/explosiongreen.png');
     this.load.image('explosionpurple', 'assets/images/explosionpurple.png');
@@ -342,7 +349,8 @@ function create ()
     this.custom_sounds.fire_ship = this.sound.add("audio_fire_ship", {volume: 0.1});
 
     ship1 = this.create_ship("ship", this.sys.canvas.width / 4, 540);
-    enemies1 = this.create_enemies(5, this.sys.canvas.width / 4, this.sys.canvas.height / 8); 
+    enemies1 = this.create_enemies(5, this.sys.canvas.width / 4, this.sys.canvas.height / 8, "a");
+    //enemies2 = this.create_enemies(5, this.sys.canvas.width / 4 + 400, this.sys.canvas.height / 8, "b");
 
     // add colliders
     // first, take care of the bullets fired by the player
@@ -384,4 +392,5 @@ function update ()
 
     // update the enemies
     enemies1.update();
+    //enemies2.update();
 }
