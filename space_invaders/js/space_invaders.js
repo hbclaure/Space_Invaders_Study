@@ -215,7 +215,7 @@ function create_enemies(num_horizontal = 5, x = 200, y = 540, g = "a", max_vel =
     }
     // align group enemies in a grid
     Phaser.Actions.GridAlign(enemies.getChildren(), 
-    { width: num_horizontal, height: 5, cellWidth: 60, cellHeight: 50, position: Phaser.Display.Align.CENTER, x: 100, y: 0 });
+    { width: num_horizontal, height: 5, cellWidth: 60, cellHeight: 50, position: Phaser.Display.Align.CENTER, x: x, y: y });
     // set initial velocity for group
     Phaser.Actions.Call(enemies.getChildren(), function(e) {
         e.setVelocityX(-horizontal_speed)
@@ -298,6 +298,7 @@ var cursors;                            //!< keyboard access
 var space_key;                          //!< space key
 var ship1;                              //!< ship1
 var enemies1;                           //!< enemies
+var enemies2;
 
 /**
  * Preload assets for the game
@@ -318,6 +319,7 @@ function preload ()
     this.load.image('enemy2a_2', 'assets/images/enemy2_2.png');
     this.load.image('enemy3a_1', 'assets/images/enemy3_1.png');
     this.load.image('enemy3a_2', 'assets/images/enemy3_2.png');
+
     this.load.image('enemy1b_1', 'assets/images/enemy1_1.png');
     this.load.image('enemy1b_2', 'assets/images/enemy1_2.png');
     this.load.image('enemy2b_1', 'assets/images/enemy2_1.png');
@@ -349,8 +351,8 @@ function create ()
     this.custom_sounds.fire_ship = this.sound.add("audio_fire_ship", {volume: 0.1});
 
     ship1 = this.create_ship("ship", this.sys.canvas.width / 4, 540);
-    enemies1 = this.create_enemies(5, this.sys.canvas.width / 4, this.sys.canvas.height / 8, "a");
-    //enemies2 = this.create_enemies(5, this.sys.canvas.width / 4 + 400, this.sys.canvas.height / 8, "b");
+    enemies1 = this.create_enemies(5, 100, 0, "a");
+    enemies2 = this.create_enemies(5, 500, 0, "b");
 
     // add colliders
     // first, take care of the bullets fired by the player
@@ -392,5 +394,6 @@ function update ()
 
     // update the enemies
     enemies1.update();
-    //enemies2.update();
+    enemies2.update();
+
 }
