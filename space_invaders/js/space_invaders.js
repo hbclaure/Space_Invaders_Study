@@ -351,8 +351,8 @@ function create ()
     this.custom_sounds.fire_ship = this.sound.add("audio_fire_ship", {volume: 0.1});
 
     ship1 = this.create_ship("ship", this.sys.canvas.width / 4, 540);
-    enemies1 = this.create_enemies(5, 100, 0, "a");
-    enemies2 = this.create_enemies(5, 500, 0, "b");
+    enemies1 = this.create_enemies(5, 50, 0, "a");
+    enemies2 = this.create_enemies(5, 400, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 750);
 
     // add colliders
     // first, take care of the bullets fired by the player
