@@ -122,7 +122,7 @@ function create_ship(image_id="ship", x = 200, y = 540, speed = 5, bullet_image_
             
     var canvas_width = this.sys.canvas.width;
     var canvas_height = this.sys.canvas.height;
-    var sprite = this.physics.add.sprite(canvas_width/4, canvas_height - 10, image_id).setOrigin(0.5, 1.0); 
+    var sprite = this.physics.add.sprite(x, y, image_id).setOrigin(0.5, 1.0); 
     sprite.body.setImmovable(true);
     sprite.body.setAllowGravity(false);
     sprite.body.setSize(sprite.width*0.8 , sprite.height, true);
@@ -296,9 +296,10 @@ var config = {
 var game = new Phaser.Game(config);     //!< game object
 var cursors;                            //!< keyboard access
 var space_key;                          //!< space key
-var ship1;                              //!< ship1
-var enemies1;                           //!< enemies
-var enemies2;
+var player_ship;                              //!< player_ship
+var ai_ship;
+var enemies_left;                           //!< enemies
+var enemies_right;
 
 /**
  * Preload assets for the game
@@ -350,13 +351,15 @@ function create ()
     this.custom_sounds.explosion = this.sound.add("audio_explosion", {volume: 0.1});
     this.custom_sounds.fire_ship = this.sound.add("audio_fire_ship", {volume: 0.1});
 
-    ship1 = this.create_ship("ship", this.sys.canvas.width / 4, 540);
-    enemies1 = this.create_enemies(5, 30, 0, "a");
-    enemies2 = this.create_enemies(5, 430, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 800);
+    player_ship = this.create_ship("ship", this.sys.canvas.width / 4, 540);
+    ai_ship = this.create_ship("avery", this.sys.canvas.width / 4 + 400, 540);
+
+    enemies_left = this.create_enemies(5, 30, 0, "a");
+    enemies_right = this.create_enemies(5, 430, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 800);
 
     // add colliders
     // first, take care of the bullets fired by the player
-    this.physics.add.collider(enemies1.enemies_group, ship1.bullets_group, (enemy, bullet) => {
+    this.physics.add.collider(enemies_left.enemies_group, player_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
         this.custom_sounds.explosion.play();
         enemy.play(enemy.explote_anim, true);
@@ -367,7 +370,7 @@ function create ()
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
     });
-    this.physics.add.collider(enemies1.bullets_group, ship1.bullets_group, (enemy_bullet, ship_bullet) => {
+    this.physics.add.collider(enemies_left.bullets_group, player_ship.bullets_group, (enemy_bullet, ship_bullet) => {
         // hide both bullets 
         enemy_bullet.body.x = this.sys.canvas.width;
         enemy_bullet.body.y = this.sys.canvas.height;
@@ -375,7 +378,7 @@ function create ()
         ship_bullet.body.y = this.sys.canvas.height;
     });
     // second, let's take care of the bullets fired by the enemies
-    this.physics.add.collider(ship1.sprite, enemies1.bullets_group, (ship_sprite, bullet) => {
+    this.physics.add.collider(player_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
@@ -390,10 +393,10 @@ function create ()
 function update ()
 {
     // update the ship
-    ship1.update(cursors.left.isDown, cursors.right.isDown, this.input.keyboard.checkDown(space_key, 500));
+    player_ship.update(cursors.left.isDown, cursors.right.isDown, this.input.keyboard.checkDown(space_key, 500));
 
     // update the enemies
-    enemies1.update();
-    enemies2.update();
+    enemies_left.update();
+    enemies_right.update();
 
 }
