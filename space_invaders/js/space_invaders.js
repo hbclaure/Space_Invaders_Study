@@ -171,8 +171,8 @@ function create_ship(image_id="ship", x = 200, y = 540, speed = 5, bullet_image_
  * @param {int} max_x maximum horizontal position for an enemy (when it reaches this edge, it switches direction)
  * @param {Array} num_rows number of rows per enemy (1, 2, and 3). Must be an array with 3 ints.
  */
-function create_enemies(num_horizontal = 5, x = 200, y = 540, g = "a", max_vel = 5, horizontal_speed = 10, 
-                        bullet_image_id = "enemylaser", min_x = 10, max_x = 390, num_rows = [1, 2, 2])
+function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizontal_speed = 10, 
+                        bullet_image_id = "enemylaser", min_x = 0, max_x = 400, num_rows = [1, 2, 2])
 {
     var canvas_width = this.sys.canvas.width                                    //!< width of the canvas
     var explosions = ['explosionpurple', 'explosionblue', 'explosiongreen'];    //!< name of explosion for each enemy (from 1 to 3)
@@ -250,7 +250,7 @@ function create_enemies(num_horizontal = 5, x = 200, y = 540, g = "a", max_vel =
                 })
             } else { // move left?
                 right_enemy = this.enemies_group.getChildren().find(function(e){
-                    return e.body.x > max_x;
+                    return e.body.x + e.body.width > max_x;
                 });
                 if (typeof right_enemy != 'undefined') {
                     Phaser.Actions.Call(this.enemies_group.getChildren(), function(e) {
@@ -351,8 +351,8 @@ function create ()
     this.custom_sounds.fire_ship = this.sound.add("audio_fire_ship", {volume: 0.1});
 
     ship1 = this.create_ship("ship", this.sys.canvas.width / 4, 540);
-    enemies1 = this.create_enemies(5, 50, 0, "a");
-    enemies2 = this.create_enemies(5, 400, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 750);
+    enemies1 = this.create_enemies(5, 30, 0, "a");
+    enemies2 = this.create_enemies(5, 430, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 800);
 
     // add colliders
     // first, take care of the bullets fired by the player
