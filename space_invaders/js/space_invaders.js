@@ -302,6 +302,7 @@ var player_ship;                              //!< player_ship
 var ai_ship;
 var enemies_left;                           //!< enemies
 var enemies_right;
+var shift_key;
 
 /**
  * Preload assets for the game
@@ -348,6 +349,7 @@ function create ()
 {
     cursors = this.input.keyboard.createCursorKeys();
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    shift_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
 
     this.custom_sounds = {};   // add sound object so that we can easily access the sounds in the scene  
     this.custom_sounds.explosion = this.sound.add("audio_explosion", {volume: 0.1});
@@ -376,6 +378,29 @@ function create ()
         bullet.body.y = this.sys.canvas.height;
     });
 	this.physics.add.collider(enemies_right.enemies_group, player_ship.bullets_group, (enemy, bullet) => {
+        // destroy the enemy
+        this.custom_sounds.explosion.play();
+        enemy.play(enemy.explote_anim, true);
+        enemy.on('animationcomplete', () => {
+            enemy.destroy();
+        });
+        // hide the bullet 
+        bullet.body.x = this.sys.canvas.width;
+        bullet.body.y = this.sys.canvas.height;
+    });
+
+    this.physics.add.collider(enemies_left.enemies_group, ai_ship.bullets_group, (enemy, bullet) => {
+        // destroy the enemy
+        this.custom_sounds.explosion.play();
+        enemy.play(enemy.explote_anim, true);
+        enemy.on('animationcomplete', () => {
+            enemy.destroy();
+        });
+        // hide the bullet 
+        bullet.body.x = this.sys.canvas.width;
+        bullet.body.y = this.sys.canvas.height;
+    });
+	this.physics.add.collider(enemies_right.enemies_group, ai_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
         this.custom_sounds.explosion.play();
         enemy.play(enemy.explote_anim, true);
@@ -444,7 +469,7 @@ function update ()
 {
     // update the ship
     player_ship.update(cursors.left.isDown, cursors.right.isDown, this.input.keyboard.checkDown(space_key, 500));
-    ai_ship.update(cursors.up.isDown, cursors.down.isDown);
+    ai_ship.update(cursors.up.isDown, cursors.down.isDown, this.input.keyboard.checkDown(shift_key, 500));
 
     // update the enemies
     enemies_left.update();
