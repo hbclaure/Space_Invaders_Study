@@ -118,7 +118,7 @@ function fire_enemy_bullet(enemies, bullets) {
  * @param {String} bullet_image_id image id for the bullet
  * @returns object with ship image, corresponding bullets group, and update function for handling actions
  */
-function create_ship(image_id="ship", x = 200, y = 540, speed = 5, bullet_image_id = "laser") {
+function create_ship(image_id="ship", x = 200, y = 540, speed = 5, bullet_image_id = "laser", min_x = 0) {
             
     var canvas_width = this.sys.canvas.width;
     var canvas_height = this.sys.canvas.height;
@@ -136,7 +136,7 @@ function create_ship(image_id="ship", x = 200, y = 540, speed = 5, bullet_image_
 
     return {
         sprite: sprite,                                         //!< image object for the ship
-        bullets_group: bullets,                                 //!< bullets shot by the ship
+        bullets_group: bullets,                                 //!< bullets shot by the shi
         update(move_left, move_right, shoot)                    //!< update the ship state based on requested actions   
         {          
             // do nothing if the ship has been killed!
@@ -146,7 +146,7 @@ function create_ship(image_id="ship", x = 200, y = 540, speed = 5, bullet_image_
             }      
             // update position
             if (move_left) {
-                this.sprite.x = Math.max(this.sprite.x - this.sprite.props.speed, obj_width);
+                this.sprite.x = Math.max(this.sprite.x - this.sprite.props.speed, obj_width + min_x);
             } else if (move_right) {
                 this.sprite.x = Math.min(this.sprite.x + this.sprite.props.speed, canvas_width - obj_width);
             } 
@@ -158,6 +158,8 @@ function create_ship(image_id="ship", x = 200, y = 540, speed = 5, bullet_image_
         },
     };
 }
+
+
 
 /**
  * Create a group of enemies
@@ -352,12 +354,12 @@ function create ()
     this.custom_sounds.fire_ship = this.sound.add("audio_fire_ship", {volume: 0.1});
 
     player_ship = this.create_ship("ship", this.sys.canvas.width / 4, 540);
-    ai_ship = this.create_ship("avery", this.sys.canvas.width / 4 + 400, 540);
+    ai_ship = this.create_ship("avery", this.sys.canvas.width / 4 + 400, 540, 5, "laser", 400);
 
     enemies_left = this.create_enemies(5, 30, 0, "a");
     enemies_right = this.create_enemies(5, 430, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 800);
 
-    var enemies = {enemies_left, enemies_right};
+    
 
     // add colliders
     // first, take care of the bullets fired by the player
@@ -384,6 +386,20 @@ function create ()
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
     });
+
+  //   enemies.forEach(function(enemy_group) {
+ 	// 	this.physics.add.collider(enemy_group.enemies_group, player_ship.bullets_group, (enemy, bullet) => {
+  //       // destroy the enemy
+	 //        this.custom_sounds.explosion.play();
+	 //        enemy.play(enemy.explote_anim, true);
+	 //        enemy.on('animationcomplete', () => {
+	 //            enemy.destroy();
+	 //        });
+	 //        // hide the bullet 
+	 //        bullet.body.x = this.sys.canvas.width;
+	 //        bullet.body.y = this.sys.canvas.height;
+	 //    });
+ 	// });
 
     // enemies bullets hit ships bullets
     this.physics.add.collider(enemies_left.bullets_group, player_ship.bullets_group, (enemy_bullet, ship_bullet) => {
@@ -428,6 +444,7 @@ function update ()
 {
     // update the ship
     player_ship.update(cursors.left.isDown, cursors.right.isDown, this.input.keyboard.checkDown(space_key, 500));
+    ai_ship.update(cursors.up.isDown, cursors.down.isDown);
 
     // update the enemies
     enemies_left.update();
