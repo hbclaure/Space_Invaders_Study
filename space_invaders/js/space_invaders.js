@@ -18,9 +18,15 @@ function create_bullets_pool(number, image_id, increase_bbox=false) {
         active: false,
         collideWorldBounds: true,
     }); 
+    // prevent the bullets from falling so that they don't kill one of the enemies by accident 
+    // when they are created... 
+    Phaser.Actions.Call(bullets.getChildren(), function(b) {
+        b.body.setImmovable(true);
+        b.body.setAllowGravity(false);
+    });
+    // increase bullet collision bounding box in case they are going down (makes the game a bit easier)
     if (increase_bbox) {
         Phaser.Actions.Call(bullets.getChildren(), function(b) {
-            // increase bullet collision bounding box in case they are going down (makes the game a bit easier)
             b.body.setSize(b.body.width*3 , b.body.height*0.5, true);
         });
     }
@@ -406,28 +412,28 @@ function create ()
         bullet.body.y = this.sys.canvas.height;
     });
 
- //    this.physics.add.collider(enemies_left.enemies_group, ai_ship.bullets_group, (enemy, bullet) => {
- //        // destroy the enemy
- //        this.custom_sounds.explosion.play();
- //        enemy.play(enemy.explote_anim, true);
- //        enemy.on('animationcomplete', () => {
- //            enemy.destroy();
- //        });
- //        // hide the bullet 
- //        bullet.body.x = this.sys.canvas.width;
- //        bullet.body.y = this.sys.canvas.height;
- //    });
-	// this.physics.add.collider(enemies_right.enemies_group, ai_ship.bullets_group, (enemy, bullet) => {
- //        // destroy the enemy
- //        this.custom_sounds.explosion.play();
- //        enemy.play(enemy.explote_anim, true);
- //        enemy.on('animationcomplete', () => {
- //            enemy.destroy();
- //        });
- //        // hide the bullet 
- //        bullet.body.x = this.sys.canvas.width;
- //        bullet.body.y = this.sys.canvas.height;
- //    });
+    this.physics.add.collider(enemies_left.enemies_group, ai_ship.bullets_group, (enemy, bullet) => {
+        // destroy the enemy
+        this.custom_sounds.explosion.play();
+        enemy.play(enemy.explote_anim, true);
+        enemy.on('animationcomplete', () => {
+            enemy.destroy();
+        });
+        // hide the bullet 
+        bullet.body.x = this.sys.canvas.width;
+        bullet.body.y = this.sys.canvas.height;
+    });
+	this.physics.add.collider(enemies_right.enemies_group, ai_ship.bullets_group, (enemy, bullet) => {
+        // destroy the enemy
+        this.custom_sounds.explosion.play();
+        enemy.play(enemy.explote_anim, true);
+        enemy.on('animationcomplete', () => {
+            enemy.destroy();
+        });
+        // hide the bullet 
+        bullet.body.x = this.sys.canvas.width;
+        bullet.body.y = this.sys.canvas.height;
+    });
 
     // enemies bullets hit ships bullets
     this.physics.add.collider(enemies_left.bullets_group, player_ship.bullets_group, (enemy_bullet, ship_bullet) => {
