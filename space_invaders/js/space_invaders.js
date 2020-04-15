@@ -164,22 +164,11 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
                 }
             }
             else {
-                //update code for AI
-                if (this.sprite.props.dead) {
-                    this.sprite.alpha = 0.35;
-                    return;
-                }      
-                // update position
-                if (move_left) {
-                    this.sprite.x = Math.max(this.sprite.x - this.sprite.props.speed, obj_width + min_x);
-                } else if (move_right) {
-                    this.sprite.x = Math.min(this.sprite.x + this.sprite.props.speed, canvas_width - obj_width);
-                } 
-                // add bullet
                 if (shoot) {
                     fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1);
                     sound.play();
                 }
+
             } 
         },
     };
@@ -330,6 +319,7 @@ var enemies_left;                           //!< enemies
 var enemies_right;
 var shift_key;
 var all_enemies;
+var shoot;
 
 /**
  * Preload assets for the game
@@ -492,7 +482,18 @@ function update ()
 {
     // update the ship
     player_ship.update(cursors.left.isDown, cursors.right.isDown, this.input.keyboard.checkDown(space_key, 500));
-    ai_ship.update(cursors.up.isDown, cursors.down.isDown, this.input.keyboard.checkDown(shift_key, 500));
+    // manual control of ai update
+    //ai_ship.update(cursors.up.isDown, cursors.down.isDown, this.input.keyboard.checkDown(shift_key, 500));
+
+    // ai ship shoots randomly, 1/1000 
+    shoot = Math.floor(Math.random() * 250 + 1);
+    console.log(shoot);
+    if (shoot == 1){
+        ai_ship.update(false, false, true);
+    }
+    else {
+        ai_ship.update(false, false, false);
+    }
 
     // update the enemies
     enemies_left.update();
