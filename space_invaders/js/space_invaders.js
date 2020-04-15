@@ -124,7 +124,7 @@ function fire_enemy_bullet(enemies, bullets) {
  * @param {String} bullet_image_id image id for the bullet
  * @returns object with ship image, corresponding bullets group, and update function for handling actions
  */
-function create_ship(image_id="ship", x = 200, y = 540, speed = 5, bullet_image_id = "laser", min_x = 0) {
+function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bullet_image_id = "laser", min_x = 0) {
             
     var canvas_width = this.sys.canvas.width;
     var canvas_height = this.sys.canvas.height;
@@ -146,21 +146,41 @@ function create_ship(image_id="ship", x = 200, y = 540, speed = 5, bullet_image_
         update(move_left, move_right, shoot)                    //!< update the ship state based on requested actions   
         {          
             // do nothing if the ship has been killed!
-            if (this.sprite.props.dead) {
-                this.sprite.alpha = 0.35;
-                return;
-            }      
-            // update position
-            if (move_left) {
-                this.sprite.x = Math.max(this.sprite.x - this.sprite.props.speed, obj_width + min_x);
-            } else if (move_right) {
-                this.sprite.x = Math.min(this.sprite.x + this.sprite.props.speed, canvas_width - obj_width);
-            } 
-            // add bullet
-            if (shoot) {
-                fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1);
-                sound.play();
+            if (type == 0) {
+                if (this.sprite.props.dead) {
+                    this.sprite.alpha = 0.35;
+                    return;
+                }      
+                // update position
+                if (move_left) {
+                    this.sprite.x = Math.max(this.sprite.x - this.sprite.props.speed, obj_width + min_x);
+                } else if (move_right) {
+                    this.sprite.x = Math.min(this.sprite.x + this.sprite.props.speed, canvas_width - obj_width);
+                } 
+                // add bullet
+                if (shoot) {
+                    fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1);
+                    sound.play();
+                }
             }
+            else {
+                //update code for AI
+                if (this.sprite.props.dead) {
+                    this.sprite.alpha = 0.35;
+                    return;
+                }      
+                // update position
+                if (move_left) {
+                    this.sprite.x = Math.max(this.sprite.x - this.sprite.props.speed, obj_width + min_x);
+                } else if (move_right) {
+                    this.sprite.x = Math.min(this.sprite.x + this.sprite.props.speed, canvas_width - obj_width);
+                } 
+                // add bullet
+                if (shoot) {
+                    fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1);
+                    sound.play();
+                }
+            } 
         },
     };
 }
@@ -362,33 +382,19 @@ function create ()
     this.custom_sounds.explosion = this.sound.add("audio_explosion", {volume: 0.1});
     this.custom_sounds.fire_ship = this.sound.add("audio_fire_ship", {volume: 0.1});
 
-    player_ship = this.create_ship("ship", this.sys.canvas.width / 4, 540);
-    ai_ship = this.create_ship("avery", this.sys.canvas.width / 4 + 400, 540, 5, "laser", 400);
+    player_ship = this.create_ship("ship", 0, this.sys.canvas.width / 4, 540);
+    ai_ship = this.create_ship("avery", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", 400);
 
     enemies_left = this.create_enemies(5, 30, 0, "a");
     enemies_right = this.create_enemies(5, 430, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 800);
 
-	// all_enemies = this.physics.add.group();
-	// all_enemies.add(enemies_left);
-	// all_enemies.add(enemies_right); 
-
-	// for (var i=0; i<2; i++){
- //    	this.physics.add.collider(all_enemies.children[i].enemies_group, player_ship.bullets_group, (enemy, bullet) => {
-	//         // destroy the enemy
-	//         this.custom_sounds.explosion.play();
-	//         enemy.play(enemy.explote_anim, true);
-	//         enemy.on('animationcomplete', () => {
-	//             enemy.destroy();
-	//         });
-	//         // hide the bullet 
-	//         bullet.body.x = this.sys.canvas.width;
-	//         bullet.body.y = this.sys.canvas.height;
-	//     });
- //    }
+    // ship_group = this.physics.add.group();
+    // ship_group.add(player_ship);
+    // ship_group.add(ai_ship);
 
     // add colliders
     // first, take care of the bullets fired by the player
-    // enemies hit by player_ship bullets 
+    // --> enemies hit by player_ship bullets 
     this.physics.add.collider(enemies_left.enemies_group, player_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
         this.custom_sounds.explosion.play();
@@ -435,7 +441,7 @@ function create ()
         bullet.body.y = this.sys.canvas.height;
     });
 
-    // enemies bullets hit ships bullets
+    // --> enemies bullets hit ships bullets
     this.physics.add.collider(enemies_left.bullets_group, player_ship.bullets_group, (enemy_bullet, ship_bullet) => {
         // hide both bullets 
         enemy_bullet.body.x = this.sys.canvas.width;
@@ -452,7 +458,7 @@ function create ()
     });
 
     // second, let's take care of the bullets fired by the enemies
-    // enemies bullets hit player_ship
+    // --> enemies bullets hit player_ship
     this.physics.add.collider(player_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
@@ -468,6 +474,14 @@ function create ()
         // kill the enemy. The change in behavior takes place within the update function of the ship
         ship_sprite.props.dead = true;
     });
+
+    // this.physics.add.collider(enemies_left.bullets_group, ship_group, (bullet, ship) => {
+    //     bullet.body.x = this.sys.canvas.width;
+    //     bullet.body.y = this.sys.canvas.height;
+
+    //     ship.sprite.props.dead = true;
+    // });
+
 
 }
 
