@@ -486,14 +486,12 @@ function update ()
     //ai_ship.update(cursors.up.isDown, cursors.down.isDown, this.input.keyboard.checkDown(shift_key, 500));
 
     // ai ship shoots randomly, 1/1000 
-    shoot = Math.floor(Math.random() * 250 + 1);
-    console.log(shoot);
-    if (shoot == 1){
-        ai_ship.update(false, false, true);
+    shoot = false;
+    var random = Math.floor(Math.random() * 250 + 1);
+    if (random == 1) {
+        shoot = true;
     }
-    else {
-        ai_ship.update(false, false, false);
-    }
+    ai_ship.update(false, false, shoot);
 
     // update the enemies
     enemies_left.update();
