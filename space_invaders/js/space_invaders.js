@@ -320,6 +320,9 @@ var enemies_right;
 var shift_key;
 var all_enemies;
 var shoot;
+var move_left;
+var move_right;
+var hit;
 
 /**
  * Preload assets for the game
@@ -379,8 +382,8 @@ function create ()
     enemies_right = this.create_enemies(5, 430, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 800);
 
     // ship_group = this.physics.add.group();
-    // ship_group.add(player_ship);
-    // ship_group.add(ai_ship);
+    // ship_group.add(player_ship.sprite);
+    // ship_group.add(ai_ship.sprite);
 
     // add colliders
     // first, take care of the bullets fired by the player
@@ -487,10 +490,15 @@ function update ()
 
     // ai ship shoots randomly, 1/1000 
     shoot = false;
-    var random = Math.floor(Math.random() * 250 + 1);
+    var random = Math.floor(Math.random() * 100 + 1);
+    console.log("random: " + random);
     if (random == 1) {
         shoot = true;
     }
+
+    move_left = move_right = true;
+    hit = false;
+
     ai_ship.update(false, false, shoot);
 
     // update the enemies
