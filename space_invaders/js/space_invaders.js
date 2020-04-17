@@ -135,6 +135,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props = {} // add properties object to ship sprite
     sprite.props.speed = speed;
     sprite.props.dead = false;
+    sprite.props.lives = 3;
     var obj_width = sprite.displayWidth;     
 
     var bullets = this.create_bullets_pool(30, bullet_image_id);
@@ -143,6 +144,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     return {
         sprite: sprite,                                         //!< image object for the ship
         bullets_group: bullets,                                 //!< bullets shot by the shi
+        min_x: min_x,
         update(move_left, move_right, shoot)                    //!< update the ship state based on requested actions   
         {          
             // do nothing if the ship has been killed!
@@ -164,10 +166,20 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
                 }
             }
             else {
+                if (this.sprite.props.dead) {
+                    this.sprite.alpha = 0.35;
+                    return;
+                } 
                 if (shoot) {
                     fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1);
                     sound.play();
                 }
+
+                if (move_left) {
+                    this.sprite.x = Math.max(this.sprite.x - this.sprite.props.speed, obj_width + min_x);
+                } else if (move_right) {
+                    this.sprite.x = Math.min(this.sprite.x + this.sprite.props.speed, canvas_width - obj_width);
+                } 
 
             } 
         },
@@ -323,6 +335,8 @@ var shoot;
 var move_left;
 var move_right;
 var hit;
+var left_final;
+var right_final;
 
 /**
  * Preload assets for the game
@@ -381,12 +395,12 @@ function create ()
     enemies_left = this.create_enemies(5, 30, 0, "a");
     enemies_right = this.create_enemies(5, 430, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 800);
 
-    ship_group = this.physics.add.group();
-    ship_group.add(player_ship.sprite);
-    ship_group.add(ai_ship.sprite);
+    // ship_group = this.physics.add.group();
+    // ship_group.add(player_ship.sprite);
+    // ship_group.add(ai_ship.sprite);
 
-    ai_ship.sprite.body.setAllowGravity(false);
-    player_ship.sprite.body.setAllowGravity(false);
+    // ai_ship.sprite.body.setAllowGravity(false);
+    // player_ship.sprite.body.setAllowGravity(false);
 
     // add colliders
     // first, take care of the bullets fired by the player
@@ -455,28 +469,50 @@ function create ()
 
     // second, let's take care of the bullets fired by the enemies
     // --> enemies bullets hit player_ship
-    // this.physics.add.collider(player_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
-    //     // hide the bullet 
-    //     bullet.body.x = this.sys.canvas.width;
-    //     bullet.body.y = this.sys.canvas.height;
-    //     // kill the enemy. The change in behavior takes place within the update function of the ship
-    //     ship_sprite.props.dead = true;
-    // });
-
-    // this.physics.add.collider(player_ship.sprite, enemies_right.bullets_group, (ship_sprite, bullet) => {
-    //     // hide the bullet 
-    //     bullet.body.x = this.sys.canvas.width;
-    //     bullet.body.y = this.sys.canvas.height;
-    //     // kill the enemy. The change in behavior takes place within the update function of the ship
-    //     ship_sprite.props.dead = true;
-    // });
-
-    this.physics.add.collider(enemies_left.bullets_group, ship_group, (bullet, ship) => {
+    this.physics.add.collider(player_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
+        // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
-
-        ship.props.dead = true;
+        // kill the enemy. The change in behavior takes place within the update function of the ship
+        if (ship_sprite.props.lives >= 1) {
+            ship_sprite.props.lives -= 1;
+            ship_sprite.x = this.sys.canvas.width / 4;
+        }
+        else {
+            ship_sprite.props.dead = true;
+        }
     });
+
+    this.physics.add.collider(player_ship.sprite, enemies_right.bullets_group, (ship_sprite, bullet) => {
+        // hide the bullet 
+        bullet.body.x = this.sys.canvas.width;
+        bullet.body.y = this.sys.canvas.height;
+        // kill the enemy. The change in behavior takes place within the update function of the ship
+        if (ship_sprite.props.lives >= 1) {
+            ship_sprite.props.lives -= 1;
+            ship_sprite.x = this.sys.canvas.width / 4;
+        }
+        else {
+            ship_sprite.props.dead = true;
+        }
+    });
+
+    // --> enemies bullets hit ai_ship
+    this.physics.add.collider(ai_ship.sprite, enemies_right.bullets_group, (ship_sprite, bullet) => {
+        // hide the bullet 
+        bullet.body.x = this.sys.canvas.width;
+        bullet.body.y = this.sys.canvas.height;
+        // kill the enemy. The change in behavior takes place within the update function of the ship
+        //ship_sprite.props.dead = true;
+    });
+
+
+    // this.physics.add.collider(enemies_left.bullets_group, ship_group, (bullet, ship) => {
+    //     bullet.body.x = this.sys.canvas.width;
+    //     bullet.body.y = this.sys.canvas.height;
+
+    //     ship.props.dead = true;
+    // });
 
 
 }
@@ -493,16 +529,88 @@ function update ()
 
     // ai ship shoots randomly, 1/1000 
     shoot = false;
-    var random = Math.floor(Math.random() * 100 + 1);
+    var random = Math.floor(Math.random() * 250 + 1);
     //console.log("random: " + random);
     if (random == 1) {
         shoot = true;
     }
 
+    // ---------- start AI logic
+
+    left_final = false;
+    right_final = false;
+
     move_left = move_right = true;
     hit = false;
 
-    ai_ship.update(false, false, shoot);
+    var bullets_right = enemies_right.bullets_group.getChildren();
+    // console.log(bullets_left.length);
+    for(var i=0; i < bullets_right.length; i++){
+        // console.log(bullets_left[i].body.x);
+        if (bullets_right[i].body.y < 300 || bullets_right[i].visible == false) {
+            continue;
+        }
+        var diff = bullets_right[i].body.x - ai_ship.sprite.x;
+        //console.log(ai_ship.sprite.x);
+        if (diff > -30 && diff < -1) {
+            move_left = false;
+        }
+        if (diff >= -1 && diff <= 50) {
+            hit = true;
+        }
+        if (diff > 50 && diff < 80) {
+            move_right = false;
+        }
+    }
+
+    // var bullets_left = enemies_left.bullets_group.getChildren();
+    // for(var i=0; i < bullets_left.length; i++){
+    //     // console.log(bullets_left[i].body.x);
+    //     if (bullets_left[i].visible == false) {
+    //         continue;
+    //     }
+    //     var diff = bullets_left[i].body.x - ai_ship.sprite.x;
+    //     //console.log(ai_ship.sprite.x);
+    //     if (diff > -30 && diff < -1) {
+    //         move_left = false;
+    //     }
+    //     if (diff >= -1 && diff <= 50) {
+    //         hit = true;
+    //     }
+    //     if (diff > 50 && diff < 80) {
+    //         move_right = false;
+    //     }
+    // }
+
+    //console.log("left: " + move_left + "right: " + move_right + "hit: " + hit);
+
+    if (move_left && move_right && hit) {
+        if (ai_ship.sprite.x < ai_ship.min_x + 50) {
+            right_final = true;
+            //console.log("first, right");
+        }
+        else if (ai_ship.sprite.x >= 750) {
+            left_final = true;
+            //console.log("first, left");
+        }
+        else {
+            left_final = true;
+        }
+    }
+    //move left
+    else if (move_left && hit) {
+        left_final = true;
+        //console.log("left");
+    }
+    //move right
+    else if (move_right && hit) {
+        right_final = true;
+        //console.log("right");
+    }
+
+    ai_ship.update(left_final, right_final, shoot);
+
+    // ---------- end AI logic
 
     // update the enemies
     enemies_left.update();
