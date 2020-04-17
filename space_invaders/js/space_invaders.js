@@ -381,9 +381,12 @@ function create ()
     enemies_left = this.create_enemies(5, 30, 0, "a");
     enemies_right = this.create_enemies(5, 430, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 800);
 
-    // ship_group = this.physics.add.group();
-    // ship_group.add(player_ship.sprite);
-    // ship_group.add(ai_ship.sprite);
+    ship_group = this.physics.add.group();
+    ship_group.add(player_ship.sprite);
+    ship_group.add(ai_ship.sprite);
+
+    ai_ship.sprite.body.setAllowGravity(false);
+    player_ship.sprite.body.setAllowGravity(false);
 
     // add colliders
     // first, take care of the bullets fired by the player
@@ -452,28 +455,28 @@ function create ()
 
     // second, let's take care of the bullets fired by the enemies
     // --> enemies bullets hit player_ship
-    this.physics.add.collider(player_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
-        // hide the bullet 
-        bullet.body.x = this.sys.canvas.width;
-        bullet.body.y = this.sys.canvas.height;
-        // kill the enemy. The change in behavior takes place within the update function of the ship
-        ship_sprite.props.dead = true;
-    });
-
-    this.physics.add.collider(player_ship.sprite, enemies_right.bullets_group, (ship_sprite, bullet) => {
-        // hide the bullet 
-        bullet.body.x = this.sys.canvas.width;
-        bullet.body.y = this.sys.canvas.height;
-        // kill the enemy. The change in behavior takes place within the update function of the ship
-        ship_sprite.props.dead = true;
-    });
-
-    // this.physics.add.collider(enemies_left.bullets_group, ship_group, (bullet, ship) => {
+    // this.physics.add.collider(player_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
+    //     // hide the bullet 
     //     bullet.body.x = this.sys.canvas.width;
     //     bullet.body.y = this.sys.canvas.height;
-
-    //     ship.props.dead = true;
+    //     // kill the enemy. The change in behavior takes place within the update function of the ship
+    //     ship_sprite.props.dead = true;
     // });
+
+    // this.physics.add.collider(player_ship.sprite, enemies_right.bullets_group, (ship_sprite, bullet) => {
+    //     // hide the bullet 
+    //     bullet.body.x = this.sys.canvas.width;
+    //     bullet.body.y = this.sys.canvas.height;
+    //     // kill the enemy. The change in behavior takes place within the update function of the ship
+    //     ship_sprite.props.dead = true;
+    // });
+
+    this.physics.add.collider(enemies_left.bullets_group, ship_group, (bullet, ship) => {
+        bullet.body.x = this.sys.canvas.width;
+        bullet.body.y = this.sys.canvas.height;
+
+        ship.props.dead = true;
+    });
 
 
 }
