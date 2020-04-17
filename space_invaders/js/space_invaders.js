@@ -472,7 +472,7 @@ function create ()
     //     bullet.body.x = this.sys.canvas.width;
     //     bullet.body.y = this.sys.canvas.height;
 
-    //     ship.sprite.props.dead = true;
+    //     ship.props.dead = true;
     // });
 
 
@@ -491,7 +491,7 @@ function update ()
     // ai ship shoots randomly, 1/1000 
     shoot = false;
     var random = Math.floor(Math.random() * 100 + 1);
-    console.log("random: " + random);
+    //console.log("random: " + random);
     if (random == 1) {
         shoot = true;
     }
