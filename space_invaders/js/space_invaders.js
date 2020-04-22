@@ -4,8 +4,8 @@
 
 // TO COMPLETE: 
 // AI logic
-// win/lose logic
 // cooperative vs. noncooperative setting
+// win/lose logic
 // lives graphics
 
 // --- helper functions ---
@@ -391,6 +391,7 @@ function create ()
 {
     gameover = false;
 
+    //this.physics.world.setFPS(1);
     //mode: 0 - cooperative, 1 - noncooperative
     mode = 1;
 
@@ -542,35 +543,35 @@ function create ()
     });
 
     // --> enemies bullets hit ai_ship
-    this.physics.add.collider(ai_ship.sprite, enemies_right.bullets_group, (ship_sprite, bullet) => {
-        // hide the bullet 
-        bullet.body.x = this.sys.canvas.width;
-        bullet.body.y = this.sys.canvas.height;
-        // kill the enemy. The change in behavior takes place within the update function of the ship
-        // ship_sprite.props.dead = true;
-        if (ship_sprite.props.lives >= 1) {
-            ship_sprite.props.lives -= 1;
-            ship_sprite.x = this.sys.canvas.width / 4 + 400;
-        }
-        else {
-            ship_sprite.props.dead = true;
-        }
-    });
+    // this.physics.add.collider(ai_ship.sprite, enemies_right.bullets_group, (ship_sprite, bullet) => {
+    //     // hide the bullet 
+    //     bullet.body.x = this.sys.canvas.width;
+    //     bullet.body.y = this.sys.canvas.height;
+    //     // kill the enemy. The change in behavior takes place within the update function of the ship
+    //     // ship_sprite.props.dead = true;
+    //     if (ship_sprite.props.lives >= 1) {
+    //         ship_sprite.props.lives -= 1;
+    //         ship_sprite.x = this.sys.canvas.width / 4 + 400;
+    //     }
+    //     else {
+    //         ship_sprite.props.dead = true;
+    //     }
+    // });
 
-    this.physics.add.collider(ai_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
-        // hide the bullet 
-        bullet.body.x = this.sys.canvas.width;
-        bullet.body.y = this.sys.canvas.height;
-        // kill the enemy. The change in behavior takes place within the update function of the ship
-        // ship_sprite.props.dead = true;
-        if (ship_sprite.props.lives >= 1) {
-            ship_sprite.props.lives -= 1;
-            ship_sprite.x = this.sys.canvas.width / 4 + 400;
-        }
-        else {
-            ship_sprite.props.dead = true;
-        }
-    });
+    // this.physics.add.collider(ai_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
+    //     // hide the bullet 
+    //     bullet.body.x = this.sys.canvas.width;
+    //     bullet.body.y = this.sys.canvas.height;
+    //     // kill the enemy. The change in behavior takes place within the update function of the ship
+    //     // ship_sprite.props.dead = true;
+    //     if (ship_sprite.props.lives >= 1) {
+    //         ship_sprite.props.lives -= 1;
+    //         ship_sprite.x = this.sys.canvas.width / 4 + 400;
+    //     }
+    //     else {
+    //         ship_sprite.props.dead = true;
+    //     }
+    // });
 
 }
 
@@ -597,7 +598,7 @@ function update ()
     left_final = false;
     right_final = false;
 
-    var left_enemy = 0;
+    var left_enemy = this.sys.canvas_width;
     var right_enemy = 0;
 
     move_left = move_right = true;
@@ -645,46 +646,56 @@ function update ()
         }
     }
 
-    var bullets_left = enemies_left.bullets_group.getChildren();
-    for(var i=0; i < bullets_left.length; i++){
-        // console.log(bullets_left[i].body.x);
-        if (bullets_left[i].visible == false) {
-            continue;
-        }
-        var diff = bullets_left[i].body.x - ai_ship.sprite.x;
-        //console.log(ai_ship.sprite.x);
-        if (diff > -30 && diff < -1) {
-            move_left = false;
-        }
-        if (diff >= -1 && diff <= 50) {
-            hit = true;
-        }
-        if (diff > 50 && diff < 80) {
-            move_right = false;
-        }
-    }
+    // var bullets_left = enemies_left.bullets_group.getChildren();
+    // for(var i=0; i < bullets_left.length; i++){
+    //     // console.log(bullets_left[i].body.x);
+    //     if (bullets_left[i].visible == false) {
+    //         continue;
+    //     }
+    //     var diff = bullets_left[i].body.x - ai_ship.sprite.x;
+    //     //console.log(ai_ship.sprite.x);
+    //     if (diff > -30 && diff < -1) {
+    //         move_left = false;
+    //     }
+    //     if (diff >= -1 && diff <= 50) {
+    //         hit = true;
+    //     }
+    //     if (diff > 50 && diff < 80) {
+    //         move_right = false;
+    //     }
+    // }
+
+    //console.log("left: " + move_left + ". right: " + move_right + ", hit: " + hit);
 
     // --> deciding which direction to move
     if (move_left && move_right && hit && ai_ship.sprite.x < ai_ship.min_x + 10) {
         right_final = true;
+        console.log("1");
     }
     else if (move_left && move_right && hit && ai_ship.sprite.x > this.sys.canvas_width - 60) {
         left_final = true;
+        console.log("2");
     }
-    else if (move_left && hit) {
+    else if (move_left && hit && !move_right) {
         left_final = true;
+        console.log("3");
         //console.log("left");
     }
-    else if (move_right && hit) {
+    else if (move_right && hit && !move_left) {
         right_final = true;
+        console.log("4");
         //console.log("right");
     }
-    else if (ai_ship.sprite.x > right_enemy && move_left && ai_ship.sprite.x > ai_ship.min_x) {
+    else if (ai_ship.sprite.x > right_enemy && move_left && ai_ship.sprite.x > ai_ship.min_x && !move_right) {
         left_final = true;
+        console.log("5");
     }
-    else if ((ai_ship.sprite.x < (right_enemy - 10) && move_right) || (ai_ship.sprite.x < ai_ship.min_x && move_right)) {
+    else if ((ai_ship.sprite.x < left_enemy + 10 && move_right) || (ai_ship.sprite.x < this.sys.canvas_width && move_right) && !move_left) {
         right_final = true;
+        console.log("6");
     }
+
+    console.log("left: " + left_final + ", right: " + right_final);
 
     ai_ship.update(left_final, right_final, shoot);
 
@@ -693,5 +704,7 @@ function update ()
     // update the enemies
     enemies_left.update();
     enemies_right.update();
+
+
 
 }
