@@ -597,8 +597,32 @@ function update ()
     left_final = false;
     right_final = false;
 
+    var left_enemy = 0;
+    var right_enemy = 0;
+
     move_left = move_right = true;
     hit = false;
+
+    var enemies_left_sprites = enemies_left.enemies_group.getChildren();
+    for (var i=0; i < enemies_left_sprites; i++) {
+        if (enemies_left_sprites[i].body.x > right_enemy) {
+            right_enemy = enemies_left_sprites[i].body.x
+        }
+        if (enemies_left_sprites[i].body.x < left_enemy) {
+            left_enemy = enemies_left_sprites[i].body.x
+        }
+    }
+
+    var enemies_right_sprites = enemies_right.enemies_group.getChildren();
+    for (var i=0; i < enemies_right_sprites; i++) {
+        if (enemies_right_sprites[i].body.x > right_enemy) {
+            right_enemy = enemies_left_sprites[i].body.x
+        }
+        if (enemies_right_sprites[i].body.x < left_enemy) {
+            left_enemy = enemies_left_sprites[i].body.x
+        }
+    }
+
 
     var bullets_right = enemies_right.bullets_group.getChildren();
     // console.log(bullets_left.length);
@@ -620,33 +644,33 @@ function update ()
         }
     }
 
-    // var bullets_left = enemies_left.bullets_group.getChildren();
-    // for(var i=0; i < bullets_left.length; i++){
-    //     // console.log(bullets_left[i].body.x);
-    //     if (bullets_left[i].visible == false) {
-    //         continue;
-    //     }
-    //     var diff = bullets_left[i].body.x - ai_ship.sprite.x;
-    //     //console.log(ai_ship.sprite.x);
-    //     if (diff > -30 && diff < -1) {
-    //         move_left = false;
-    //     }
-    //     if (diff >= -1 && diff <= 50) {
-    //         hit = true;
-    //     }
-    //     if (diff > 50 && diff < 80) {
-    //         move_right = false;
-    //     }
-    // }
+    var bullets_left = enemies_left.bullets_group.getChildren();
+    for(var i=0; i < bullets_left.length; i++){
+        // console.log(bullets_left[i].body.x);
+        if (bullets_left[i].visible == false) {
+            continue;
+        }
+        var diff = bullets_left[i].body.x - ai_ship.sprite.x;
+        //console.log(ai_ship.sprite.x);
+        if (diff > -30 && diff < -1) {
+            move_left = false;
+        }
+        if (diff >= -1 && diff <= 50) {
+            hit = true;
+        }
+        if (diff > 50 && diff < 80) {
+            move_right = false;
+        }
+    }
 
     //console.log("left: " + move_left + "right: " + move_right + "hit: " + hit);
 
     if (move_left && move_right && hit) {
-        if (ai_ship.sprite.x < ai_ship.min_x + 50) {
+        if (ai_ship.sprite.x < ai_ship.min_x) {
             right_final = true;
             //console.log("first, right");
         }
-        else if (ai_ship.sprite.x >= 750) {
+        else if (ai_ship.sprite.x >= 800) {
             left_final = true;
             //console.log("first, left");
         }
@@ -663,6 +687,12 @@ function update ()
     else if (move_right && hit) {
         right_final = true;
         //console.log("right");
+    }
+    else if (ai_ship.sprite.x > right_enemy && move_left && ai_ship.sprite.x > ai_ship.min_x) {
+        left_final = true;
+    }
+    else if ((ai_ship.sprite.x < (right_enemy - 10) && move_right) || (ai_ship.sprite.x < ai_ship.min_x && move_right)) {
+        right_final = true;
     }
 
     ai_ship.update(left_final, right_final, shoot);
