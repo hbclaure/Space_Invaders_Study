@@ -603,6 +603,7 @@ function update ()
     move_left = move_right = true;
     hit = false;
 
+    // --> checking where the enemies are
     var enemies_left_sprites = enemies_left.enemies_group.getChildren();
     for (var i=0; i < enemies_left_sprites; i++) {
         if (enemies_left_sprites[i].body.x > right_enemy) {
@@ -623,7 +624,7 @@ function update ()
         }
     }
 
-
+    // --> checking where the bullets are/if a bullet is about to hit the ai ship
     var bullets_right = enemies_right.bullets_group.getChildren();
     // console.log(bullets_left.length);
     for(var i=0; i < bullets_right.length; i++){
@@ -663,27 +664,17 @@ function update ()
         }
     }
 
-    //console.log("left: " + move_left + "right: " + move_right + "hit: " + hit);
-
-    if (move_left && move_right && hit) {
-        if (ai_ship.sprite.x < ai_ship.min_x) {
-            right_final = true;
-            //console.log("first, right");
-        }
-        else if (ai_ship.sprite.x >= 800) {
-            left_final = true;
-            //console.log("first, left");
-        }
-        else {
-            left_final = true;
-        }
+    // --> deciding which direction to move
+    if (move_left && move_right && hit && ai_ship.sprite.x < ai_ship.min_x + 10) {
+        right_final = true;
     }
-    //move left
+    else if (move_left && move_right && hit && ai_ship.sprite.x > this.sys.canvas_width - 60) {
+        left_final = true;
+    }
     else if (move_left && hit) {
         left_final = true;
         //console.log("left");
     }
-    //move right
     else if (move_right && hit) {
         right_final = true;
         //console.log("right");
