@@ -2,6 +2,14 @@
 // This game is inspired by Lee Robinson's Space Invaders, https://leerob.io/blog/space-invaders-with-python
 // And an adaptation by Simon Mendelsohn, https://zoo.cs.yale.edu/classes/cs490/19-20a/mendelsohn.simon.sjm225
 
+// TO COMPLETE: 
+// AI logic
+// AI lives
+// all collisions
+// win/lose logic
+// cooperative vs. noncooperative setting
+// lives graphics
+
 // --- helper functions ---
 
 /**
@@ -467,6 +475,21 @@ function create ()
         ship_bullet.body.y = this.sys.canvas.height;
     });
 
+    this.physics.add.collider(enemies_left.bullets_group, ai_ship.bullets_group, (enemy_bullet, ship_bullet) => {
+        // hide both bullets 
+        enemy_bullet.body.x = this.sys.canvas.width;
+        enemy_bullet.body.y = this.sys.canvas.height;
+        ship_bullet.body.x = this.sys.canvas.width;
+        ship_bullet.body.y = this.sys.canvas.height;
+    });
+    this.physics.add.collider(enemies_right.bullets_group, ai_ship.bullets_group, (enemy_bullet, ship_bullet) => {
+        // hide both bullets 
+        enemy_bullet.body.x = this.sys.canvas.width;
+        enemy_bullet.body.y = this.sys.canvas.height;
+        ship_bullet.body.x = this.sys.canvas.width;
+        ship_bullet.body.y = this.sys.canvas.height;
+    });
+
     // second, let's take care of the bullets fired by the enemies
     // --> enemies bullets hit player_ship
     this.physics.add.collider(player_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
@@ -503,9 +526,30 @@ function create ()
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
         // kill the enemy. The change in behavior takes place within the update function of the ship
-        //ship_sprite.props.dead = true;
+        // ship_sprite.props.dead = true;
+        if (ship_sprite.props.lives >= 1) {
+            ship_sprite.props.lives -= 1;
+            ship_sprite.x = this.sys.canvas.width / 4 + 400;
+        }
+        else {
+            ship_sprite.props.dead = true;
+        }
     });
 
+    this.physics.add.collider(ai_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
+        // hide the bullet 
+        bullet.body.x = this.sys.canvas.width;
+        bullet.body.y = this.sys.canvas.height;
+        // kill the enemy. The change in behavior takes place within the update function of the ship
+        // ship_sprite.props.dead = true;
+        if (ship_sprite.props.lives >= 1) {
+            ship_sprite.props.lives -= 1;
+            ship_sprite.x = this.sys.canvas.width / 4 + 400;
+        }
+        else {
+            ship_sprite.props.dead = true;
+        }
+    });
 
     // this.physics.add.collider(enemies_left.bullets_group, ship_group, (bullet, ship) => {
     //     bullet.body.x = this.sys.canvas.width;
