@@ -329,6 +329,7 @@ var config = {
 };
 
 var game = new Phaser.Game(config);     //!< game object
+var mode;
 var cursors;                            //!< keyboard access
 var space_key;                          //!< space key
 var player_ship;                              //!< player_ship
@@ -389,6 +390,10 @@ function preload ()
 function create ()
 {
     gameover = false;
+
+    //mode: 0 - cooperative, 1 - noncooperative
+    mode = 1;
+
     cursors = this.input.keyboard.createCursorKeys();
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     shift_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
@@ -398,11 +403,18 @@ function create ()
     this.custom_sounds.fire_ship = this.sound.add("audio_fire_ship", {volume: 0.1});
 
     player_ship = this.create_ship("ship", 0, this.sys.canvas.width / 4, 540);
-    ai_ship = this.create_ship("avery", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", 400);
+
+    var minX = 0;
+    if (mode == 1) {
+        minX = 400;
+    }
+
+    ai_ship = this.create_ship("avery", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", minX);
 
     enemies_left = this.create_enemies(5, 30, 0, "a");
     enemies_right = this.create_enemies(5, 430, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 800);
 
+    // --> logic to create a ship group (BROKEN)
     // ship_group = this.physics.add.group();
     // ship_group.add(player_ship.sprite);
     // ship_group.add(ai_ship.sprite);
@@ -410,8 +422,14 @@ function create ()
     // ai_ship.sprite.body.setAllowGravity(false);
     // player_ship.sprite.body.setAllowGravity(false);
 
-    // add colliders
-    // first, take care of the bullets fired by the player
+     // this.physics.add.collider(enemies_left.bullets_group, ship_group, (bullet, ship) => {
+    //     bullet.body.x = this.sys.canvas.width;
+    //     bullet.body.y = this.sys.canvas.height;
+
+    //     ship.props.dead = true;
+    // });
+
+    // --> COLLIDERS <--
     // --> enemies hit by player_ship bullets 
     this.physics.add.collider(enemies_left.enemies_group, player_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
@@ -553,14 +571,6 @@ function create ()
             ship_sprite.props.dead = true;
         }
     });
-
-    // this.physics.add.collider(enemies_left.bullets_group, ship_group, (bullet, ship) => {
-    //     bullet.body.x = this.sys.canvas.width;
-    //     bullet.body.y = this.sys.canvas.height;
-
-    //     ship.props.dead = true;
-    // });
-
 
 }
 
