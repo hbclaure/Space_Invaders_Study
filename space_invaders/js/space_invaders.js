@@ -4,8 +4,6 @@
 
 // TO COMPLETE: 
 // AI logic
-// AI lives
-// all collisions
 // win/lose logic
 // cooperative vs. noncooperative setting
 // lives graphics
@@ -345,6 +343,7 @@ var move_right;
 var hit;
 var left_final;
 var right_final;
+var gameover;
 
 /**
  * Preload assets for the game
@@ -389,6 +388,7 @@ function preload ()
  */
 function create ()
 {
+    gameover = false;
     cursors = this.input.keyboard.createCursorKeys();
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     shift_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
@@ -436,6 +436,7 @@ function create ()
         bullet.body.y = this.sys.canvas.height;
     });
 
+    // --> enemies hit by Ai ship's bullets
     this.physics.add.collider(enemies_left.enemies_group, ai_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
         this.custom_sounds.explosion.play();
@@ -475,6 +476,7 @@ function create ()
         ship_bullet.body.y = this.sys.canvas.height;
     });
 
+    // --> enemies bullets hit AI ship's bullets
     this.physics.add.collider(enemies_left.bullets_group, ai_ship.bullets_group, (enemy_bullet, ship_bullet) => {
         // hide both bullets 
         enemy_bullet.body.x = this.sys.canvas.width;
@@ -490,7 +492,6 @@ function create ()
         ship_bullet.body.y = this.sys.canvas.height;
     });
 
-    // second, let's take care of the bullets fired by the enemies
     // --> enemies bullets hit player_ship
     this.physics.add.collider(player_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
         // hide the bullet 
@@ -503,6 +504,7 @@ function create ()
         }
         else {
             ship_sprite.props.dead = true;
+            gameover = true;
         }
     });
 
@@ -517,6 +519,7 @@ function create ()
         }
         else {
             ship_sprite.props.dead = true;
+            gameover = true;
         }
     });
 
@@ -594,15 +597,15 @@ function update ()
         if (bullets_right[i].body.y < 300 || bullets_right[i].visible == false) {
             continue;
         }
-        var diff = bullets_right[i].body.x - ai_ship.sprite.x;
+        var x_diff = bullets_right[i].body.x - ai_ship.sprite.x;
         //console.log(ai_ship.sprite.x);
-        if (diff > -30 && diff < -1) {
+        if (x_diff > -30 && x_diff < -1) {
             move_left = false;
         }
-        if (diff >= -1 && diff <= 50) {
+        if (x_diff >= -1 && x_diff <= 50) {
             hit = true;
         }
-        if (diff > 50 && diff < 80) {
+        if (x_diff > 50 && x_diff < 80) {
             move_right = false;
         }
     }
