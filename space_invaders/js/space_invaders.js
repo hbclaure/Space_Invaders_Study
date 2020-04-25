@@ -182,8 +182,10 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
                 }
 
                 if (move_left) {
+                    // console.log("move left");
                     this.sprite.x = Math.max(this.sprite.x - this.sprite.props.speed, obj_width + min_x);
                 } else if (move_right) {
+                    // console.log("move right");
                     this.sprite.x = Math.min(this.sprite.x + this.sprite.props.speed, canvas_width - obj_width);
                 } 
 
@@ -346,6 +348,7 @@ var left_final;
 var right_final;
 var gameover;
 var dir_switch;
+var debug_text;
 
 /**
  * Preload assets for the game
@@ -391,6 +394,7 @@ function preload ()
 function create ()
 {
     gameover = false;
+    debug_text = true;
 
     //this.physics.world.setFPS(1);
     //mode: 0 - cooperative, 1 - noncooperative
@@ -601,7 +605,7 @@ function update ()
     left_final = false;
     right_final = false;
 
-    var left_enemy = 0;
+    var left_enemy = 800;
     var right_enemy = 0;
 
     move_left = move_right = true;
@@ -610,7 +614,7 @@ function update ()
     // --> checking where the enemies are
 
     var enemies_right_sprites = enemies_right.enemies_group.getChildren();
-    for (var i=0; i < enemies_right_sprites; i++) {
+    for (var i=0; i < enemies_right_sprites.length; i++) {
         if (enemies_right_sprites[i].body.x > right_enemy) {
             right_enemy = enemies_right_sprites[i].body.x;
         }
@@ -636,7 +640,7 @@ function update ()
     // console.log(bullets_left.length);
     for(var i=0; i < bullets_right.length; i++){
         // console.log(bullets_left[i].body.x);
-        if (bullets_right[i].body.y < 300 || bullets_right[i].visible == false) {
+        if (bullets_right[i].body.y < 100 || bullets_right[i].visible == false) {
             continue;
         }
         var x_diff = bullets_right[i].body.x - ai_ship.sprite.x;
@@ -652,15 +656,20 @@ function update ()
         }
     }
 
-    if (!move_left) {
-        console.log("don't move left");
+    
+
+    if (ai_ship.sprite.props.dead == false && debug_text) {
+        if (!move_left) {
+            console.log("don't move left");
+        }
+        if (hit) {
+            console.log("bullet incoming");
+        }   
+        if (!move_right) {
+            console.log("don't move right");
+        }
     }
-    if (hit) {
-        console.log("bullet incoming");
-    }
-    if (!move_right) {
-        console.log("don't move right");
-    }
+    
 
     // var bullets_left = enemies_left.bullets_group.getChildren();
     // for(var i=0; i < bullets_left.length; i++){
@@ -681,9 +690,6 @@ function update ()
     //     }
     // }
 
-    console.log("left: " + move_left + ". right: " + move_right + ", hit: " + hit + ", right enemy: " + right_enemy + ", left enemy: " + left_enemy);
-
-
 
     // --> deciding which direction to move
     if (move_left && move_right && hit && ai_ship.sprite.x < ai_ship.min_x + 10) {
@@ -694,12 +700,12 @@ function update ()
         left_final = true;
         console.log("2");
     }
-    else if (move_left && hit) {
+    else if (move_left && hit && ai_ship.sprite.x > ai_ship.min_x + 10) {
         left_final = true;
         console.log("3");
         //console.log("left");
     }
-    else if (move_right && hit) {
+    else if (move_right && hit && ai_ship.sprite.x < 740) {
         right_final = true;
         console.log("4");
         //console.log("right");
@@ -713,7 +719,10 @@ function update ()
         console.log("6");
     }
 
-    console.log("left: " + left_final + ", right: " + right_final);
+    if (ai_ship.sprite.props.dead == false && debug_text) {
+        console.log("left: " + move_left + ". right: " + move_right + ", hit: " + hit + ", right enemy: " + right_enemy + ", left enemy: " + left_enemy);
+        console.log("left: " + left_final + ", right: " + right_final);
+    }
 
     ai_ship.update(left_final, right_final, shoot);
 
