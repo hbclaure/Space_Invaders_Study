@@ -594,7 +594,7 @@ function update ()
 
     // ai ship shoots randomly, 1/1000 
     shoot = false;
-    var random = Math.floor(Math.random() * 100 + 1);
+    var random = Math.floor(Math.random() * 50 + 1);
     //console.log("random: " + random);
     if (random == 1) {
         shoot = true;
@@ -623,7 +623,7 @@ function update ()
         }
     }
 
-    if (mode = 0) {
+    if (mode == 0) {
         var enemies_left_sprites = enemies_left.enemies_group.getChildren();
         for (var i=0; i < enemies_left_sprites; i++) {
             if (enemies_left_sprites[i].body.x > right_enemy) {
@@ -710,17 +710,18 @@ function update ()
         console.log("4");
         //console.log("right");
     }
-    else if (ai_ship.sprite.x > right_enemy && move_left && ai_ship.sprite.x > ai_ship.min_x && !move_right) {
+    else if (ai_ship.sprite.x > right_enemy && move_left && ai_ship.sprite.x > ai_ship.min_x) {
         left_final = true;
         console.log("5");
     }
-    else if ((ai_ship.sprite.x < left_enemy + 10 && move_right) || (ai_ship.sprite.x < this.sys.canvas_width && move_right) && !move_left) {
+    else if ((ai_ship.sprite.x < right_enemy - 10 && move_right) || (ai_ship.sprite.x < this.sys.canvas_width && move_right)) {
         right_final = true;
         console.log("6");
     }
 
     if (ai_ship.sprite.props.dead == false && debug_text) {
         console.log("left: " + move_left + ". right: " + move_right + ", hit: " + hit + ", right enemy: " + right_enemy + ", left enemy: " + left_enemy);
+        console.log("x: " + ai_ship.sprite.x);
         console.log("left: " + left_final + ", right: " + right_final);
     }
 
