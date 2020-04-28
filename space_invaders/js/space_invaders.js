@@ -161,7 +161,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
                 }      
                 // update position
                 if (move_left) {
-                    this.sprite.x = Math.max(this.sprite.x - this.sprite.props.speed, obj_width + min_x);
+                    this.sprite.x = Math.max(this.sprite.x - this.sprite.props.speed, min_x);
                 } else if (move_right) {
                     this.sprite.x = Math.min(this.sprite.x + this.sprite.props.speed, canvas_width - obj_width);
                 } 
@@ -183,7 +183,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
 
                 if (move_left) {
                     // console.log("move left");
-                    this.sprite.x = Math.max(this.sprite.x - this.sprite.props.speed, obj_width + min_x);
+                    this.sprite.x = Math.max(this.sprite.x - this.sprite.props.speed, min_x);
                 } else if (move_right) {
                     // console.log("move right");
                     this.sprite.x = Math.min(this.sprite.x + this.sprite.props.speed, canvas_width - obj_width);
@@ -338,8 +338,6 @@ var player_ship;                              //!< player_ship
 var ai_ship;
 var enemies_left;                           //!< enemies
 var enemies_right;
-var shift_key;
-var all_enemies;
 var shoot;
 var move_left;
 var move_right;
@@ -347,7 +345,6 @@ var hit;
 var left_final;
 var right_final;
 var gameover;
-var dir_switch;
 var debug_text;
 
 /**
@@ -392,19 +389,18 @@ function preload ()
  * Create world objects and collider functions
  */
 function create ()
-{
+{	
+	// flag to tell when the game is over, currently not being used
     gameover = false;
-    debug_text = true;
 
-    //this.physics.world.setFPS(1);
-    //mode: 0 - cooperative, 1 - noncooperative
+    // debug_text flag to run debugging text in developer tools
+    debug_text = false;
+
+    // mode: 0 - cooperative, 1 - noncooperative
     mode = 1;
-
-    dir_switch = -1;
 
     cursors = this.input.keyboard.createCursorKeys();
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    shift_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
 
     this.custom_sounds = {};   // add sound object so that we can easily access the sounds in the scene  
     this.custom_sounds.explosion = this.sound.add("audio_explosion", {volume: 0.1});
@@ -412,6 +408,7 @@ function create ()
 
     player_ship = this.create_ship("ship", 0, this.sys.canvas.width / 4, 540);
 
+    //setting the left wall for the AI depending on what kind of agent it is
     var minX = 0;
     if (mode == 1) {
         minX = 400;
@@ -419,23 +416,9 @@ function create ()
 
     ai_ship = this.create_ship("avery", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", minX);
 
+    //creating the enemies on the left and right
     enemies_left = this.create_enemies(5, 30, 0, "a");
     enemies_right = this.create_enemies(5, 430, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 800);
-
-    // --> logic to create a ship group (BROKEN)
-    // ship_group = this.physics.add.group();
-    // ship_group.add(player_ship.sprite);
-    // ship_group.add(ai_ship.sprite);
-
-    // ai_ship.sprite.body.setAllowGravity(false);
-    // player_ship.sprite.body.setAllowGravity(false);
-
-     // this.physics.add.collider(enemies_left.bullets_group, ship_group, (bullet, ship) => {
-    //     bullet.body.x = this.sys.canvas.width;
-    //     bullet.body.y = this.sys.canvas.height;
-
-    //     ship.props.dead = true;
-    // });
 
     // --> COLLIDERS <--
     // --> enemies hit by player_ship bullets 
@@ -590,9 +573,8 @@ function update ()
     // update the ship
     player_ship.update(cursors.left.isDown, cursors.right.isDown, this.input.keyboard.checkDown(space_key, 500));
     // manual control of ai update
-    //ai_ship.update(cursors.up.isDown, cursors.down.isDown, this.input.keyboard.checkDown(shift_key, 500));
 
-    // ai ship shoots randomly, 1/1000 
+    // ---------- AI shooting logic, ai ship shoots randomly, 1/50 chance each loop 
     shoot = false;
     var random = Math.floor(Math.random() * 50 + 1);
     //console.log("random: " + random);
@@ -600,7 +582,7 @@ function update ()
         shoot = true;
     }
 
-    // ---------- start AI logic
+    // ---------- start of AI movement logic
 
     left_final = false;
     right_final = false;
@@ -612,7 +594,6 @@ function update ()
     hit = false;
 
     // --> checking where the enemies are
-
     var enemies_right_sprites = enemies_right.enemies_group.getChildren();
     for (var i=0; i < enemies_right_sprites.length; i++) {
         if (enemies_right_sprites[i].body.x > right_enemy) {
@@ -623,9 +604,10 @@ function update ()
         }
     }
 
+    //don't consider enemies on left side if not cooperative agent
     if (mode == 0) {
         var enemies_left_sprites = enemies_left.enemies_group.getChildren();
-        for (var i=0; i < enemies_left_sprites; i++) {
+        for (var i=0; i < enemies_left_sprites.length; i++) {
             if (enemies_left_sprites[i].body.x > right_enemy) {
                 right_enemy = enemies_left_sprites[i].body.x;
             }
@@ -656,8 +638,29 @@ function update ()
         }
     }
 
-    
+    //don't consider bullets on left side if not cooperative agent
+    if (mode == 0) {
+        var bullets_left = enemies_left.bullets_group.getChildren();
+        for(var i=0; i < bullets_left.length; i++){
+            // console.log(bullets_left[i].body.x);
+            if (bullets_left[i].body.y < 100 || bullets_left[i].visible == false) {
+                continue;
+            }
+            var diff = bullets_left[i].body.x - ai_ship.sprite.x;
+            //console.log(ai_ship.sprite.x);
+            if (diff > -30 && diff < -1) {
+                move_left = false;
+            }
+            if (diff >= -1 && diff <= 50) {
+                hit = true;
+            }
+            if (diff > 50 && diff < 80) {
+                move_right = false;
+            }
+        }
+    }
 
+    // debugging text
     if (ai_ship.sprite.props.dead == false && debug_text) {
         if (!move_left) {
             console.log("don't move left");
@@ -669,27 +672,6 @@ function update ()
             console.log("don't move right");
         }
     }
-    
-
-    // var bullets_left = enemies_left.bullets_group.getChildren();
-    // for(var i=0; i < bullets_left.length; i++){
-    //     // console.log(bullets_left[i].body.x);
-    //     if (bullets_left[i].visible == false) {
-    //         continue;
-    //     }
-    //     var diff = bullets_left[i].body.x - ai_ship.sprite.x;
-    //     //console.log(ai_ship.sprite.x);
-    //     if (diff > -30 && diff < -1) {
-    //         move_left = false;
-    //     }
-    //     if (diff >= -1 && diff <= 50) {
-    //         hit = true;
-    //     }
-    //     if (diff > 50 && diff < 80) {
-    //         move_right = false;
-    //     }
-    // }
-
 
     // --> deciding which direction to move
     if (move_left && move_right && hit && ai_ship.sprite.x < ai_ship.min_x + 10) {
@@ -705,7 +687,7 @@ function update ()
         console.log("3");
         //console.log("left");
     }
-    else if (move_right && hit && ai_ship.sprite.x < 740) {
+    else if (move_right && hit && ai_ship.sprite.x < this.sys.canvas_width - 60) {
         right_final = true;
         console.log("4");
         //console.log("right");
@@ -714,11 +696,13 @@ function update ()
         left_final = true;
         console.log("5");
     }
-    else if ((ai_ship.sprite.x < right_enemy - 10 && move_right) || (ai_ship.sprite.x < this.sys.canvas_width && move_right)) {
+    else if ((ai_ship.sprite.x < right_enemy - 10 && move_right) || (ai_ship.sprite.x < this.sys.canvas_width - 60 && move_right)) {
         right_final = true;
         console.log("6");
     }
 
+
+    // more debugging text
     if (ai_ship.sprite.props.dead == false && debug_text) {
         console.log("left: " + move_left + ". right: " + move_right + ", hit: " + hit + ", right enemy: " + right_enemy + ", left enemy: " + left_enemy);
         console.log("x: " + ai_ship.sprite.x);
