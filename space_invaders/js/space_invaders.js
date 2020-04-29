@@ -534,7 +534,7 @@ function create ()
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
         // kill the enemy. The change in behavior takes place within the update function of the ship
-        // ship_sprite.props.dead = true;
+
         if (ship_sprite.props.lives >= 1) {
             ship_sprite.props.lives -= 1;
             ship_sprite.x = this.sys.canvas.width / 4 + 400;
@@ -549,7 +549,7 @@ function create ()
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
         // kill the enemy. The change in behavior takes place within the update function of the ship
-        // ship_sprite.props.dead = true;
+
         if (ship_sprite.props.lives >= 1) {
             ship_sprite.props.lives -= 1;
             ship_sprite.x = this.sys.canvas.width / 4 + 400;
