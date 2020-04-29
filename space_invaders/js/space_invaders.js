@@ -1,12 +1,8 @@
 // Space Invaders game built with Phaser 3
 // This game is inspired by Lee Robinson's Space Invaders, https://leerob.io/blog/space-invaders-with-python
 // And an adaptation by Simon Mendelsohn, https://zoo.cs.yale.edu/classes/cs490/19-20a/mendelsohn.simon.sjm225
-
-// TO COMPLETE: 
-// AI logic
-// cooperative vs. noncooperative setting
-// win/lose logic
-// lives graphics
+// Framework for this code was built by Professor Marynel Vázquez and expanded upon by Ananya Parthasarathy as 
+// part of a CPSC 490 Senior project
 
 // --- helper functions ---
 
@@ -396,7 +392,7 @@ function create ()
     // debug_text flag to run debugging text in developer tools
     debug_text = false;
 
-    // mode: 0 - cooperative, 1 - noncooperative
+    // mode: 0 - cooperative, 1 - uncooperative
     mode = 1;
 
     cursors = this.input.keyboard.createCursorKeys();
@@ -577,7 +573,7 @@ function update ()
     // ---------- AI shooting logic, ai ship shoots randomly, 1/50 chance each loop 
     shoot = false;
     var random = Math.floor(Math.random() * 50 + 1);
-    //console.log("random: " + random);
+
     if (random == 1) {
         shoot = true;
     }
@@ -621,12 +617,10 @@ function update ()
     var bullets_right = enemies_right.bullets_group.getChildren();
     // console.log(bullets_left.length);
     for(var i=0; i < bullets_right.length; i++){
-        // console.log(bullets_left[i].body.x);
         if (bullets_right[i].body.y < 100 || bullets_right[i].visible == false) {
             continue;
         }
         var x_diff = bullets_right[i].body.x - ai_ship.sprite.x;
-        //console.log(ai_ship.sprite.x);
         if (x_diff > -30 && x_diff < -1) {
             move_left = false;
         }
@@ -642,12 +636,11 @@ function update ()
     if (mode == 0) {
         var bullets_left = enemies_left.bullets_group.getChildren();
         for(var i=0; i < bullets_left.length; i++){
-            // console.log(bullets_left[i].body.x);
             if (bullets_left[i].body.y < 100 || bullets_left[i].visible == false) {
                 continue;
             }
             var diff = bullets_left[i].body.x - ai_ship.sprite.x;
-            //console.log(ai_ship.sprite.x);
+
             if (diff > -30 && diff < -1) {
                 move_left = false;
             }
@@ -663,42 +656,34 @@ function update ()
     // debugging text
     if (ai_ship.sprite.props.dead == false && debug_text) {
         if (!move_left) {
-            console.log("don't move left");
+            console.log("bullet on left");
         }
         if (hit) {
             console.log("bullet incoming");
         }   
         if (!move_right) {
-            console.log("don't move right");
+            console.log("bullet on right");
         }
     }
 
     // --> deciding which direction to move
     if (move_left && move_right && hit && ai_ship.sprite.x < ai_ship.min_x + 10) {
         right_final = true;
-        console.log("1");
     }
     else if (move_left && move_right && hit && ai_ship.sprite.x > this.sys.canvas_width - 60) {
         left_final = true;
-        console.log("2");
     }
     else if (move_left && hit && ai_ship.sprite.x > ai_ship.min_x + 10) {
         left_final = true;
-        console.log("3");
-        //console.log("left");
     }
     else if (move_right && hit && ai_ship.sprite.x < this.sys.canvas_width - 60) {
         right_final = true;
-        console.log("4");
-        //console.log("right");
     }
     else if (ai_ship.sprite.x > right_enemy && move_left && ai_ship.sprite.x > ai_ship.min_x) {
         left_final = true;
-        console.log("5");
     }
     else if ((ai_ship.sprite.x < right_enemy - 10 && move_right) || (ai_ship.sprite.x < this.sys.canvas_width - 60 && move_right)) {
         right_final = true;
-        console.log("6");
     }
 
 
