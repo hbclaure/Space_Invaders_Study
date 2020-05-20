@@ -117,6 +117,7 @@ function fire_enemy_bullet(enemies, bullets) {
 /**
  * Create ship object
  * @param {string} image_id Image ID for the ship
+ * @param {int} type type of ship (0 for human, 1 for AI)
  * @param {int} x horizontal coordinate for the ship (moves horizontally)
  * @param {int} y vertical coordinate for the ship (fixed)
  * @param {int} speed speed for the ship
@@ -137,12 +138,15 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props = {} // add properties object to ship sprite
     sprite.props.speed = speed;
     sprite.props.dead = false;
+    sprite.props.score = 0;
+    sprite.props.scoreText = this.add.text(205 + min_x, 3, 'SCORE 0', { fontFamily: 'PT Mono', fontSize: '28px'});
     sprite.props.lives = 3;
+    
     sprite.lives = [] // add sprites to display lives
-    var life_x = canvas_width / 2 + type * canvas_width / 2 - 100;
-    this.add.text(life_x - 120, 3, 'Lives:', { fontFamily: 'PT Mono', fontSize: '28px'});
+    var life_x = 5 + min_x;
+    this.add.text(life_x, 3, 'LIVES', { fontFamily: 'PT Mono', fontSize: '28px'});
     for (i = 0; i < sprite.props.lives; i++) {
-    	var life = this.physics.add.sprite(life_x + 25 * i, 30, image_id).setOrigin(0.5, 1.0);
+    	var life = this.physics.add.sprite(life_x + 100 + 25 * i, 30, image_id).setOrigin(0.5, 1.0);
     	life.body.setImmovable(true);
     	life.body.setAllowGravity(false);
     	life.body.setSize(life.width * 0.4 , life.height * 0.5, true);
@@ -256,6 +260,7 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
                 enemy.grid_row += num_rows[j];
             }
             enemy.grid_column = i % num_horizontal;
+            enemy.score = 10 + 10 * (num_rows[0] + num_rows[1] + num_rows[2] - 1 - enemy.grid_row)
             enemies.add(enemy);
         }
     }
@@ -403,7 +408,7 @@ function create ()
     gameover = false;
 
     // debug_text flag to run debugging text in developer tools
-    debug_text = true;
+    debug_text = false;
 
     // mode: 0 - cooperative, 1 - uncooperative
     mode = 1;
@@ -426,6 +431,7 @@ function create ()
     ai_ship = this.create_ship("avery", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", minX);
 
     //creating the enemies on the left and right
+    var enemy_rows = 5;
     enemies_left = this.create_enemies(5, 30, 0, "a");
     enemies_right = this.create_enemies(5, 430, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 800);
 
@@ -441,6 +447,9 @@ function create ()
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
+        // update the score
+        player_ship.sprite.props.score += enemy.score;
+        player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
     });
 	this.physics.add.collider(enemies_right.enemies_group, player_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
@@ -452,6 +461,9 @@ function create ()
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
+        // update the score
+        player_ship.sprite.props.score += enemy.score;
+        player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
     });
 
     // --> enemies hit by Ai ship's bullets
@@ -465,6 +477,9 @@ function create ()
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
+        // update the score
+        ai_ship.sprite.props.score += enemy.score;
+        ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
     });
 	this.physics.add.collider(enemies_right.enemies_group, ai_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
@@ -476,6 +491,9 @@ function create ()
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
+        // update the score
+        ai_ship.sprite.props.score += enemy.score;
+        ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
     });
 
     // --> enemies bullets hit ships bullets
