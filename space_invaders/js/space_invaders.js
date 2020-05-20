@@ -138,6 +138,19 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props.speed = speed;
     sprite.props.dead = false;
     sprite.props.lives = 3;
+    sprite.lives = [] // add sprites to display lives
+    var life_x = canvas_width / 2 + type * canvas_width / 2 - 100;
+    this.add.text(life_x - 120, 3, 'Lives:', { fontFamily: 'PT Mono', fontSize: '28px'});
+    for (i = 0; i < sprite.props.lives; i++) {
+    	var life = this.physics.add.sprite(life_x + 25 * i, 30, image_id).setOrigin(0.5, 1.0);
+    	life.body.setImmovable(true);
+    	life.body.setAllowGravity(false);
+    	life.body.setSize(life.width * 0.4 , life.height * 0.5, true);
+    	life.setScale(0.5);
+    	sprite.lives.push(life);
+    }
+
+
     var obj_width = sprite.displayWidth;     
 
     var bullets = this.create_bullets_pool(30, bullet_image_id);
@@ -390,7 +403,7 @@ function create ()
     gameover = false;
 
     // debug_text flag to run debugging text in developer tools
-    debug_text = false;
+    debug_text = true;
 
     // mode: 0 - cooperative, 1 - uncooperative
     mode = 1;
@@ -505,6 +518,7 @@ function create ()
         // kill the enemy. The change in behavior takes place within the update function of the ship
         if (ship_sprite.props.lives >= 1) {
             ship_sprite.props.lives -= 1;
+            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
             ship_sprite.x = this.sys.canvas.width / 4;
         }
         else {
@@ -520,6 +534,7 @@ function create ()
         // kill the enemy. The change in behavior takes place within the update function of the ship
         if (ship_sprite.props.lives >= 1) {
             ship_sprite.props.lives -= 1;
+            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
             ship_sprite.x = this.sys.canvas.width / 4;
         }
         else {
@@ -537,6 +552,7 @@ function create ()
 
         if (ship_sprite.props.lives >= 1) {
             ship_sprite.props.lives -= 1;
+            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
             ship_sprite.x = this.sys.canvas.width / 4 + 400;
         }
         else {
@@ -552,6 +568,7 @@ function create ()
 
         if (ship_sprite.props.lives >= 1) {
             ship_sprite.props.lives -= 1;
+            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
             ship_sprite.x = this.sys.canvas.width / 4 + 400;
         }
         else {
