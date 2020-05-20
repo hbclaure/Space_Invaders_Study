@@ -260,7 +260,8 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
                 enemy.grid_row += num_rows[j];
             }
             enemy.grid_column = i % num_horizontal;
-            enemy.score = 10 + 10 * (num_rows[0] + num_rows[1] + num_rows[2] - 1 - enemy.grid_row)
+            enemy.score = 10 + 10 * (num_rows[0] + num_rows[1] + num_rows[2] - 1 - enemy.grid_row);
+            enemy.hit = false;
             enemies.add(enemy);
         }
     }
@@ -448,8 +449,11 @@ function create ()
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
         // update the score
-        player_ship.sprite.props.score += enemy.score;
-        player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
+        if (enemy.hit == false) {
+        	player_ship.sprite.props.score += enemy.score;
+        	player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
+    	}
+    	enemy.hit = true;
     });
 	this.physics.add.collider(enemies_right.enemies_group, player_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
@@ -462,8 +466,11 @@ function create ()
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
         // update the score
-        player_ship.sprite.props.score += enemy.score;
-        player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
+        if (enemy.hit == false) {
+        	player_ship.sprite.props.score += enemy.score;
+        	player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
+        }
+        enemy.hit = true;
     });
 
     // --> enemies hit by Ai ship's bullets
@@ -478,8 +485,11 @@ function create ()
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
         // update the score
-        ai_ship.sprite.props.score += enemy.score;
-        ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
+        if (enemy.hit == false) {
+        	ai_ship.sprite.props.score += enemy.score;
+        	ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
+        }
+        enemy.hit = true;
     });
 	this.physics.add.collider(enemies_right.enemies_group, ai_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
@@ -492,8 +502,11 @@ function create ()
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
         // update the score
-        ai_ship.sprite.props.score += enemy.score;
-        ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
+        if (enemy.hit == false) {
+	        ai_ship.sprite.props.score += enemy.score;
+	        ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
+	    }
+	    enemy.hit = true;
     });
 
     // --> enemies bullets hit ships bullets
