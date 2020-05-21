@@ -315,6 +315,26 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
 }
 
 
+// --- Start Screen of the game ---
+var start_scene = new Phaser.Scene('start_scene');
+
+start_scene.create = function() {
+    var game_name = this.add.text(100, 175, 'SPACE INVADERS', { fontFamily: 'PT Mono', fontSize: '70px'});
+    var instructions = this.add.text(115, 300, 'Use arrow keys to move, press spacebar to fire', { fontFamily: 'PT Mono', fontSize: '20px'});
+    var start = this.add.text(225, 380, 'Press spacebar to begin', { fontFamily: 'PT Mono', fontSize: '20px'});
+
+    space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+}
+
+// begin the game when the player presses spacebar
+start_scene.update = function() {
+    if (this.input.keyboard.checkDown(space_key, 500)) {
+        this.scene.switch('game_scene');
+    }
+}
+
+
+
 // --- actual game ---
 
 /**
@@ -332,18 +352,20 @@ var config = {
             gravity: { y: 100 }
         }
     },
-    scene: {
-        preload: preload,
-        create: create,
-        update: update,
-        extend: {
-            fire_bullet: fire_bullet,
-            create_bullets_pool: create_bullets_pool,
-            create_ship: create_ship,
-            create_enemies: create_enemies,
-        }
-    },
 };
+
+var game_scene = {
+    preload: preload,
+    create: create,
+    update: update,
+    extend: {
+        fire_bullet: fire_bullet,
+        create_bullets_pool: create_bullets_pool,
+        create_ship: create_ship,
+        create_enemies: create_enemies,
+    }
+};
+
 
 var game = new Phaser.Game(config);     //!< game object
 var mode;
@@ -361,6 +383,12 @@ var left_final;
 var right_final;
 var gameover;
 var debug_text;
+
+
+game.scene.add('start_scene', start_scene);
+game.scene.add('game_scene', game_scene);
+
+game.scene.start('start_scene');
 
 /**
  * Preload assets for the game
@@ -749,7 +777,5 @@ function update ()
     // update the enemies
     enemies_left.update();
     enemies_right.update();
-
-
 
 }
