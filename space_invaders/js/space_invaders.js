@@ -337,21 +337,21 @@ start_scene.update = function() {
 // --- Game Over Screen ---
 var gameover_scene = new Phaser.Scene('gameover_scene');
 
-// display Game Over and player's final score
+// display Game Over and final scores
 gameover_scene.create = function() {
     var gameover_text = this.add.text(400, 175, 'GAME OVER', { fontFamily: 'PT Mono', fontSize: '70px', color: 'red'}).setOrigin(0.5);
-    var score_text = 'Final Score: ' + player_ship.sprite.props.score;
-    var final_score = this.add.text(400, 300, score_text, { fontFamily: 'PT Mono', fontSize: '30px'}).setOrigin(0.5);
+    var player_score = this.add.text(400, 300, 'Player Final Score: ' + player_ship.sprite.props.score, { fontFamily: 'PT Mono', fontSize: '30px'}).setOrigin(0.5);
+    var ai_score = this.add.text(400, 400, 'AI Final Score: ' + ai_ship.sprite.props.score, { fontFamily: 'PT Mono', fontSize: '30px'}).setOrigin(0.5);
 }
 
 // --- Victory Screen ---
 var victory_scene = new Phaser.Scene('victory_scene');
 
-// display Victory! and player's final score
+// display Victory! and final scores
 victory_scene.create = function() {
     var victory_text = this.add.text(400, 175, 'VICTORY!', { fontFamily: 'PT Mono', fontSize: '70px', color: 'green'}).setOrigin(0.5);
-    var score_text = 'Final Score: ' + player_ship.sprite.props.score;
-    var final_score = this.add.text(400, 300, score_text, { fontFamily: 'PT Mono', fontSize: '30px'}).setOrigin(0.5);
+    var player_score = this.add.text(400, 300, 'Player Final Score: ' + player_ship.sprite.props.score, { fontFamily: 'PT Mono', fontSize: '30px'}).setOrigin(0.5);
+    var ai_score = this.add.text(400, 400, 'AI Final Score: ' + ai_ship.sprite.props.score, { fontFamily: 'PT Mono', fontSize: '30px'}).setOrigin(0.5);
 }
 
 
