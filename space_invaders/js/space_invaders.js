@@ -139,14 +139,14 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props.speed = speed;
     sprite.props.dead = false;
     sprite.props.score = 0;
-    sprite.props.scoreText = this.add.text(205 + min_x, 3, 'SCORE 0', { fontFamily: 'PT Mono', fontSize: '28px'});
+    sprite.props.scoreText = this.add.bitmapText(205 + min_x, 3, 'PressStart2P_White', 'SCORE 0', 20);
     sprite.props.lives = 3;
     
     sprite.lives = [] // add sprites to display lives
     var life_x = 5 + min_x;
-    this.add.text(life_x, 3, 'LIVES', { fontFamily: 'PT Mono', fontSize: '28px'});
+    this.add.bitmapText(life_x, 3, 'PressStart2P_White', 'LIVES', 20);
     for (i = 0; i < sprite.props.lives; i++) {
-    	var life = this.physics.add.sprite(life_x + 100 + 25 * i, 30, image_id).setOrigin(0.5, 1.0);
+    	var life = this.physics.add.sprite(life_x + 125 + 25 * i, 25, image_id).setOrigin(0.5, 1.0);
     	life.body.setImmovable(true);
     	life.body.setAllowGravity(false);
     	life.body.setSize(life.width * 0.4 , life.height * 0.5, true);
@@ -318,10 +318,17 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
 // --- Start Screen of the game ---
 var start_scene = new Phaser.Scene('start_scene');
 
+// load fonts
+start_scene.preload = function() {
+    this.load.bitmapFont('PressStart2P_Orange', 'assets/fonts/PressStart2P_Orange/font.png', 'assets/fonts/PressStart2P_Orange/font.fnt');
+    this.load.bitmapFont('PressStart2P_White', 'assets/fonts/PressStart2P_White/font.png', 'assets/fonts/PressStart2P_White/font.fnt');
+    this.load.bitmapFont('PressStart2P_Green', 'assets/fonts/PressStart2P_Green/font.png', 'assets/fonts/PressStart2P_Green/font.fnt');
+}
+
 start_scene.create = function() {
-    var game_name = this.add.text(400, 175, 'SPACE INVADERS', { fontFamily: 'PT Mono', fontSize: '70px'}).setOrigin(0.5);
-    var instructions = this.add.text(400, 300, 'Use arrow keys to move, press spacebar to fire', { fontFamily: 'PT Mono', fontSize: '20px'}).setOrigin(0.5);
-    var start = this.add.text(400, 380, 'Press spacebar to begin', { fontFamily: 'PT Mono', fontSize: '20px'}).setOrigin(0.5);
+    var game_name = this.add.bitmapText(400, 175, 'PressStart2P_Orange', 'SPACE INVADERS', 50).setOrigin(0.5);
+    var instructions = this.add.bitmapText(400, 300, 'PressStart2P_White', 'Use arrow keys to move, press spacebar to fire', 15).setOrigin(0.5);
+    var start = this.add.bitmapText(400, 400, 'PressStart2P_Green', 'Press spacebar to begin', 20).setOrigin(0.5);
 
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 }
@@ -337,21 +344,33 @@ start_scene.update = function() {
 // --- Game Over Screen ---
 var gameover_scene = new Phaser.Scene('gameover_scene');
 
+// load fonts
+gameover_scene.preload = function () {
+    this.load.bitmapFont('PressStart2P_Red', 'assets/fonts/PressStart2P_Red/font.png', 'assets/fonts/PressStart2P_Red/font.fnt');
+    this.load.bitmapFont('PressStart2P_White', 'assets/fonts/PressStart2P_White/font.png', 'assets/fonts/PressStart2P_White/font.fnt');
+}
+
 // display Game Over and final scores
 gameover_scene.create = function() {
-    var gameover_text = this.add.text(400, 175, 'GAME OVER', { fontFamily: 'PT Mono', fontSize: '70px', color: 'red'}).setOrigin(0.5);
-    var player_score = this.add.text(400, 300, 'Player Final Score: ' + player_ship.sprite.props.score, { fontFamily: 'PT Mono', fontSize: '30px'}).setOrigin(0.5);
-    var ai_score = this.add.text(400, 400, 'AI Final Score: ' + ai_ship.sprite.props.score, { fontFamily: 'PT Mono', fontSize: '30px'}).setOrigin(0.5);
+    var gameover_text = this.add.bitmapText(400, 175, 'PressStart2P_Red', 'GAME OVER', 50).setOrigin(0.5);
+    var player_score = this.add.bitmapText(400, 300, 'PressStart2P_White', 'Player Final Score: ' + player_ship.sprite.props.score, 20).setOrigin(0.5);
+    var ai_score = this.add.bitmapText(400, 400, 'PressStart2P_White', 'AI Final Score: ' + ai_ship.sprite.props.score, 20).setOrigin(0.5);
 }
 
 // --- Victory Screen ---
 var victory_scene = new Phaser.Scene('victory_scene');
 
+// load fonts
+victory_scene.preload = function () {
+    this.load.bitmapFont('PressStart2P_White', 'assets/fonts/PressStart2P_White/font.png', 'assets/fonts/PressStart2P_White/font.fnt');
+    this.load.bitmapFont('PressStart2P_Green', 'assets/fonts/PressStart2P_Green/font.png', 'assets/fonts/PressStart2P_Green/font.fnt');
+}
+
 // display Victory! and final scores
 victory_scene.create = function() {
-    var victory_text = this.add.text(400, 175, 'VICTORY!', { fontFamily: 'PT Mono', fontSize: '70px', color: 'green'}).setOrigin(0.5);
-    var player_score = this.add.text(400, 300, 'Player Final Score: ' + player_ship.sprite.props.score, { fontFamily: 'PT Mono', fontSize: '30px'}).setOrigin(0.5);
-    var ai_score = this.add.text(400, 400, 'AI Final Score: ' + ai_ship.sprite.props.score, { fontFamily: 'PT Mono', fontSize: '30px'}).setOrigin(0.5);
+    var victory_text = this.add.bitmapText(400, 175, 'PressStart2P_Green', 'VICTORY!', 50).setOrigin(0.5);
+    var player_score = this.add.bitmapText(400, 300, 'PressStart2P_White', 'Player Final Score: ' + player_ship.sprite.props.score, 20).setOrigin(0.5);
+    var ai_score = this.add.bitmapText(400, 400, 'PressStart2P_White', 'AI Final Score: ' + ai_ship.sprite.props.score, 20).setOrigin(0.5);
 }
 
 
@@ -419,8 +438,7 @@ game.scene.start('start_scene');
  */
 function preload ()
 {
-
-    // load imagess
+    // load images
     // this.load.setBaseURL('..');
     this.load.image('ship', 'assets/images/ship.png');
     this.load.image('avery', 'assets/images/avery.png');
@@ -450,6 +468,9 @@ function preload ()
     // load audio
     this.load.audio("audio_explosion", "assets/sounds/shipexplosion.wav");
     this.load.audio("audio_fire_ship", "assets/sounds/shoot.wav");
+
+    // load fonts
+    this.load.bitmapFont('PressStart2P_White', 'assets/fonts/PressStart2P_White/font.png', 'assets/fonts/PressStart2P_White/font.fnt');
 }
 
 /**
