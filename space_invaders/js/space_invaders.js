@@ -319,9 +319,9 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
 var start_scene = new Phaser.Scene('start_scene');
 
 start_scene.create = function() {
-    var game_name = this.add.text(100, 175, 'SPACE INVADERS', { fontFamily: 'PT Mono', fontSize: '70px'});
-    var instructions = this.add.text(115, 300, 'Use arrow keys to move, press spacebar to fire', { fontFamily: 'PT Mono', fontSize: '20px'});
-    var start = this.add.text(225, 380, 'Press spacebar to begin', { fontFamily: 'PT Mono', fontSize: '20px'});
+    var game_name = this.add.text(400, 175, 'SPACE INVADERS', { fontFamily: 'PT Mono', fontSize: '70px'}).setOrigin(0.5);
+    var instructions = this.add.text(400, 300, 'Use arrow keys to move, press spacebar to fire', { fontFamily: 'PT Mono', fontSize: '20px'}).setOrigin(0.5);
+    var start = this.add.text(400, 380, 'Press spacebar to begin', { fontFamily: 'PT Mono', fontSize: '20px'}).setOrigin(0.5);
 
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 }
@@ -331,6 +331,27 @@ start_scene.update = function() {
     if (this.input.keyboard.checkDown(space_key, 500)) {
         this.scene.switch('game_scene');
     }
+}
+
+
+// --- Game Over Screen ---
+var gameover_scene = new Phaser.Scene('gameover_scene');
+
+// display Game Over and player's final score
+gameover_scene.create = function() {
+    var gameover_text = this.add.text(400, 175, 'GAME OVER', { fontFamily: 'PT Mono', fontSize: '70px', color: 'red'}).setOrigin(0.5);
+    var score_text = 'Final Score: ' + player_ship.sprite.props.score;
+    var final_score = this.add.text(400, 300, score_text, { fontFamily: 'PT Mono', fontSize: '30px'}).setOrigin(0.5);
+}
+
+// --- Victory Screen ---
+var victory_scene = new Phaser.Scene('victory_scene');
+
+// display Victory! and player's final score
+victory_scene.create = function() {
+    var victory_text = this.add.text(400, 175, 'VICTORY!', { fontFamily: 'PT Mono', fontSize: '70px', color: 'green'}).setOrigin(0.5);
+    var score_text = 'Final Score: ' + player_ship.sprite.props.score;
+    var final_score = this.add.text(400, 300, score_text, { fontFamily: 'PT Mono', fontSize: '30px'}).setOrigin(0.5);
 }
 
 
@@ -375,6 +396,7 @@ var player_ship;                              //!< player_ship
 var ai_ship;
 var enemies_left;                           //!< enemies
 var enemies_right;
+var num_enemies;
 var shoot;
 var move_left;
 var move_right;
@@ -387,6 +409,8 @@ var debug_text;
 
 game.scene.add('start_scene', start_scene);
 game.scene.add('game_scene', game_scene);
+game.scene.add('gameover_scene', gameover_scene);
+game.scene.add('victory_scene', victory_scene);
 
 game.scene.start('start_scene');
 
@@ -463,6 +487,7 @@ function create ()
     var enemy_rows = 5;
     enemies_left = this.create_enemies(5, 30, 0, "a");
     enemies_right = this.create_enemies(5, 430, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 800);
+    num_enemies = 50;
 
     // --> COLLIDERS <--
     // --> enemies hit by player_ship bullets 
@@ -480,6 +505,7 @@ function create ()
         if (enemy.hit == false) {
         	player_ship.sprite.props.score += enemy.score;
         	player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
+            num_enemies -= 1;
     	}
     	enemy.hit = true;
     });
@@ -497,6 +523,7 @@ function create ()
         if (enemy.hit == false) {
         	player_ship.sprite.props.score += enemy.score;
         	player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
+            num_enemies -= 1;
         }
         enemy.hit = true;
     });
@@ -516,6 +543,7 @@ function create ()
         if (enemy.hit == false) {
         	ai_ship.sprite.props.score += enemy.score;
         	ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
+            num_enemies -= 1;
         }
         enemy.hit = true;
     });
@@ -533,6 +561,7 @@ function create ()
         if (enemy.hit == false) {
 	        ai_ship.sprite.props.score += enemy.score;
 	        ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
+            num_enemies -= 1;
 	    }
 	    enemy.hit = true;
     });
@@ -777,5 +806,14 @@ function update ()
     // update the enemies
     enemies_left.update();
     enemies_right.update();
+
+    // switch to game over screen
+    if (gameover) {
+        this.scene.switch('gameover_scene');
+    }
+
+    if (num_enemies == 0) {
+        this.scene.switch('victory_scene');
+    }
 
 }
