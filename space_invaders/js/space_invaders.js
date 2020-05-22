@@ -351,11 +351,10 @@ var game = new Phaser.Game(config);     //!< game object
 var mode;
 var cursors;                            //!< keyboard access
 var space_key;                          //!< space key
-var player_ship;                              //!< player_ship
+var player_ship;                        //!< player_ship
 var ai_ship;
-var enemies_left;                           //!< enemies
+var enemies_left;                       //!< enemies
 var enemies_right;
-var num_enemies;
 var shoot;
 var move_left;
 var move_right;
@@ -364,6 +363,8 @@ var left_final;
 var right_final;
 var gameover;
 var debug_text;
+var game_id;
+var game_log;                           //!< array that stores a log of all the information from this game
 
 
 // Add all of the scenes (see start_scene.js and end_scenes.js)
@@ -419,6 +420,9 @@ function preload ()
  */
 function create ()
 {	
+    // a log of all of the frames of the game
+    game_log = [];
+
 	// flag to tell when the game is over, currently not being used
     gameover = false;
 
@@ -449,7 +453,6 @@ function create ()
     var enemy_rows = 5;
     enemies_left = this.create_enemies(5, 30, 0, "a");
     enemies_right = this.create_enemies(5, 430, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 800);
-    num_enemies = 50;
 
     // --> COLLIDERS <--
     // --> enemies hit by player_ship bullets 
@@ -467,7 +470,6 @@ function create ()
         if (enemy.hit == false) {
         	player_ship.sprite.props.score += enemy.score;
         	player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
-            num_enemies -= 1;
     	}
     	enemy.hit = true;
     });
@@ -485,7 +487,6 @@ function create ()
         if (enemy.hit == false) {
         	player_ship.sprite.props.score += enemy.score;
         	player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
-            num_enemies -= 1;
         }
         enemy.hit = true;
     });
@@ -505,7 +506,6 @@ function create ()
         if (enemy.hit == false) {
         	ai_ship.sprite.props.score += enemy.score;
         	ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
-            num_enemies -= 1;
         }
         enemy.hit = true;
     });
@@ -523,7 +523,6 @@ function create ()
         if (enemy.hit == false) {
 	        ai_ship.sprite.props.score += enemy.score;
 	        ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
-            num_enemies -= 1;
 	    }
 	    enemy.hit = true;
     });
@@ -625,7 +624,6 @@ function create ()
             ship_sprite.props.dead = true;
         }
     });
-
 }
 
 /**
@@ -658,6 +656,7 @@ function update ()
 
     // --> checking where the enemies are
     var enemies_right_sprites = enemies_right.enemies_group.getChildren();
+    var enemies_right_positions = [];
     for (var i=0; i < enemies_right_sprites.length; i++) {
         if (enemies_right_sprites[i].body.x > right_enemy) {
             right_enemy = enemies_right_sprites[i].body.x;
@@ -665,12 +664,14 @@ function update ()
         if (enemies_right_sprites[i].body.x < left_enemy) {
             left_enemy = enemies_right_sprites[i].body.x;
         }
+        enemies_right_positions.push([enemies_right_sprites[i].body.x, enemies_right_sprites[i].body.y]);
     }
 
-    //don't consider enemies on left side if not cooperative agent
-    if (mode == 0) {
-        var enemies_left_sprites = enemies_left.enemies_group.getChildren();
-        for (var i=0; i < enemies_left_sprites.length; i++) {
+    var enemies_left_sprites = enemies_left.enemies_group.getChildren();
+    var enemies_left_positions = [];
+    for (var i=0; i < enemies_left_sprites.length; i++) {
+        //don't consider enemies on left side if not cooperative agent
+        if (mode == 0) {
             if (enemies_left_sprites[i].body.x > right_enemy) {
                 right_enemy = enemies_left_sprites[i].body.x;
             }
@@ -678,11 +679,13 @@ function update ()
                 left_enemy = enemies_left_sprites[i].body.x;
             }
         }
+        enemies_left_positions.push([enemies_left_sprites[i].body.x, enemies_left_sprites[i].body.y]);
     }
+        
 
     // --> checking where the bullets are/if a bullet is about to hit the ai ship
     var bullets_right = enemies_right.bullets_group.getChildren();
-    // console.log(bullets_left.length);
+    var bullets_right_positions = [];
     for(var i=0; i < bullets_right.length; i++){
         if (bullets_right[i].body.y < 100 || bullets_right[i].visible == false) {
             continue;
@@ -697,12 +700,16 @@ function update ()
         if (x_diff > 50 && x_diff < 80) {
             move_right = false;
         }
+        if (bullets_right[i].body.y > 0 && bullets_right[i].body.y < this.sys.canvas.height) {
+            bullets_right_positions.push([bullets_right[i].body.x, bullets_right[i].body.y]);
+        }
     }
 
-    //don't consider bullets on left side if not cooperative agent
-    if (mode == 0) {
-        var bullets_left = enemies_left.bullets_group.getChildren();
-        for(var i=0; i < bullets_left.length; i++){
+    var bullets_left = enemies_left.bullets_group.getChildren();
+    var bullets_left_positions = [];          
+    for(var i=0; i < bullets_left.length; i++){
+        //don't consider bullets on left side if not cooperative agent
+        if (mode == 0) {
             if (bullets_left[i].body.y < 100 || bullets_left[i].visible == false) {
                 continue;
             }
@@ -717,6 +724,9 @@ function update ()
             if (diff > 50 && diff < 80) {
                 move_right = false;
             }
+        }
+        if (bullets_left[i].body.y > 0 && bullets_left[i].body.y < this.sys.canvas.height) {
+            bullets_left_positions.push([bullets_left[i].body.x, bullets_left[i].body.y]);
         }
     }
 
@@ -771,11 +781,57 @@ function update ()
 
     // switch to game over screen
     if (gameover) {
+        var random_string = (Math.random() + 1).toString(36).substr(2, 5);
+        var date = new Date();
+        game_id = random_string + '_' + date.toString();
+        console.log({id: game_id, log: game_log});
         this.scene.switch('gameover_scene');
     }
 
-    if (num_enemies == 0) {
+    if (enemies_left_sprites.length == 0 && enemies_right_sprites.length == 0) {
+        var random_string = (Math.random() + 1).toString(36).substr(2, 5);
+        var date = new Date();
+        game_id = random_string + '_' + date.toString();
+        console.log({id: game_id, log: game_log});
         this.scene.switch('victory_scene');
     }
 
+    // --- log this frame of the game ---
+    
+    // get location of all player and ai bullets
+    var player_bullets = player_ship.bullets_group.getChildren();
+    var player_bullets_positions = [];
+    for (i = 0; i < player_bullets.length; i++) {
+        if (player_bullets[i].body.y > 0 && player_bullets[i].body.y < this.sys.canvas.height) {
+            player_bullets_positions.push([player_bullets[i].body.x, player_bullets[i].body.y]);
+        }
+    }
+
+    var ai_bullets = ai_ship.bullets_group.getChildren();
+    var ai_bullets_positions = [];
+    for (i = 0; i < ai_bullets.length; i++) {
+        if (ai_bullets[i].body.y > 0 && ai_bullets[i].body.y < this.sys.canvas.height) {
+            ai_bullets_positions.push([ai_bullets[i].body.x, ai_bullets[i].body.y]);
+        }
+    }
+
+    var log_frame = {
+        player_position: player_ship.sprite.x,               //!< Player's position
+        player_lives: player_ship.sprite.props.lives,        //!< Player's lives
+        player_score: player_ship.sprite.props.score,        //!< Player's score
+        bullets_player_positions: player_bullets_positions,  //!< Positions of all of player's bullets
+
+        ai_position: ai_ship.sprite.x,                       //!< AI Ship's position 
+        ai_lives: ai_ship.sprite.props.lives,                //!< AI Ship's lives
+        ai_score: ai_ship.sprite.props.score,                //!< AI Ship's score
+        bullets_ai_positions: ai_bullets_positions,          //!< Positions of all of AI player's bullets
+
+        enemies_left_positions: enemies_left_positions,      //!< Left side enemies' positions
+        bullets_left_positions: bullets_left_positions,      //!< Positions of all left side enemies' bullets
+
+        enemies_right_positions: enemies_right_positions,    //!< Right side enemies' positions
+        bullets_right_positions: bullets_right_positions,    //!< Positions of all right side enemies' bullets
+    }
+
+    game_log.push(log_frame);
 }
