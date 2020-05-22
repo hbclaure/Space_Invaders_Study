@@ -315,66 +315,6 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
 }
 
 
-// --- Start Screen of the game ---
-var start_scene = new Phaser.Scene('start_scene');
-
-// load fonts
-start_scene.preload = function() {
-    this.load.bitmapFont('PressStart2P_Orange', 'assets/fonts/PressStart2P_Orange/font.png', 'assets/fonts/PressStart2P_Orange/font.fnt');
-    this.load.bitmapFont('PressStart2P_White', 'assets/fonts/PressStart2P_White/font.png', 'assets/fonts/PressStart2P_White/font.fnt');
-    this.load.bitmapFont('PressStart2P_Green', 'assets/fonts/PressStart2P_Green/font.png', 'assets/fonts/PressStart2P_Green/font.fnt');
-}
-
-start_scene.create = function() {
-    var game_name = this.add.bitmapText(400, 175, 'PressStart2P_Orange', 'SPACE INVADERS', 50).setOrigin(0.5);
-    var instructions = this.add.bitmapText(400, 300, 'PressStart2P_White', 'Use arrow keys to move, press spacebar to fire', 15).setOrigin(0.5);
-    var start = this.add.bitmapText(400, 400, 'PressStart2P_Green', 'Press spacebar to begin', 20).setOrigin(0.5);
-
-    space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-}
-
-// begin the game when the player presses spacebar
-start_scene.update = function() {
-    if (this.input.keyboard.checkDown(space_key, 500)) {
-        this.scene.switch('game_scene');
-    }
-}
-
-
-// --- Game Over Screen ---
-var gameover_scene = new Phaser.Scene('gameover_scene');
-
-// load fonts
-gameover_scene.preload = function () {
-    this.load.bitmapFont('PressStart2P_Red', 'assets/fonts/PressStart2P_Red/font.png', 'assets/fonts/PressStart2P_Red/font.fnt');
-    this.load.bitmapFont('PressStart2P_White', 'assets/fonts/PressStart2P_White/font.png', 'assets/fonts/PressStart2P_White/font.fnt');
-}
-
-// display Game Over and final scores
-gameover_scene.create = function() {
-    var gameover_text = this.add.bitmapText(400, 175, 'PressStart2P_Red', 'GAME OVER', 50).setOrigin(0.5);
-    var player_score = this.add.bitmapText(400, 300, 'PressStart2P_White', 'Player Final Score: ' + player_ship.sprite.props.score, 20).setOrigin(0.5);
-    var ai_score = this.add.bitmapText(400, 400, 'PressStart2P_White', 'AI Final Score: ' + ai_ship.sprite.props.score, 20).setOrigin(0.5);
-}
-
-// --- Victory Screen ---
-var victory_scene = new Phaser.Scene('victory_scene');
-
-// load fonts
-victory_scene.preload = function () {
-    this.load.bitmapFont('PressStart2P_White', 'assets/fonts/PressStart2P_White/font.png', 'assets/fonts/PressStart2P_White/font.fnt');
-    this.load.bitmapFont('PressStart2P_Green', 'assets/fonts/PressStart2P_Green/font.png', 'assets/fonts/PressStart2P_Green/font.fnt');
-}
-
-// display Victory! and final scores
-victory_scene.create = function() {
-    var victory_text = this.add.bitmapText(400, 175, 'PressStart2P_Green', 'VICTORY!', 50).setOrigin(0.5);
-    var player_score = this.add.bitmapText(400, 300, 'PressStart2P_White', 'Player Final Score: ' + player_ship.sprite.props.score, 20).setOrigin(0.5);
-    var ai_score = this.add.bitmapText(400, 400, 'PressStart2P_White', 'AI Final Score: ' + ai_ship.sprite.props.score, 20).setOrigin(0.5);
-}
-
-
-
 // --- actual game ---
 
 /**
@@ -426,6 +366,7 @@ var gameover;
 var debug_text;
 
 
+// Add all of the scenes (see start_scene.js and end_scenes.js)
 game.scene.add('start_scene', start_scene);
 game.scene.add('game_scene', game_scene);
 game.scene.add('gameover_scene', gameover_scene);
