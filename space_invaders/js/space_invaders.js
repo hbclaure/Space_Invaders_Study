@@ -139,11 +139,11 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props.speed = speed;
     sprite.props.dead = false;
     sprite.props.score = 0;
-    sprite.props.scoreText = this.add.bitmapText(205 + min_x, 3, 'PressStart2P_White', 'SCORE 0', 20);
+    sprite.props.scoreText = this.add.bitmapText(x, 3, 'PressStart2P_White', 'SCORE 0', 20);
     sprite.props.lives = 3;
     
     sprite.lives = [] // add sprites to display lives
-    var life_x = 5 + min_x;
+    var life_x = x - 200;
     this.add.bitmapText(life_x, 3, 'PressStart2P_White', 'LIVES', 20);
     for (i = 0; i < sprite.props.lives; i++) {
     	var life = this.physics.add.sprite(life_x + 125 + 25 * i, 25, image_id).setOrigin(0.5, 1.0);
