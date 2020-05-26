@@ -157,7 +157,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
 
     var obj_width = sprite.displayWidth;     
 
-    var bullets = this.create_bullets_pool(30, bullet_image_id);
+    var bullets = this.create_bullets_pool(1, bullet_image_id);
     var sound = this.custom_sounds.fire_ship;
 
     return {
@@ -261,7 +261,6 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
             }
             enemy.grid_column = i % num_horizontal;
             enemy.score = 10 + 10 * (num_rows[0] + num_rows[1] + num_rows[2] - 1 - enemy.grid_row);
-            enemy.hit = false;
             enemies.add(enemy);
         }
     }
@@ -355,7 +354,6 @@ var player_ship;                        //!< player_ship
 var ai_ship;
 var enemies_left;                       //!< enemies
 var enemies_right;
-var shoot;
 var move_left;
 var move_right;
 var hit;
@@ -466,12 +464,9 @@ function create ()
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
-        // update the score
-        if (enemy.hit == false) {
-        	player_ship.sprite.props.score += enemy.score;
-        	player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
-    	}
-    	enemy.hit = true;
+        // update the score        
+    	player_ship.sprite.props.score += enemy.score;
+    	player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score); 	
     });
 	this.physics.add.collider(enemies_right.enemies_group, player_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
@@ -484,11 +479,8 @@ function create ()
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
         // update the score
-        if (enemy.hit == false) {
-        	player_ship.sprite.props.score += enemy.score;
-        	player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
-        }
-        enemy.hit = true;
+    	player_ship.sprite.props.score += enemy.score;
+    	player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
     });
 
     // --> enemies hit by Ai ship's bullets
@@ -503,11 +495,8 @@ function create ()
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
         // update the score
-        if (enemy.hit == false) {
-        	ai_ship.sprite.props.score += enemy.score;
-        	ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
-        }
-        enemy.hit = true;
+        ai_ship.sprite.props.score += enemy.score;
+        ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
     });
 	this.physics.add.collider(enemies_right.enemies_group, ai_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
@@ -520,11 +509,8 @@ function create ()
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
         // update the score
-        if (enemy.hit == false) {
-	        ai_ship.sprite.props.score += enemy.score;
-	        ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
-	    }
-	    enemy.hit = true;
+        ai_ship.sprite.props.score += enemy.score;
+        ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
     });
 
     // --> enemies bullets hit ships bullets
@@ -631,17 +617,38 @@ function create ()
  */
 function update ()
 {
-    // update the ship
-    player_ship.update(cursors.left.isDown, cursors.right.isDown, this.input.keyboard.checkDown(space_key, 500));
+    // --------- update the ship
+
+    var player_shoots = false;
+    var player_bullet = player_ship.bullets_group.getChildren()[0];
+    var player_bullet_position = [];
+
+    // make sure player can only have one active bullet at a time
+    if (player_bullet.active) {
+        player_bullet_position = [player_bullet.body.x, player_bullet.body.y];
+    }
+    else if (this.input.keyboard.checkDown(space_key, 500)) {
+        player_shoots = true;
+    }
+
+    player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
+
     // manual control of ai update
 
-    // ---------- AI shooting logic, ai ship shoots randomly, 1/50 chance each loop 
-    shoot = false;
-    var random = Math.floor(Math.random() * 50 + 1);
+    // ---------- AI shooting logic, ai ship shoots whenever it can
 
-    if (random == 1) {
-        shoot = true;
+    var ai_shoots = false;
+    var ai_bullet = ai_ship.bullets_group.getChildren()[0];
+    var ai_bullet_position = [];
+
+
+    if (ai_bullet.active) {
+        ai_bullet_position = [ai_bullet.body.x, ai_bullet.body.y];
     }
+    else {
+        ai_shoots = true;
+    }
+    
 
     // ---------- start of AI movement logic
 
@@ -771,7 +778,7 @@ function update ()
         console.log("left: " + left_final + ", right: " + right_final);
     }
 
-    ai_ship.update(left_final, right_final, shoot);
+    ai_ship.update(left_final, right_final, ai_shoots);
 
     // ---------- end AI logic
 
@@ -797,34 +804,17 @@ function update ()
     }
 
     // --- log this frame of the game ---
-    
-    // get location of all player and ai bullets
-    var player_bullets = player_ship.bullets_group.getChildren();
-    var player_bullets_positions = [];
-    for (i = 0; i < player_bullets.length; i++) {
-        if (player_bullets[i].body.y > 0 && player_bullets[i].body.y < this.sys.canvas.height) {
-            player_bullets_positions.push([player_bullets[i].body.x, player_bullets[i].body.y]);
-        }
-    }
-
-    var ai_bullets = ai_ship.bullets_group.getChildren();
-    var ai_bullets_positions = [];
-    for (i = 0; i < ai_bullets.length; i++) {
-        if (ai_bullets[i].body.y > 0 && ai_bullets[i].body.y < this.sys.canvas.height) {
-            ai_bullets_positions.push([ai_bullets[i].body.x, ai_bullets[i].body.y]);
-        }
-    }
 
     var log_frame = {
         player_position: player_ship.sprite.x,               //!< Player's position
         player_lives: player_ship.sprite.props.lives,        //!< Player's lives
         player_score: player_ship.sprite.props.score,        //!< Player's score
-        bullets_player_positions: player_bullets_positions,  //!< Positions of all of player's bullets
+        player_bullet_position: player_bullet_position,      //!< Positions of all of player's bullets
 
         ai_position: ai_ship.sprite.x,                       //!< AI Ship's position 
         ai_lives: ai_ship.sprite.props.lives,                //!< AI Ship's lives
         ai_score: ai_ship.sprite.props.score,                //!< AI Ship's score
-        bullets_ai_positions: ai_bullets_positions,          //!< Positions of all of AI player's bullets
+        ai_bullet_position: ai_bullet_position,              //!< Positions of all of AI player's bullets
 
         enemies_left_positions: enemies_left_positions,      //!< Left side enemies' positions
         bullets_left_positions: bullets_left_positions,      //!< Positions of all left side enemies' bullets
