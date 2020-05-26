@@ -180,7 +180,9 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
         {          
             // do nothing if the ship has been killed!
             if (this.sprite.props.dead) {
-                this.sprite.alpha = 0.35;
+                this.sprite.setVisible(false);
+                this.sprite.x = 0;
+                this.sprite.y = 0;
                 return;
             }
             // don't update position while exploding
@@ -565,6 +567,7 @@ function create ()
         }
         else {
             ship_sprite.props.dead = true;
+            ship_sprite.props.lives -= 1;
             gameover = true;
         }
     });
@@ -589,6 +592,7 @@ function create ()
         }
         else {
             ship_sprite.props.dead = true;
+            ship_sprite.props.lives -= 1;
             gameover = true;
         }
     });
@@ -596,11 +600,13 @@ function create ()
     // --> enemies bullets hit ai_ship
     this.physics.add.collider(ai_ship.sprite, enemies_right.bullets_group, (ship_sprite, bullet) => {
         // play sound
-        this.custom_sounds.player_explosion.play();
+        if (ship_sprite.props.dead == false) {
+            this.custom_sounds.player_explosion.play();
+        }
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
-        // kill the enemy. The change in behavior takes place within the update function of the ship
+        // kill the player. The change in behavior takes place within the update function of the ship
         if (ship_sprite.props.lives >= 1) {
             ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
@@ -613,17 +619,26 @@ function create ()
             });
         }
         else {
-            ship_sprite.props.dead = true;
+            ship_sprite.props.exploding = true;
+            ship_sprite.play(ship_sprite.explote_anim, true);
+            ship_sprite.on('animationcomplete', () => {
+                ship_sprite.setTexture(ship_sprite.props.image_id);
+                ship_sprite.props.exploding = false;
+                ship_sprite.props.lives -= 1;
+                ship_sprite.props.dead = true;
+            });
         }
     });
 
     this.physics.add.collider(ai_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
         // play sound
-        this.custom_sounds.player_explosion.play();
+        if (ship_sprite.props.dead == false) {
+            this.custom_sounds.player_explosion.play();
+        }
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
-        // kill the enemy. The change in behavior takes place within the update function of the ship
+        // kill the player. The change in behavior takes place within the update function of the ship
         if (ship_sprite.props.lives >= 1) {
             ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
@@ -636,7 +651,119 @@ function create ()
             });
         }
         else {
+            ship_sprite.props.exploding = true;
+            ship_sprite.play(ship_sprite.explote_anim, true);
+            ship_sprite.on('animationcomplete', () => {
+                ship_sprite.setTexture(ship_sprite.props.image_id);
+                ship_sprite.props.exploding = false;
+                ship_sprite.props.lives -= 1;
+                ship_sprite.props.dead = true;
+            });
+        }
+    });
+
+
+    // --> enemies hit player_ship
+    this.physics.add.collider(player_ship.sprite, enemies_left.enemies_group, (ship_sprite, enemy) => {
+        // play sounds
+        this.custom_sounds.player_explosion.play();
+        this.custom_sounds.enemy_explosion.play();
+        // kill the player and the enemy. The change in behavior takes place within the update function of the ship
+        if (ship_sprite.props.lives >= 1) {
+            ship_sprite.props.exploding = true;
+            ship_sprite.props.lives -= 1;
+            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+            ship_sprite.play(ship_sprite.explote_anim, true);
+            enemy.play(enemy.explote_anim, true);
+            ship_sprite.on('animationcomplete', () => {
+                ship_sprite.x = this.sys.canvas.width / 4;
+                ship_sprite.setTexture(ship_sprite.props.image_id);
+                ship_sprite.props.exploding = false;
+                enemy.destroy();
+            });
+        }
+        else {
             ship_sprite.props.dead = true;
+            ship_sprite.props.lives -= 1;
+            gameover = true;
+        }
+    });
+
+    this.physics.add.collider(player_ship.sprite, enemies_right.enemies_group, (ship_sprite, enemy) => {
+        // play sound
+        this.custom_sounds.player_explosion.play();
+        this.custom_sounds.enemy_explosion.play();
+        // kill the player and the enemy. The change in behavior takes place within the update function of the ship
+        if (ship_sprite.props.lives >= 1) {
+            ship_sprite.props.exploding = true;
+            ship_sprite.props.lives -= 1;
+            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+            ship_sprite.play(ship_sprite.explote_anim, true);
+            enemy.play(enemy.explote_anim, true);
+            ship_sprite.on('animationcomplete', () => {
+                ship_sprite.x = this.sys.canvas.width / 4;
+                ship_sprite.setTexture(ship_sprite.props.image_id);
+                ship_sprite.props.exploding = false;
+                enemy.destroy()
+            });
+        }
+        else {
+            ship_sprite.props.dead = true;
+            ship_sprite.props.lives -= 1;
+            gameover = true;
+        }
+    });
+
+    // --> enemies hit ai_ship
+    this.physics.add.collider(ai_ship.sprite, enemies_left.enemies_group, (ship_sprite, enemy) => {
+        // play sounds
+        if (ship_sprite.props.dead == false) {
+            this.custom_sounds.player_explosion.play();
+            this.custom_sounds.enemy_explosion.play();
+        }
+        // kill the player and the enemy. The change in behavior takes place within the update function of the ship
+        if (ship_sprite.props.lives >= 1) {
+            ship_sprite.props.exploding = true;
+            ship_sprite.props.lives -= 1;
+            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+            ship_sprite.play(ship_sprite.explote_anim, true);
+            enemy.play(enemy.explote_anim, true);
+            ship_sprite.on('animationcomplete', () => {
+                ship_sprite.x = this.sys.canvas.width / 4;
+                ship_sprite.setTexture(ship_sprite.props.image_id);
+                ship_sprite.props.exploding = false;
+                enemy.destroy();
+            });
+        }
+        else {
+            ship_sprite.props.dead = true;
+            ship_sprite.props.lives -= 1;
+        }
+    });
+
+    this.physics.add.collider(ai_ship.sprite, enemies_right.enemies_group, (ship_sprite, enemy) => {
+        // play sounds
+        if (ship_sprite.props.dead == false) {
+            this.custom_sounds.player_explosion.play();
+            this.custom_sounds.enemy_explosion.play();
+        }
+        // kill the player and the enemy. The change in behavior takes place within the update function of the ship
+        if (ship_sprite.props.lives >= 1) {
+            ship_sprite.props.exploding = true;
+            ship_sprite.props.lives -= 1;
+            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+            ship_sprite.play(ship_sprite.explote_anim, true);
+            enemy.play(enemy.explote_anim, true);
+            ship_sprite.on('animationcomplete', () => {
+                ship_sprite.x = this.sys.canvas.width / 4;
+                ship_sprite.setTexture(ship_sprite.props.image_id);
+                ship_sprite.props.exploding = false;
+                enemy.destroy()
+            });
+        }
+        else {
+            ship_sprite.props.dead = true;
+            ship_sprite.props.lives -= 1;
         }
     });
 }
