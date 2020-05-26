@@ -141,6 +141,19 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props.score = 0;
     sprite.props.scoreText = this.add.bitmapText(x, 3, 'PressStart2P_White', 'SCORE 0', 20);
     sprite.props.lives = 3;
+    sprite.props.image_id = image_id;
+    sprite.props.exploding = false;
+    sprite.explote_anim = image_id + '_exp';
+
+    // animation for the player/ai explosions
+    var explosion = (image_id == 'ship') ? 'explosiongreen' : 
+                    (image_id == 'avery') ? 'explosionblue' : 'explosionpurple';
+    this.anims.create({
+        key: image_id + '_exp',
+        frames: [{ key: explosion } ],
+        frameRate: 10,
+    });
+
     
     sprite.lives = [] // add sprites to display lives
     var life_x = x - 200;
@@ -154,7 +167,6 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     	sprite.lives.push(life);
     }
 
-
     var obj_width = sprite.displayWidth;     
 
     var bullets = this.create_bullets_pool(1, bullet_image_id);
@@ -167,42 +179,25 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
         update(move_left, move_right, shoot)                    //!< update the ship state based on requested actions   
         {          
             // do nothing if the ship has been killed!
-            if (type == 0) {
-                if (this.sprite.props.dead) {
-                    this.sprite.alpha = 0.35;
-                    return;
-                }      
-                // update position
-                if (move_left) {
-                    this.sprite.x = Math.max(this.sprite.x - this.sprite.props.speed, min_x);
-                } else if (move_right) {
-                    this.sprite.x = Math.min(this.sprite.x + this.sprite.props.speed, canvas_width - obj_width);
-                } 
-                // add bullet
-                if (shoot) {
-                    fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1);
-                    sound.play();
-                }
+            if (this.sprite.props.dead) {
+                this.sprite.alpha = 0.35;
+                return;
             }
-            else {
-                if (this.sprite.props.dead) {
-                    this.sprite.alpha = 0.35;
-                    return;
-                } 
-                if (shoot) {
-                    fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1);
-                    sound.play();
-                }
-
-                if (move_left) {
-                    // console.log("move left");
-                    this.sprite.x = Math.max(this.sprite.x - this.sprite.props.speed, min_x);
-                } else if (move_right) {
-                    // console.log("move right");
-                    this.sprite.x = Math.min(this.sprite.x + this.sprite.props.speed, canvas_width - obj_width);
-                } 
-
+            // don't update position while exploding
+            if (this.sprite.props.exploding) {
+                return;
+            }
+            // update position
+            if (move_left) {
+                this.sprite.x = Math.max(this.sprite.x - this.sprite.props.speed, min_x);
+            } else if (move_right) {
+                this.sprite.x = Math.min(this.sprite.x + this.sprite.props.speed, canvas_width - obj_width);
             } 
+            // add bullet
+            if (shoot) {
+                fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1);
+                sound.play();
+            }
         },
     };
 }
@@ -420,6 +415,9 @@ function create ()
 {	
     // a log of all of the frames of the game
     game_log = [];
+    var random_string = (Math.random() + 1).toString(36).substr(2, 5);
+    var date = new Date();
+    game_id = random_string + '_' + date.toString();
 
 	// flag to tell when the game is over, currently not being used
     gameover = false;
@@ -434,8 +432,9 @@ function create ()
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     this.custom_sounds = {};   // add sound object so that we can easily access the sounds in the scene  
-    this.custom_sounds.explosion = this.sound.add("audio_explosion", {volume: 0.1});
-    this.custom_sounds.fire_ship = this.sound.add("audio_fire_ship", {volume: 0.1});
+    this.custom_sounds.enemy_explosion = this.sound.add("audio_explosion", {volume: 0.05});
+    this.custom_sounds.player_explosion = this.sound.add("audio_explosion", {volume: 0.1});
+    this.custom_sounds.fire_ship = this.sound.add("audio_fire_ship", {volume: 0.05});
 
     player_ship = this.create_ship("ship", 0, this.sys.canvas.width / 4, 540);
 
@@ -456,7 +455,7 @@ function create ()
     // --> enemies hit by player_ship bullets 
     this.physics.add.collider(enemies_left.enemies_group, player_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
-        this.custom_sounds.explosion.play();
+        this.custom_sounds.enemy_explosion.play();
         enemy.play(enemy.explote_anim, true);
         enemy.on('animationcomplete', () => {
             enemy.destroy();
@@ -470,7 +469,7 @@ function create ()
     });
 	this.physics.add.collider(enemies_right.enemies_group, player_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
-        this.custom_sounds.explosion.play();
+        this.custom_sounds.enemy_explosion.play();
         enemy.play(enemy.explote_anim, true);
         enemy.on('animationcomplete', () => {
             enemy.destroy();
@@ -486,7 +485,7 @@ function create ()
     // --> enemies hit by Ai ship's bullets
     this.physics.add.collider(enemies_left.enemies_group, ai_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
-        this.custom_sounds.explosion.play();
+        this.custom_sounds.enemy_explosion.play();
         enemy.play(enemy.explote_anim, true);
         enemy.on('animationcomplete', () => {
             enemy.destroy();
@@ -500,7 +499,7 @@ function create ()
     });
 	this.physics.add.collider(enemies_right.enemies_group, ai_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
-        this.custom_sounds.explosion.play();
+        this.custom_sounds.enemy_explosion.play();
         enemy.play(enemy.explote_anim, true);
         enemy.on('animationcomplete', () => {
             enemy.destroy();
@@ -547,14 +546,22 @@ function create ()
 
     // --> enemies bullets hit player_ship
     this.physics.add.collider(player_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
+        // play sound
+        this.custom_sounds.player_explosion.play();
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
-        // kill the enemy. The change in behavior takes place within the update function of the ship
+        // kill the player. The change in behavior takes place within the update function of the ship
         if (ship_sprite.props.lives >= 1) {
+            ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
             ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
-            ship_sprite.x = this.sys.canvas.width / 4;
+            ship_sprite.play(ship_sprite.explote_anim, true);
+            ship_sprite.on('animationcomplete', () => {
+                ship_sprite.x = this.sys.canvas.width / 4;
+                ship_sprite.setTexture(ship_sprite.props.image_id);
+                ship_sprite.props.exploding = false;
+            });
         }
         else {
             ship_sprite.props.dead = true;
@@ -563,14 +570,22 @@ function create ()
     });
 
     this.physics.add.collider(player_ship.sprite, enemies_right.bullets_group, (ship_sprite, bullet) => {
+        // play sound
+        this.custom_sounds.player_explosion.play();
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
-        // kill the enemy. The change in behavior takes place within the update function of the ship
+        // kill the player. The change in behavior takes place within the update function of the ship
         if (ship_sprite.props.lives >= 1) {
+            ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
             ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
-            ship_sprite.x = this.sys.canvas.width / 4;
+            ship_sprite.play(ship_sprite.explote_anim, true);
+            ship_sprite.on('animationcomplete', () => {
+                ship_sprite.x = this.sys.canvas.width / 4;
+                ship_sprite.setTexture(ship_sprite.props.image_id);
+                ship_sprite.props.exploding = false;
+            });
         }
         else {
             ship_sprite.props.dead = true;
@@ -580,15 +595,22 @@ function create ()
 
     // --> enemies bullets hit ai_ship
     this.physics.add.collider(ai_ship.sprite, enemies_right.bullets_group, (ship_sprite, bullet) => {
+        // play sound
+        this.custom_sounds.player_explosion.play();
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
         // kill the enemy. The change in behavior takes place within the update function of the ship
-
         if (ship_sprite.props.lives >= 1) {
+            ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
             ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
-            ship_sprite.x = this.sys.canvas.width / 4 + 400;
+            ship_sprite.play(ship_sprite.explote_anim, true);
+            ship_sprite.on('animationcomplete', () => {
+                ship_sprite.x = this.sys.canvas.width / 4 + 400;
+                ship_sprite.setTexture(ship_sprite.props.image_id);
+                ship_sprite.props.exploding = false;
+            });
         }
         else {
             ship_sprite.props.dead = true;
@@ -596,15 +618,22 @@ function create ()
     });
 
     this.physics.add.collider(ai_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
+        // play sound
+        this.custom_sounds.player_explosion.play();
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
         // kill the enemy. The change in behavior takes place within the update function of the ship
-
         if (ship_sprite.props.lives >= 1) {
+            ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
             ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
-            ship_sprite.x = this.sys.canvas.width / 4 + 400;
+            ship_sprite.play(ship_sprite.explote_anim, true);
+            ship_sprite.on('animationcomplete', () => {
+                ship_sprite.x = this.sys.canvas.width / 4 + 400;
+                ship_sprite.setTexture(ship_sprite.props.image_id);
+                ship_sprite.props.exploding = false;
+            });
         }
         else {
             ship_sprite.props.dead = true;
@@ -788,17 +817,11 @@ function update ()
 
     // switch to game over screen
     if (gameover) {
-        var random_string = (Math.random() + 1).toString(36).substr(2, 5);
-        var date = new Date();
-        game_id = random_string + '_' + date.toString();
         console.log({id: game_id, log: game_log});
         this.scene.switch('gameover_scene');
     }
 
     if (enemies_left_sprites.length == 0 && enemies_right_sprites.length == 0) {
-        var random_string = (Math.random() + 1).toString(36).substr(2, 5);
-        var date = new Date();
-        game_id = random_string + '_' + date.toString();
         console.log({id: game_id, log: game_log});
         this.scene.switch('victory_scene');
     }
