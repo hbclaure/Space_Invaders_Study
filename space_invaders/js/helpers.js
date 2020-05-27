@@ -5,11 +5,11 @@ All the helper functions and global variables for space invaders
 var mode;
 var cursors;                            //!< keyboard access
 var space_key;                          //!< space key
+
 var player_ship;                        //!< player_ship
 var ai_ship;
 var enemies_left;                       //!< enemies
 var enemies_right;
-var gameover;
 var debug_text;
 var game_id;
 var game_log;                           //!< array that stores a log of all the information from this game
@@ -266,6 +266,7 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
             }
             enemy.grid_column = i % num_horizontal;
             enemy.score = 10 + 10 * (num_rows[0] + num_rows[1] + num_rows[2] - 1 - enemy.grid_row);
+            enemy.hit = false;
             enemies.add(enemy);
         }
     }

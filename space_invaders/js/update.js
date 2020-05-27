@@ -51,7 +51,7 @@ function update ()
             bullets_right_positions.push([current_bullet.x, current_bullet.y]);
 
             if (ai_ship.sprite.x >= 400 && 
-                current_bullet.y < ai_ship.sprite.y && current_bullet.y > nearest_bullet.y) {
+                current_bullet.y < ai_ship.sprite.y + 15 && current_bullet.y > nearest_bullet.y) {
                 nearest_bullet.x = current_bullet.x;
                 nearest_bullet.y = current_bullet.y;
             }
@@ -67,7 +67,7 @@ function update ()
             bullets_left_positions.push([current_bullet.x, current_bullet.y]);
 
             if (ai_ship.sprite.x < 400 && 
-                current_bullet.y < ai_ship.sprite.y && current_bullet.y > nearest_bullet.y) {
+                current_bullet.y < ai_ship.sprite.y + 15 && current_bullet.y > nearest_bullet.y) {
                 nearest_bullet.x = current_bullet.x;
                 nearest_bullet.y = current_bullet.y;
             }
@@ -85,6 +85,9 @@ function update ()
         var current_enemy = enemies_right_sprites[i];
 
         enemies_right_positions.push([current_enemy.x, current_enemy.y]);
+        if (current_enemy.y < player_ship.y) {
+            gameover = true;
+        }
 
         var x_diff = Math.abs(current_enemy.x - ai_ship.sprite.x);
 
@@ -101,6 +104,9 @@ function update ()
         var current_enemy = enemies_left_sprites[i];
 
         enemies_left_positions.push([current_enemy.x, current_enemy.y]);
+        if (current_enemy.y < player_ship.y) {
+            gameover = true;
+        }
 
         var x_diff = Math.abs(current_enemy.x - ai_ship.sprite.x);
 
@@ -132,14 +138,23 @@ function update ()
     }
     // attack logic: move to the nearest enemy and shoot
     else {
-        if (nearest_x_diff <= 20) {
+        if (nearest_x_diff <= 24) {
             shoot_final = true;
         }
-        else if (nearest_enemy.x < ai_ship.sprite.x) {
-            left_final = true;
+        if (nearest_enemy.x < ai_ship.sprite.x) {
+            // make sure it doesn't drive into bullets
+            if (!(nearest_bullet.x < ai_ship.sprite.x && 
+                nearest_bullet.y < ai_ship.sprite.y + 200 &&
+                ai_ship.sprite.x - nearest_bullet.x <= 35)) {
+                left_final = true;
+            }
         }
-        else {
-            right_final = true;
+        if (nearest_enemy.x > ai_ship.sprite.x) {
+            if (!(nearest_bullet.x > ai_ship.sprite.x && 
+                nearest_bullet.y < ai_ship.sprite.y + 200 && 
+                nearest_bullet.x - ai_ship.sprite.x <= 35)) {
+                right_final = true;
+            }
         }
     }
 
