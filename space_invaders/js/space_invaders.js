@@ -1,8 +1,8 @@
 // Space Invaders game built with Phaser 3
 // This game is inspired by Lee Robinson's Space Invaders, https://leerob.io/blog/space-invaders-with-python
 // And an adaptation by Simon Mendelsohn, https://zoo.cs.yale.edu/classes/cs490/19-20a/mendelsohn.simon.sjm225
-// Framework for this code was built by Professor Marynel Vázquez and expanded upon by Ananya Parthasarathy as 
-// part of a CPSC 490 Senior project
+// Framework for this code was built by Professor Marynel Vázquez, expanded upon by Ananya Parthasarathy as 
+// part of a CPSC 490 Senior project, and further expanded upon by Jamie Large.
 
 
 // --- actual game ---

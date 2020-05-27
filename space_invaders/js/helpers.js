@@ -5,7 +5,7 @@ All the helper functions and global variables for space invaders
 var mode;
 var cursors;                            //!< keyboard access
 var space_key;                          //!< space key
-
+var enter_key;                          //!< enter key
 var player_ship;                        //!< player_ship
 var ai_ship;
 var enemies_left;                       //!< enemies

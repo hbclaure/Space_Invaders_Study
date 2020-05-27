@@ -17,9 +17,6 @@ function create ()
     // debug_text flag to run debugging text in developer tools
     debug_text = false;
 
-    // mode: 0 - cooperative, 1 - uncooperative
-    mode = 0;
-
     cursors = this.input.keyboard.createCursorKeys();
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
