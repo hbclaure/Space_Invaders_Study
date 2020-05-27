@@ -33,7 +33,7 @@ function create ()
     //setting the left wall for the AI depending on what kind of agent it is
     var minX = 0;
     if (mode == 1) {
-        minX = 420;
+        minX = 425;
     }
 
     ai_ship = this.create_ship("avery", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", minX);

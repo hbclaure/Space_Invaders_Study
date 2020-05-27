@@ -9,11 +9,6 @@ var player_ship;                        //!< player_ship
 var ai_ship;
 var enemies_left;                       //!< enemies
 var enemies_right;
-var move_left;
-var move_right;
-var hit;
-var left_final;
-var right_final;
 var gameover;
 var debug_text;
 var game_id;
@@ -64,7 +59,7 @@ function fire_bullet(bullets_group, x, y, direction, speed = 500) {
         // set bullet position and speed
         bullet.body.originX = 0.5;
         bullet.body.originY = 1.0;
-        bullet.body.velocity.y = speed * direction;;
+        bullet.body.velocity.y = speed * direction;
         // make bullet visible
         bullet.setActive(true);
         bullet.setVisible(true);
@@ -104,6 +99,7 @@ function fire_enemy_bullet(enemies, bullets) {
         }
         if (num_valid == enemies.num_columns) break;
     }
+    enemies.num_valid_columns = num_valid;
     // turn valid_columns to indexes
     var valid_index = [];
     for (var i=0; i<valid_columns.length; i++) {
@@ -186,7 +182,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
 
     return {
         sprite: sprite,                                         //!< image object for the ship
-        bullets_group: bullets,                                 //!< bullets shot by the shi
+        bullets_group: bullets,                                 //!< bullets shot by the ship
         min_x: min_x,
         update(move_left, move_right, shoot)                    //!< update the ship state based on requested actions   
         {          
@@ -283,6 +279,7 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
     // store number of columns in the grid
     var children = enemies.getChildren();
     enemies.num_columns = num_horizontal;
+    enemies.num_valid_columns = enemies.num_columns;
     enemies.num_rows = children[children.length - 1].grid_row;
 
     // create bullets pool
@@ -294,6 +291,7 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
                                               callback: () => { 
                                                     fire_enemy_bullet(enemies, bullets);
                                               } });
+    enemies.timer_changes = 0;
 
     return {
         enemies_group: enemies,                //!< enemies group
@@ -317,6 +315,24 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
                         e.setVelocityX(-horizontal_speed)
                     })
                 }
+            }
+
+            // change timer depending on how many valid columns are left
+            if (this.enemies_group.num_valid_columns <= 0.6 * this.enemies_group.num_columns &&
+                this.enemies_group.timer_changes == 0) {
+                this.enemies_group.fire_timer.reset({ delay: Phaser.Math.Between(1000, 1500), loop: true, 
+                                              callback: () => { 
+                                                    fire_enemy_bullet(enemies, bullets);
+                                              } });
+                this.enemies_group.timer_changes += 1;
+            }
+            else if (this.enemies_group.num_valid_columns <= 0.2 * this.enemies_group.num_columns &&
+                this.enemies_group.timer_changes == 1) {
+                this.enemies_group.fire_timer.reset({ delay: Phaser.Math.Between(1500, 2000), loop: true, 
+                                              callback: () => { 
+                                                    fire_enemy_bullet(enemies, bullets);
+                                              } });
+                this.enemies_group.timer_changes += 1;
             }
         },
     };

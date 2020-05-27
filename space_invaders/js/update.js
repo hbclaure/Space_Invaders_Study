@@ -19,14 +19,13 @@ function update ()
 
     player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
 
-    // manual control of ai update
+    // ---------- AI Logic
 
-    // ---------- AI shooting logic, ai ship shoots whenever it can
+    // Determine whether ai_ship is able to shoot
 
     var ai_shoots = false;
     var ai_bullet = ai_ship.bullets_group.getChildren()[0];
     var ai_bullet_position = [];
-
 
     if (ai_bullet.active) {
         ai_bullet_position = [ai_bullet.body.x, ai_bullet.body.y];
@@ -34,144 +33,118 @@ function update ()
     else {
         ai_shoots = true;
     }
+
+    var left_final = false;
+    var right_final = false;
+    var shoot_final = false;
+    var hit = false;
+
+    // find the bullet that is closest to the AI player (on y-axis)
+    var nearest_bullet = {x: 0, y: 0 };
     
+    var enemies_right_bullets = enemies_right.bullets_group.getChildren();
+    var bullets_right_positions = []; // for logging purposes
+    for (var i = 0; i < enemies_right_bullets.length; i++) {
+        var current_bullet = enemies_right_bullets[i];
+        
+        if (current_bullet.active) {
+            bullets_right_positions.push([current_bullet.x, current_bullet.y]);
 
-    // ---------- start of AI movement logic
+            if (ai_ship.sprite.x >= 400 && 
+                current_bullet.y < ai_ship.sprite.y && current_bullet.y > nearest_bullet.y) {
+                nearest_bullet.x = current_bullet.x;
+                nearest_bullet.y = current_bullet.y;
+            }
+        }
+    }
 
-    left_final = false;
-    right_final = false;
+    var enemies_left_bullets = enemies_left.bullets_group.getChildren();
+    var bullets_left_positions = []; // for logging purposes
+    for (var i = 0; i < enemies_left_bullets.length; i++) {
+        var current_bullet = enemies_left_bullets[i];
+        
+        if (current_bullet.active) {
+            bullets_left_positions.push([current_bullet.x, current_bullet.y]);
 
-    var left_enemy = 800;
-    var right_enemy = 0;
+            if (ai_ship.sprite.x < 400 && 
+                current_bullet.y < ai_ship.sprite.y && current_bullet.y > nearest_bullet.y) {
+                nearest_bullet.x = current_bullet.x;
+                nearest_bullet.y = current_bullet.y;
+            }
+        }
+    }
 
-    move_left = move_right = true;
-    hit = false;
 
-    // --> checking where the enemies are
+    // find the enemy that is closest to the ai player (on x-axis)
+    var nearest_enemy = {x: 0, y: 0};
+    var nearest_x_diff = this.sys.canvas.width;
+
     var enemies_right_sprites = enemies_right.enemies_group.getChildren();
     var enemies_right_positions = [];
     for (var i=0; i < enemies_right_sprites.length; i++) {
-        if (enemies_right_sprites[i].body.x > right_enemy) {
-            right_enemy = enemies_right_sprites[i].body.x;
-        }
-        if (enemies_right_sprites[i].body.x < left_enemy) {
-            left_enemy = enemies_right_sprites[i].body.x;
-        }
-        enemies_right_positions.push([enemies_right_sprites[i].body.x, enemies_right_sprites[i].body.y]);
-        // if enemy has reached end of screen, game over
-        if (enemies_right_sprites[i].body.y > player_ship.sprite.y) {
-            gameover = true;
+        var current_enemy = enemies_right_sprites[i];
+
+        enemies_right_positions.push([current_enemy.x, current_enemy.y]);
+
+        var x_diff = Math.abs(current_enemy.x - ai_ship.sprite.x);
+
+        if (x_diff < nearest_x_diff) {
+            nearest_enemy.x = current_enemy.x;
+            nearest_enemy.y = current_enemy.y;
+            nearest_x_diff = x_diff;
         }
     }
 
     var enemies_left_sprites = enemies_left.enemies_group.getChildren();
     var enemies_left_positions = [];
     for (var i=0; i < enemies_left_sprites.length; i++) {
-        //don't consider enemies on left side if not cooperative agent
-        if (mode == 0) {
-            if (enemies_left_sprites[i].body.x > right_enemy) {
-                right_enemy = enemies_left_sprites[i].body.x;
-            }
-            if (enemies_left_sprites[i].body.x < left_enemy) {
-                left_enemy = enemies_left_sprites[i].body.x;
-            }
-        }
-        enemies_left_positions.push([enemies_left_sprites[i].body.x, enemies_left_sprites[i].body.y]);
-        if (enemies_left_sprites[i].body.y > player_ship.sprite.y) {
-            gameover = true;
+        var current_enemy = enemies_left_sprites[i];
+
+        enemies_left_positions.push([current_enemy.x, current_enemy.y]);
+
+        var x_diff = Math.abs(current_enemy.x - ai_ship.sprite.x);
+
+        if (mode == 0 && x_diff < nearest_x_diff) {
+            nearest_enemy.x = current_enemy.x;
+            nearest_enemy.y = current_enemy.y;
+            nearest_x_diff = x_diff;
         }
     }
-        
-
-    // --> checking where the bullets are/if a bullet is about to hit the ai ship
-    var bullets_right = enemies_right.bullets_group.getChildren();
-    var bullets_right_positions = [];
-    for(var i=0; i < bullets_right.length; i++){
-        if (bullets_right[i].body.y < 100 || bullets_right[i].visible == false) {
-            continue;
-        }
-        var x_diff = bullets_right[i].body.x - ai_ship.sprite.x;
-        if (x_diff > -30 && x_diff < -1) {
-            move_left = false;
-        }
-        if (x_diff >= -1 && x_diff <= 50) {
+    
+    // dodge logic: dodges the closest bullet when ai player is unable to fire
+    if (!ai_shoots) {
+        if (nearest_bullet.x <= ai_ship.sprite.x + 30 && nearest_bullet.x >= ai_ship.sprite.x - 30) {
             hit = true;
         }
-        if (x_diff > 50 && x_diff < 80) {
-            move_right = false;
+
+        if (hit && nearest_bullet.x >= this.sys.canvas.width - 75) {
+            left_final = true;
         }
-        if (bullets_right[i].active) {
-            bullets_right_positions.push([bullets_right[i].body.x, bullets_right[i].body.y]);
+        else if (hit && nearest_bullet.x <= ai_ship.min_x + 55) {
+            right_final = true;
+        }
+        else if (hit && nearest_bullet.x > ai_ship.sprite.x) {
+            left_final = true;
+        }
+        else if (hit && nearest_bullet.x <= ai_ship.sprite.x) {
+            right_final = true;
         }
     }
-
-    var bullets_left = enemies_left.bullets_group.getChildren();
-    var bullets_left_positions = [];          
-    for(var i=0; i < bullets_left.length; i++){
-        //don't consider bullets on left side if not cooperative agent
-        if (mode == 0) {
-            if (bullets_left[i].body.y < 100 || bullets_left[i].visible == false) {
-                continue;
-            }
-            var diff = bullets_left[i].body.x - ai_ship.sprite.x;
-
-            if (diff > -30 && diff < -1) {
-                move_left = false;
-            }
-            if (diff >= -1 && diff <= 50) {
-                hit = true;
-            }
-            if (diff > 50 && diff < 80) {
-                move_right = false;
-            }
+    // attack logic: move to the nearest enemy and shoot
+    else {
+        if (nearest_x_diff <= 20) {
+            shoot_final = true;
         }
-        if (bullets_left[i].active) {
-            bullets_left_positions.push([bullets_left[i].body.x, bullets_left[i].body.y]);
+        else if (nearest_enemy.x < ai_ship.sprite.x) {
+            left_final = true;
+        }
+        else {
+            right_final = true;
         }
     }
 
-    // debugging text
-    if (ai_ship.sprite.props.dead == false && debug_text) {
-        if (!move_left) {
-            console.log("bullet on left");
-        }
-        if (hit) {
-            console.log("bullet incoming");
-        }   
-        if (!move_right) {
-            console.log("bullet on right");
-        }
-    }
 
-    // --> deciding which direction to move
-    if (move_left && move_right && hit && ai_ship.sprite.x < ai_ship.min_x + 10) {
-        right_final = true;
-    }
-    else if (move_left && move_right && hit && ai_ship.sprite.x > this.sys.canvas_width - 60) {
-        left_final = true;
-    }
-    else if (move_left && hit && ai_ship.sprite.x > ai_ship.min_x + 10) {
-        left_final = true;
-    }
-    else if (move_right && hit && ai_ship.sprite.x < this.sys.canvas_width - 60) {
-        right_final = true;
-    }
-    else if (ai_ship.sprite.x > right_enemy && move_left && ai_ship.sprite.x > ai_ship.min_x) {
-        left_final = true;
-    }
-    else if ((ai_ship.sprite.x < right_enemy - 10 && move_right) || (ai_ship.sprite.x < this.sys.canvas_width - 60 && move_right)) {
-        right_final = true;
-    }
-
-
-    // more debugging text
-    if (ai_ship.sprite.props.dead == false && debug_text) {
-        console.log("left: " + move_left + ". right: " + move_right + ", hit: " + hit + ", right enemy: " + right_enemy + ", left enemy: " + left_enemy);
-        console.log("x: " + ai_ship.sprite.x);
-        console.log("left: " + left_final + ", right: " + right_final);
-    }
-
-    ai_ship.update(left_final, right_final, ai_shoots);
+    ai_ship.update(left_final, right_final, shoot_final);
 
     // ---------- end AI logic
 
