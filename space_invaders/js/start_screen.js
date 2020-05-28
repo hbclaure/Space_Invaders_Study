@@ -20,13 +20,14 @@ start_scene.create = function() {
     enter_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 }
 
-// begin the game when the player presses spacebar
 start_scene.update = function() {
+    // begin uncooperative game when the player presses spacebar
     if (this.input.keyboard.checkDown(space_key, 500)) {
         mode = 1;
         this.scene.switch('game_scene');
     }
 
+    // begin cooperative game when the player presses enter
     if (this.input.keyboard.checkDown(enter_key, 500)) {
         mode = 0;
         this.scene.switch('game_scene');
