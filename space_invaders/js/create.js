@@ -7,9 +7,6 @@ function create ()
 {	
     // a log of all of the frames of the game
     game_log = [];
-    var random_string = (Math.random() + 1).toString(36).substr(2, 5);
-    var date = new Date();
-    game_id = mode + '_' + date.toString();
 
 	// flag to tell when the game is over
     gameover = false;

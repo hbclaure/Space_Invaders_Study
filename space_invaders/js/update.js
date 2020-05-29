@@ -191,7 +191,7 @@ function update ()
 
     // switch to game over screen
     if (gameover) {
-        console.log({id: game_id, log: game_log});
+        console.log({id: game_id, mode: mode, log: game_log});
         if (mode == 0) {
             this.scene.start('intermediate_scene_2');
         }
@@ -202,7 +202,7 @@ function update ()
 
     // switch to victory screen
     if (enemies_left_sprites.length == 0 && enemies_right_sprites.length == 0) {
-        console.log({id: game_id, log: game_log});
+        console.log({id: game_id, mode: mode, log: game_log});
         if (mode == 0) {
             this.scene.start('intermediate_scene_2');
         }

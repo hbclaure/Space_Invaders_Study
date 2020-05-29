@@ -12,8 +12,11 @@ var enemies_left;                       //!< enemies
 var enemies_right;
 var enemies_practice;
 var debug_text;
-var game_id;
 var game_log;                           //!< array that stores a log of all the information from this game
+
+var random_string = (Math.random() + 1).toString(36).substr(2, 5);
+var date = new Date();
+var game_id = random_string + '_' + date.toString();
 
 /**
  * Create bullets pool
@@ -157,11 +160,16 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     // animation for the player/ai explosions
     var explosion = (image_id == 'ship') ? 'explosiongreen' : 
                     (image_id == 'avery') ? 'explosionblue' : 'explosionpurple';
-    this.anims.create({
-        key: image_id + '_exp',
-        frames: [{ key: explosion } ],
-        frameRate: 10,
-    });
+
+
+    if (!(this.anims.get(image_id + '_exp'))) { 
+        this.anims.create({
+            key: image_id + '_exp',
+            frames: [{ key: explosion } ],
+            frameRate: 10,
+        });
+    }
+    
 
     
     sprite.lives = [] // add sprites to display lives
@@ -237,21 +245,23 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
     // create animations for all enemies, animations for explosions, and groups of robots
     for (var e=1; e<4; e++) {
         // animation for the enemy
-        this.anims.create({
-            key: 'enemy' + e + g + '_move',
-            frames: [
-                { key: 'enemy' + e + g + '_1' },
-                { key: 'enemy' + e + g + '_2' },
-            ],
-            frameRate: 2,
-            repeat: -1
-        });
-        // animation for the enemy explosion
-        this.anims.create({
-            key: 'enemy' + e + g + '_exp',
-            frames: [{ key: explosions[e - 1] }],
-            frameRate: 10,
-        });
+        if (!(this.anims.get('enemy' + e + g + '_move'))) {
+            this.anims.create({
+                key: 'enemy' + e + g + '_move',
+                frames: [
+                    { key: 'enemy' + e + g + '_1' },
+                    { key: 'enemy' + e + g + '_2' },
+                ],
+                frameRate: 2,
+                repeat: -1
+            });
+            // animation for the enemy explosion
+            this.anims.create({
+                key: 'enemy' + e + g + '_exp',
+                frames: [{ key: explosions[e - 1] }],
+                frameRate: 10,
+            });
+        }
         // add actual enemies to the enemies group 
         for (var i=0; i<num_horizontal * num_rows[e - 1]; i++) {
             enemy = this.physics.add.sprite(400, 300, 'enemy' + e + g + '_1').play('enemy' + e + g + '_move');
