@@ -9,9 +9,9 @@ function create ()
     game_log = [];
     var random_string = (Math.random() + 1).toString(36).substr(2, 5);
     var date = new Date();
-    game_id = random_string + '_' + date.toString();
+    game_id = mode + '_' + date.toString();
 
-	// flag to tell when the game is over, currently not being used
+	// flag to tell when the game is over
     gameover = false;
 
     // debug_text flag to run debugging text in developer tools
@@ -172,7 +172,7 @@ function create ()
             ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
             ship_sprite.play(ship_sprite.explote_anim, true);
             ship_sprite.on('animationcomplete', () => {
-                ship_sprite.x = this.sys.canvas.width / 4;
+                ship_sprite.x = this.sys.canvas.width / 2;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
             });
@@ -197,7 +197,7 @@ function create ()
             ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
             ship_sprite.play(ship_sprite.explote_anim, true);
             ship_sprite.on('animationcomplete', () => {
-                ship_sprite.x = this.sys.canvas.width / 4;
+                ship_sprite.x = this.sys.canvas.width / 2;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
             });
@@ -226,7 +226,7 @@ function create ()
             ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
             ship_sprite.play(ship_sprite.explote_anim, true);
             ship_sprite.on('animationcomplete', () => {
-                ship_sprite.x = this.sys.canvas.width / 4 + 400;
+                ship_sprite.x = this.sys.canvas.width / 2 + 25;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
             });
@@ -258,7 +258,7 @@ function create ()
             ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
             ship_sprite.play(ship_sprite.explote_anim, true);
             ship_sprite.on('animationcomplete', () => {
-                ship_sprite.x = this.sys.canvas.width / 4 + 400;
+                ship_sprite.x = this.sys.canvas.width / 2 + 25;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
             });
@@ -292,7 +292,7 @@ function create ()
             ship_sprite.play(ship_sprite.explote_anim, true);
             enemy.play(enemy.explote_anim, true);
             ship_sprite.on('animationcomplete', () => {
-                ship_sprite.x = this.sys.canvas.width / 4;
+                ship_sprite.x = this.sys.canvas.width / 2;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
                 enemy.destroy();
@@ -319,7 +319,7 @@ function create ()
             ship_sprite.play(ship_sprite.explote_anim, true);
             enemy.play(enemy.explote_anim, true);
             ship_sprite.on('animationcomplete', () => {
-                ship_sprite.x = this.sys.canvas.width / 4;
+                ship_sprite.x = this.sys.canvas.width / 2;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
                 enemy.destroy()
@@ -350,7 +350,7 @@ function create ()
             ship_sprite.play(ship_sprite.explote_anim, true);
             enemy.play(enemy.explote_anim, true);
             ship_sprite.on('animationcomplete', () => {
-                ship_sprite.x = this.sys.canvas.width / 4 + 400;
+                ship_sprite.x = this.sys.canvas.width / 2 + 25;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
                 enemy.destroy();
@@ -378,7 +378,7 @@ function create ()
             ship_sprite.play(ship_sprite.explote_anim, true);
             enemy.play(enemy.explote_anim, true);
             ship_sprite.on('animationcomplete', () => {
-                ship_sprite.x = this.sys.canvas.width / 4 + 400;
+                ship_sprite.x = this.sys.canvas.width / 2 + 25;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
                 enemy.destroy()

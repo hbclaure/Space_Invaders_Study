@@ -2,7 +2,7 @@
 All the helper functions and global variables for space invaders
 **/
 
-var mode;
+var mode;                               //!< mode of AI: 0 for cooperative, 1 for uncooperative
 var cursors;                            //!< keyboard access
 var space_key;                          //!< space key
 var enter_key;                          //!< enter key
@@ -10,6 +10,7 @@ var player_ship;                        //!< player_ship
 var ai_ship;
 var enemies_left;                       //!< enemies
 var enemies_right;
+var enemies_practice;
 var debug_text;
 var game_id;
 var game_log;                           //!< array that stores a log of all the information from this game

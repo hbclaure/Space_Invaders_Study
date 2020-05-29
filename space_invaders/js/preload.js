@@ -24,6 +24,13 @@ function preload ()
     this.load.image('enemy3b_1', 'assets/images/enemy3_1.png');
     this.load.image('enemy3b_2', 'assets/images/enemy3_2.png');
 
+    this.load.image('enemy1p_1', 'assets/images/enemy1_1.png');
+    this.load.image('enemy1p_2', 'assets/images/enemy1_2.png');
+    this.load.image('enemy2p_1', 'assets/images/enemy2_1.png');
+    this.load.image('enemy2p_2', 'assets/images/enemy2_2.png');
+    this.load.image('enemy3p_1', 'assets/images/enemy3_1.png');
+    this.load.image('enemy3p_2', 'assets/images/enemy3_2.png');
+
     this.load.image('explosionblue', 'assets/images/explosionblue.png');
     this.load.image('explosiongreen', 'assets/images/explosiongreen.png');
     this.load.image('explosionpurple', 'assets/images/explosionpurple.png');
