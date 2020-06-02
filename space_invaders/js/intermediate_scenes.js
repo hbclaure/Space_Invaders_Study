@@ -44,9 +44,12 @@ intermediate_scene.preload = function() {
 }
 
 intermediate_scene.create = function() {
+    player_score = player_ship.sprite.props.score;
+    ai_score = ai_ship.sprite.props.score;
+
     var gameover_text = this.add.bitmapText(400, 175, 'PressStart2P_Orange', 'ROUND ENDED', 50).setOrigin(0.5);
-    var player_score = this.add.bitmapText(400, 300, 'PressStart2P_White', 'Player Final Score: ' + player_ship.sprite.props.score, 20).setOrigin(0.5).setCenterAlign();
-    var ai_score = this.add.bitmapText(400, 400, 'PressStart2P_White', 'AI Final Score: ' + ai_ship.sprite.props.score, 20).setOrigin(0.5).setCenterAlign();
+    var player_text = this.add.bitmapText(400, 300, 'PressStart2P_White', 'Player Score: ' + player_score, 20).setOrigin(0.5).setCenterAlign();
+    var ai_text = this.add.bitmapText(400, 400, 'PressStart2P_White', 'AI Score: ' + ai_score, 20).setOrigin(0.5).setCenterAlign();
     var instructions = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Press spacebar to begin second round', 20).setOrigin(0.5);
 
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -70,9 +73,12 @@ gameover_scene.preload = function () {
 
 // display Game Over and final scores
 gameover_scene.create = function() {
+    player_score += player_ship.sprite.props.score;
+    ai_score += ai_ship.sprite.props.score;
+
     var gameover_text = this.add.bitmapText(400, 175, 'PressStart2P_Orange', 'GAME ENDED', 50).setOrigin(0.5);
-    var player_score = this.add.bitmapText(400, 300, 'PressStart2P_White', 'Player Final Score: ' + player_ship.sprite.props.score, 20).setOrigin(0.5).setCenterAlign();;
-    var ai_score = this.add.bitmapText(400, 400, 'PressStart2P_White', 'AI Final Score: ' + ai_ship.sprite.props.score, 20).setOrigin(0.5).setCenterAlign();;
+    var player_text = this.add.bitmapText(400, 300, 'PressStart2P_White', 'Player Final Score: ' + player_score, 20).setOrigin(0.5).setCenterAlign();
+    var ai_text = this.add.bitmapText(400, 400, 'PressStart2P_White', 'AI Final Score: ' + ai_score, 20).setOrigin(0.5).setCenterAlign();
 }
 
 // --- Game Over Screen ---
@@ -87,5 +93,5 @@ gameover_scene_practice.preload = function () {
 // display Game Over and final scores
 gameover_scene_practice.create = function() {
     var gameover_text = this.add.bitmapText(400, 175, 'PressStart2P_Orange', 'GAME ENDED', 50).setOrigin(0.5);
-    var player_score = this.add.bitmapText(400, 300, 'PressStart2P_White', 'Player Final Score: ' + player_ship.sprite.props.score, 20).setOrigin(0.5).setCenterAlign();;
+    var player_text = this.add.bitmapText(400, 300, 'PressStart2P_White', 'Player Score: ' + player_ship.sprite.props.score, 20).setOrigin(0.5).setCenterAlign();;
 }

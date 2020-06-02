@@ -14,6 +14,8 @@ var enemies_practice;
 var debug_text;
 var game_log;                           //!< array that stores a log of all the information from this game
 var rounds_played = 0;                  //!< number of rounds that they have played
+var player_score;
+var ai_score;
 
 var random_string = (Math.random() + 1).toString(36).substr(2, 5);
 var date = new Date();
