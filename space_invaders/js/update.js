@@ -192,8 +192,9 @@ function update ()
     // switch to game over screen
     if (gameover || (enemies_left_sprites.length == 0 && enemies_right_sprites.length == 0)) {
         console.log({id: game_id, mode: mode, log: game_log});
-        if (mode == 0) {
-            this.scene.start('intermediate_scene_2');
+        if (rounds_played == 0) {
+            rounds_played += 1;
+            this.scene.start('intermediate_scene');
         }
         else {
             this.scene.start('gameover_scene');

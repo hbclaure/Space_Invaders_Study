@@ -148,7 +148,7 @@ function update_practice_scene() {
 
     // switch to first intermediate screen
     if (gameover || enemies_practice_sprites.length == 0) {
-        this.scene.start('intermediate_scene_1');
+        this.scene.start('gameover_scene_practice');
     }
 }
 

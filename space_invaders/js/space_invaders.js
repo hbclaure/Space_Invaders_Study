@@ -41,9 +41,9 @@ var game = new Phaser.Game(config);     //!< game object
 
 // Add all of the scenes (see start_scene.js and end_scenes.js)
 game.scene.add('start_scene', start_scene);
-game.scene.add('intermediate_scene_1', intermediate_scene_1);
-game.scene.add('intermediate_scene_2', intermediate_scene_2);
+game.scene.add('intermediate_scene', intermediate_scene);
 game.scene.add('gameover_scene', gameover_scene);
+game.scene.add('gameover_scene_practice', gameover_scene_practice);
 game.scene.add('game_scene', game_scene);
 game.scene.add('practice_scene', practice_scene);
 
