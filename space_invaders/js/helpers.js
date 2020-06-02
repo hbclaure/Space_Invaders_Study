@@ -2,24 +2,45 @@
 All the helper functions and global variables for space invaders
 **/
 
-var mode = 1;                           //!< game mode: -1 for practice, 0 for cooperative, 1 for uncooperative
+var mode;                               //!< game mode: -1 for practice, 0 for cooperative, 1 for uncooperative
 var cursors;                            //!< keyboard access
 var space_key;                          //!< space key
 var enter_key;                          //!< enter key
 var player_ship;                        //!< player_ship
-var ai_ship;
+var ai_ship;                            //!< ai_ship
 var enemies_left;                       //!< enemies
 var enemies_right;
 var enemies_practice;
 var debug_text;
-var game_log;                           //!< array that stores a log of all the information from this game
+var game_log;                           //!< a log of all the information from this game
 var rounds_played = 0;                  //!< number of rounds that they have played
-var player_score;
-var ai_score;
+var player_score;                       //!< total player score (accumulated over multiple rounds)
+var ai_score;                           //!< total ai score (accumulated over multiple rounds)
 
-var random_string = (Math.random() + 1).toString(36).substr(2, 5);
-var date = new Date();
-var game_id = random_string + '_' + date.toString();
+var date = new Date();                  //!< date
+var game_id;                            //!< unique ID
+
+
+/**
+Function to find the game id and game mode (which are passed as GET parameters)
+Modified from code found at: https://stackoverflow.com/questions/5448545/how-to-retrieve-get-parameters-from-javascript
+**/
+function findGetParameter(parameterName) {
+    var result = null,
+        tmp = [];
+    var items = location.search.substr(1).split("&");
+    for (var index = 0; index < items.length; index++) {
+        tmp = items[index].split("=");
+        if (tmp[0] === parameterName) result = parseInt(tmp[1], 10);
+    }
+    return result;
+}
+
+game_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
+mode = findGetParameter('mode') ? findGetParameter('mode') : 0;
+
+console.log(game_id);
+console.log(mode);
 
 /**
  * Create bullets pool
