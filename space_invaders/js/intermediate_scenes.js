@@ -13,7 +13,7 @@ start_scene.create = function() {
     var instructions = this.add.bitmapText(400, 300, 'PressStart2P_White', 'Use arrow keys to move, \npress spacebar to fire', 25).setOrigin(0.5).setCenterAlign();
     var start = this.add.bitmapText(400, 400, 'PressStart2P_Green', 'Press spacebar to begin', 20).setOrigin(0.5);
 
-    if (mode == -1) {
+    if (mode == PRACTICE) {
         start.setText('Press spacebar to begin practice round');
     }
 
@@ -23,7 +23,7 @@ start_scene.create = function() {
 start_scene.update = function() {
     // begin practice game when the player presses spacebar
     if (this.input.keyboard.checkDown(space_key, 500)) {
-        if (mode == -1) {
+        if (mode == PRACTICE) {
             this.scene.start('practice_scene');
         }
         else {

@@ -6,7 +6,9 @@
 function create ()
 {	
     // a log of all of the frames of the game
-    game_log = [];
+    frames = [];
+    frame_number = 0;
+    date = new Date();
 
 	// flag to tell when the game is over
     gameover = false;
@@ -26,7 +28,7 @@ function create ()
 
     //setting the left wall for the AI depending on what kind of agent it is
     var minX = 0;
-    if (mode == 1) {
+    if (mode == UNCOOPERATIVE) {
         minX = 425;
     }
 

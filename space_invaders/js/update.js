@@ -110,7 +110,7 @@ function update ()
 
         var x_diff = Math.abs(current_enemy.x - ai_ship.sprite.x);
 
-        if (mode == 0 && x_diff < nearest_x_diff) {
+        if (mode == COOPERATIVE && x_diff < nearest_x_diff) {
             nearest_enemy.x = current_enemy.x;
             nearest_enemy.y = current_enemy.y;
             nearest_x_diff = x_diff;
@@ -170,6 +170,7 @@ function update ()
     // --- log this frame of the game ---
 
     var log_frame = {
+        frame_number: frame_number,                          //!< Number of the frame
         player_position: player_ship.sprite.x,               //!< Player's position
         player_lives: player_ship.sprite.props.lives,        //!< Player's lives
         player_score: player_ship.sprite.props.score,        //!< Player's score
@@ -187,16 +188,23 @@ function update ()
         bullets_right_positions: bullets_right_positions,    //!< Positions of all right side enemies' bullets
     }
 
-    game_log.push(log_frame);
+    frames.push(log_frame);
+    frame_number += 1;
 
     // switch to game over screen
     if (gameover || (enemies_left_sprites.length == 0 && enemies_right_sprites.length == 0)) {
-        console.log({id: game_id, mode: mode, log: game_log});
+        game_log.push({player_id: player_id, date: date, round: rounds_played, mode: mode, frames: frames});
         if (rounds_played == 0) {
-            rounds_played += 1;
             this.scene.start('intermediate_scene');
+            rounds_played += 1;
         }
         else {
+            // log this game
+            var file_name = './logs/' + game_log[0].player_id + '_' + mode + '.json';                //<! Use when testing
+            // var file_name = '/srv/spaceinvaders/' + game_log[0].player_id + '_' + mode + '.json'; //<! Use in prod
+            fs.writeFile(file_name, JSON.stringify(game_log), function(err, result) {
+                            if (err) console.log(err);
+                         });
             this.scene.start('gameover_scene');
         }
     }

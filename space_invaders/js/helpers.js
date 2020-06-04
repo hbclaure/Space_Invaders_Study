@@ -2,7 +2,12 @@
 All the helper functions and global variables for space invaders
 **/
 
-var mode;                               //!< game mode: -1 for practice, 0 for cooperative, 1 for uncooperative
+// The different game modes
+const PRACTICE = 0;
+const COOPERATIVE = 1;
+const UNCOOPERATIVE = 2;
+
+var mode;                               //!< game mode
 var cursors;                            //!< keyboard access
 var space_key;                          //!< space key
 var enter_key;                          //!< enter key
@@ -12,13 +17,17 @@ var enemies_left;                       //!< enemies
 var enemies_right;
 var enemies_practice;
 var debug_text;
-var game_log;                           //!< a log of all the information from this game
+var game_log = [];                      //!< a log of all the information from this game
+var frames;                             //!< the frames of this game
+var frame_number;                       //!< the number of the current frame
 var rounds_played = 0;                  //!< number of rounds that they have played
 var player_score;                       //!< total player score (accumulated over multiple rounds)
 var ai_score;                           //!< total ai score (accumulated over multiple rounds)
 
-var date = new Date();                  //!< date
-var game_id;                            //!< unique ID
+var date;                               //!< date
+var player_id;                          //!< unique ID
+
+var fs = require('fs');
 
 
 /**
@@ -31,16 +40,13 @@ function findGetParameter(parameterName) {
     var items = location.search.substr(1).split("&");
     for (var index = 0; index < items.length; index++) {
         tmp = items[index].split("=");
-        if (tmp[0] === parameterName) result = parseInt(tmp[1], 10);
+        if (tmp[0] === parameterName) result = decodeURIcomponent(tmp[1]);
     }
     return result;
 }
 
-game_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
-mode = findGetParameter('mode') ? findGetParameter('mode') : 0;
-
-console.log(game_id);
-console.log(mode);
+player_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
+mode = findGetParameter('mode') ? parseInt(findGetParameter('mode'), 10) : COOPERATIVE;
 
 /**
  * Create bullets pool
