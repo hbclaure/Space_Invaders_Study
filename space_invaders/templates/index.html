@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Space Invaders</title>
+    <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline' 'unsafe-eval';" />
+    <!-- <link rel="stylesheet" href="./assets/css/style.css"> -->
+  
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
+    <!-- <script data-main="js/space_invaders" src="js/require.js"></script> includes space invaders game already -->
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    
+  </head>
+    <body>
+
+        <!-- <script src="./js/agents.js"></script> -->
+        <!-- Get the url for the static files -->
+        <script>var static_url = " {{ url_for('static', filename='.') }}"; </script>
+        
+        <!-- Script for the intermediate scenes of the game -->
+        <script type="text/javascript"
+         src="{{ url_for('static', filename='js/intermediate_scenes.js') }}"></script>
+        
+        <!-- Helper scripts for the game -->
+        <script type="text/javascript"
+         src="{{ url_for('static', filename='js/preload.js') }}"></script>
+        <script type="text/javascript"
+         src="{{ url_for('static', filename='js/create.js') }}"></script>
+        <script type="text/javascript"
+         src="{{ url_for('static', filename='js/update.js') }}"></script>
+        <script type="text/javascript"
+         src="{{ url_for('static', filename='js/helpers.js') }}"></script>
+
+        <!-- Script for the game -->
+        <script type="text/javascript"
+         src="{{ url_for('static', filename='js/practice_game.js') }}"></script>
+        <script type="text/javascript"
+         src="{{ url_for('static', filename='js/space_invaders.js') }}"></script>
+        
+        <!-- <script src="https://cdn.jsdelivr.net/npm/phaser@3.22.0/dist/phaser.min.js"></script> -->
+
+    </body>
+</html>

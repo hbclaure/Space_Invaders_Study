@@ -3,6 +3,7 @@ var start_scene = new Phaser.Scene('start_scene');
 
 // load fonts
 start_scene.preload = function() {
+    this.load.setBaseURL(static_url + '/');
     this.load.bitmapFont('PressStart2P_Orange', 'assets/fonts/PressStart2P_Orange/font.png', 'assets/fonts/PressStart2P_Orange/font.fnt');
     this.load.bitmapFont('PressStart2P_White', 'assets/fonts/PressStart2P_White/font.png', 'assets/fonts/PressStart2P_White/font.fnt');
     this.load.bitmapFont('PressStart2P_Green', 'assets/fonts/PressStart2P_Green/font.png', 'assets/fonts/PressStart2P_Green/font.fnt');
@@ -38,6 +39,7 @@ var intermediate_scene = new Phaser.Scene('intermediate_scene');
 
 // load fonts
 intermediate_scene.preload = function() {
+    this.load.setBaseURL(static_url + '/');
     this.load.bitmapFont('PressStart2P_Orange', 'assets/fonts/PressStart2P_Orange/font.png', 'assets/fonts/PressStart2P_Orange/font.fnt');
     this.load.bitmapFont('PressStart2P_White', 'assets/fonts/PressStart2P_White/font.png', 'assets/fonts/PressStart2P_White/font.fnt');
     this.load.bitmapFont('PressStart2P_Green', 'assets/fonts/PressStart2P_Green/font.png', 'assets/fonts/PressStart2P_Green/font.fnt');
@@ -67,6 +69,7 @@ var gameover_scene = new Phaser.Scene('gameover_scene');
 
 // load fonts
 gameover_scene.preload = function () {
+    this.load.setBaseURL(static_url + '/');
     this.load.bitmapFont('PressStart2P_Orange', 'assets/fonts/PressStart2P_Orange/font.png', 'assets/fonts/PressStart2P_Orange/font.fnt');
     this.load.bitmapFont('PressStart2P_White', 'assets/fonts/PressStart2P_White/font.png', 'assets/fonts/PressStart2P_White/font.fnt');
 }
@@ -86,6 +89,7 @@ var gameover_scene_practice = new Phaser.Scene('gameover_scene_practice');
 
 // load fonts
 gameover_scene_practice.preload = function () {
+    this.load.setBaseURL(static_url + '/');
     this.load.bitmapFont('PressStart2P_Orange', 'assets/fonts/PressStart2P_Orange/font.png', 'assets/fonts/PressStart2P_Orange/font.fnt');
     this.load.bitmapFont('PressStart2P_White', 'assets/fonts/PressStart2P_White/font.png', 'assets/fonts/PressStart2P_White/font.fnt');
 }

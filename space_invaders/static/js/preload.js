@@ -4,7 +4,7 @@
 function preload ()
 {
     // load images
-    // this.load.setBaseURL('..');
+    this.load.setBaseURL(static_url + '/');
     this.load.image('ship', 'assets/images/ship.png');
     this.load.image('avery', 'assets/images/avery.png');
     this.load.image('jordan', 'assets/images/jordan.png');

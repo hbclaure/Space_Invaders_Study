@@ -27,8 +27,6 @@ var ai_score;                           //!< total ai score (accumulated over mu
 var date;                               //!< date
 var player_id;                          //!< unique ID
 
-var fs = require('fs');
-
 
 /**
 Function to find the game id and game mode (which are passed as GET parameters)
@@ -40,7 +38,7 @@ function findGetParameter(parameterName) {
     var items = location.search.substr(1).split("&");
     for (var index = 0; index < items.length; index++) {
         tmp = items[index].split("=");
-        if (tmp[0] === parameterName) result = decodeURIcomponent(tmp[1]);
+        if (tmp[0] === parameterName) result = tmp[1];
     }
     return result;
 }

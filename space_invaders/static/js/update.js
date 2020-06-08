@@ -200,11 +200,10 @@ function update ()
         }
         else {
             // log this game
-            var file_name = './logs/' + game_log[0].player_id + '_' + mode + '.json';                //<! Use when testing
-            // var file_name = '/srv/spaceinvaders/' + game_log[0].player_id + '_' + mode + '.json'; //<! Use in prod
-            fs.writeFile(file_name, JSON.stringify(game_log), function(err, result) {
-                            if (err) console.log(err);
-                         });
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/log', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(game_log));
             this.scene.start('gameover_scene');
         }
     }
