@@ -12,6 +12,11 @@ var practice_scene = {
 };
 
 function create_practice_scene() {
+    // a log of all of the frames of the game
+    frames = [];
+    frame_number = 0;
+    date = new Date();
+
 	// flag to tell when the game is over
     gameover = false;
 
@@ -138,16 +143,57 @@ function update_practice_scene() {
     player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
 
     var enemies_practice_sprites = enemies_practice.enemies_group.getChildren();
+    var enemies_positions = [];
     for (var i=0; i < enemies_practice_sprites.length; i++) {
+        enemies_positions.push([enemies_practice_sprites[i].x, enemies_practice_sprites[i].y]);
         if (enemies_practice_sprites[i].y > player_ship.sprite.y) {
             gameover = true;
         }
     }
 
+    var enemies_bullets = enemies_practice.bullets_group.getChildren();
+    var bullets_positions = []; // for logging purposes
+    for (var i = 0; i < enemies_bullets.length; i++) {
+        var current_bullet = enemies_bullets[i];
+        
+        if (current_bullet.active) {
+            bullets_positions.push([current_bullet.x, current_bullet.y]);
+        }
+    }
+
     enemies_practice.update();
+
+
+    // log this frame
+    var log_frame = {
+        frame_number: frame_number,                          //!< Number of the frame
+        player_position: player_ship.sprite.x,               //!< Player's position
+        player_lives: player_ship.sprite.props.lives,        //!< Player's lives
+        player_score: player_ship.sprite.props.score,        //!< Player's score
+        player_bullet_position: player_bullet_position,      //!< Positions of all of player's bullets
+
+        ai_position: null,                                   //!< AI Ship's position 
+        ai_lives: null,                                      //!< AI Ship's lives
+        ai_score: null,                                      //!< AI Ship's score
+        ai_bullet_position: [],                              //!< Positions of all of AI player's bullets
+
+        enemies_left_positions: enemies_positions,           //!< Left side enemies' positions (all enemies in practice mode)
+        bullets_left_positions: bullets_positions,           //!< Positions of all left side enemies' bullets
+
+        enemies_right_positions: [],                         //!< Right side enemies' positions (none in practice mode)
+        bullets_right_positions: [],                         //!< Positions of all right side enemies' bullets
+    }
+
+    frames.push(log_frame);
+    frame_number += 1;
 
     // switch to first intermediate screen
     if (gameover || enemies_practice_sprites.length == 0) {
+        game_log.push({player_id: player_id, date: date, round: 0, mode: mode, frames: frames});
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/log', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify(game_log));
         this.scene.start('gameover_scene_practice');
     }
 }

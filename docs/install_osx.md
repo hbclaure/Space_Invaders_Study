@@ -6,11 +6,12 @@
     $ cd space_invaders_web/space_invaders/db
     $ sqlite3 game_logs.db < create_database.sql 
     ```
-3. Go to the `space_invaders` directory and create a virtual environment:
+3. Change the `DATABASE` variable in app.py to hold the absolute path on your computer to the database
+4. Go to the `space_invaders` directory and create a virtual environment:
     ```bash
     $ cd space_invaders_web/space_invaders
     $ python3 -m venv venv
     ```
-4. Activate the environment by running `. venv/bin/activate`
-5. Within the activated environment, run `pip install Flask` to install flask
-6. You may now test the game by executing `flask run` and going to the link it provides in the terminal (you must be within the activated virual environment when you do this)
+5. Activate the environment by running `. venv/bin/activate`
+6. Within the activated environment, run `pip install Flask` to install flask
+7. You may now test the game by executing `flask run` and going to the link it provides in the terminal (you must be within the activated virual environment when you do this)

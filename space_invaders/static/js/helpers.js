@@ -44,7 +44,13 @@ function findGetParameter(parameterName) {
 }
 
 player_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
-mode = findGetParameter('mode') ? parseInt(findGetParameter('mode'), 10) : COOPERATIVE;
+mode = findGetParameter('mode'); 
+if (mode && !isNaN(mode) && parseInt(findGetParameter('mode'), 10) >= 0 && parseInt(findGetParameter('mode'), 10) <= 2) {
+    mode = parseInt(findGetParameter('mode'), 10);
+}
+else {
+    mode = COOPERATIVE;
+}
 
 /**
  * Create bullets pool
