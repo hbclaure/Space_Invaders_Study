@@ -192,8 +192,8 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.explote_anim = image_id + '_exp';
 
     // animation for the player/ai explosions
-    var explosion = (image_id == 'ship') ? 'explosiongreen' : 
-                    (image_id == 'avery') ? 'explosionblue' : 'explosionpurple';
+    var explosion = (image_id == 'ship') ? 'shipexplosion' : 
+                    (image_id == 'avery') ? 'averyexplosion' : 'jordanexplosion';
 
 
     if (!(this.anims.get(image_id + '_exp'))) { 

@@ -34,6 +34,9 @@ function preload ()
     this.load.image('explosionblue', 'assets/images/explosionblue.png');
     this.load.image('explosiongreen', 'assets/images/explosiongreen.png');
     this.load.image('explosionpurple', 'assets/images/explosionpurple.png');
+    this.load.image('shipexplosion', 'assets/images/shipexplosion.png');
+    this.load.image('averyexplosion', 'assets/images/averyexplosion.png');
+    this.load.image('jordanexplosion', 'assets/images/jordanexplosion.png');
     this.load.image('laser', 'assets/images/laser.png');
     this.load.image('enemylaser', 'assets/images/enemylaser.png');
 
