@@ -187,7 +187,7 @@ function update_practice_scene() {
     frames.push(log_frame);
     frame_number += 1;
 
-    // switch to first intermediate screen
+    // switch to gameover screen
     if (gameover || enemies_practice_sprites.length == 0) {
         game_log.push({player_id: player_id, date: date, round: 0, mode: mode, frames: frames});
         var xhr = new XMLHttpRequest();
