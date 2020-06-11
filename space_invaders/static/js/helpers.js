@@ -188,6 +188,8 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props.scoreText = this.add.bitmapText(x, 3, 'PressStart2P_White', 'SCORE 0', 20);
     sprite.props.lives = 3;
     sprite.props.image_id = image_id;
+    sprite.props.invincible = false;
+    sprite.props.invincibility_timer = 0;
     sprite.props.exploding = false;
     sprite.explote_anim = image_id + '_exp';
 
@@ -236,6 +238,15 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
                 this.sprite.y = 0;
                 return;
             }
+            // invincible sprite: don't let move, decrement timer, make clear
+            if (this.sprite.props.invincible) {
+                this.sprite.alpha = 0.35
+                this.sprite.props.invincibility_timer -= 1;
+                if (this.sprite.props.invincibility_timer == 0) {
+                    this.sprite.props.invincible = false;
+                    this.sprite.alpha = 1;
+                }
+            }
             // don't update position while exploding
             if (this.sprite.props.exploding) {
                 return;
@@ -247,7 +258,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
                 this.sprite.x = Math.min(this.sprite.x + this.sprite.props.speed, canvas_width - obj_width);
             } 
             // add bullet
-            if (shoot) {
+            if (shoot && !this.sprite.props.invincible) {
                 fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1);
                 sound.play();
             }

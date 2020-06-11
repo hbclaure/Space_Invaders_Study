@@ -160,14 +160,15 @@ function create ()
 
     // --> enemies bullets hit player_ship
     this.physics.add.collider(player_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
-        // play sound
-        this.custom_sounds.player_explosion.play();
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
         bullet.setActive(false);
+
+        if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
-        if (ship_sprite.props.lives >= 1) {
+        else if (ship_sprite.props.lives >= 1) {
+            this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
             ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
@@ -176,23 +177,27 @@ function create ()
                 ship_sprite.x = this.sys.canvas.width / 2;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
+                // give the player 50 frames of invincibility
+                ship_sprite.props.invincible = true;
+                ship_sprite.props.invincibility_timer = 50;
             });
         }
         else {
+            this.custom_sounds.player_explosion.play();
             ship_sprite.props.dead = true;
             ship_sprite.props.lives -= 1;
             gameover = true;
         }
     });
     this.physics.add.collider(player_ship.sprite, enemies_right.bullets_group, (ship_sprite, bullet) => {
-        // play sound
-        this.custom_sounds.player_explosion.play();
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
         bullet.setActive(false);
+        if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
-        if (ship_sprite.props.lives >= 1) {
+        else if (ship_sprite.props.lives >= 1) {
+            this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
             ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
@@ -201,9 +206,13 @@ function create ()
                 ship_sprite.x = this.sys.canvas.width / 2;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
+                // give the player 50 frames of invincibility
+                ship_sprite.props.invincible = true;
+                ship_sprite.props.invincibility_timer = 50;
             });
         }
         else {
+            this.custom_sounds.player_explosion.play();
             ship_sprite.props.dead = true;
             ship_sprite.props.lives -= 1;
             gameover = true;
@@ -212,16 +221,14 @@ function create ()
 
     // --> enemies bullets hit ai_ship
     this.physics.add.collider(ai_ship.sprite, enemies_right.bullets_group, (ship_sprite, bullet) => {
-        // play sound
-        if (ship_sprite.props.dead == false) {
-            this.custom_sounds.player_explosion.play();
-        }
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
         bullet.setActive(false);
+        if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
-        if (ship_sprite.props.lives >= 1) {
+        else if (ship_sprite.props.lives >= 1) {
+            this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
             ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
@@ -230,9 +237,13 @@ function create ()
                 ship_sprite.x = this.sys.canvas.width / 2 + 25;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
+                // give the player 50 frames of invincibility
+                ship_sprite.props.invincible = true;
+                ship_sprite.props.invincibility_timer = 50;
             });
         }
         else {
+            this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.play(ship_sprite.explote_anim, true);
             ship_sprite.on('animationcomplete', () => {
@@ -244,16 +255,14 @@ function create ()
         }
     });
     this.physics.add.collider(ai_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
-        // play sound
-        if (ship_sprite.props.dead == false) {
-            this.custom_sounds.player_explosion.play();
-        }
         // hide the bullet 
         bullet.body.x = this.sys.canvas.width;
         bullet.body.y = this.sys.canvas.height;
         bullet.setActive(false);
+        if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
-        if (ship_sprite.props.lives >= 1) {
+        else if (ship_sprite.props.lives >= 1) {
+            this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
             ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
@@ -262,9 +271,13 @@ function create ()
                 ship_sprite.x = this.sys.canvas.width / 2 + 25;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
+                // give the player 50 frames of invincibility
+                ship_sprite.props.invincible = true;
+                ship_sprite.props.invincibility_timer = 50;
             });
         }
         else {
+            this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.play(ship_sprite.explote_anim, true);
             ship_sprite.on('animationcomplete', () => {
