@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import sqlite3
-import csv
 import os
 import sys
+import subprocess
 
 DATABASE = '/Users/jamielarge/space_invaders_web/space_invaders/db/game_logs.db'
 
@@ -19,40 +19,30 @@ else:
 con = sqlite3.connect(DATABASE)
 cur = con.cursor()
 
+# Create a .csv of all the games for this player
+subprocess.call(["sqlite3", "game_logs.db", 
+  ".mode csv", ".output " + log_folder + "games.csv",
+  "SELECT id, date, mode, round FROM Games WHERE player_id = \'" + player_id + "\';", ".quit "])
+
+# Get a list of all the game IDs
 cur.execute('SELECT id, date, mode, round FROM Games WHERE player_id = ?', [player_id])
-games_data = cur.fetchall()
+games_data = str(tuple(map(lambda x: x[0], cur.fetchall())))
 
-with open(log_folder + 'games.csv', 'w') as f:
-    writer = csv.writer(f)
-    writer.writerow(['id', 'date', 'mode', 'round'])
-    writer.writerows(games_data)
+# Create a .csv of all the frames for this player
+subprocess.call(["sqlite3", "game_logs.db", 
+  ".mode csv", ".output " + log_folder + "frames.csv",
+  "SELECT * FROM Frames WHERE game_id IN " + games_data + ";", ".quit "])
 
-with open(log_folder + 'frames.csv', 'w') as frames_f, \
-     open(log_folder + 'enemies.csv', 'w') as enemies_f, \
-     open(log_folder + 'bullets.csv', 'w') as bullets_f:	
-	frames_writer = csv.writer(frames_f)
-	frames_writer.writerow(['id', 'game_id', 'frame_number', 'player_position', 'player_lives', 
-		                    'player_score', 'ai_position', 'ai_lives', 'ai_score'])
+# Get a list of all the frame IDs
+cur.execute("SELECT * FROM Frames WHERE game_id IN " + games_data + ";")
+frames_data = str(tuple(map(lambda x: x[0], cur.fetchall())))
 
-	enemies_writer = csv.writer(enemies_f)
-	enemies_writer.writerow(['id', 'frame_id', 'side', 'x', 'y'])
+# Create a .csv of all the enemies for this player
+subprocess.call(["sqlite3", "game_logs.db", 
+  ".mode csv", ".output " + log_folder + "enemies.csv",
+  "SELECT * FROM Enemies WHERE frame_id IN " + frames_data + ";", ".quit "])
 
-	bullets_writer = csv.writer(bullets_f)
-	bullets_writer.writerow(['id', 'frame_id', 'type', 'x', 'y'])
-
-	for game in games_data:
-		game_id = game[0]
-		cur.execute('SELECT * FROM Frames WHERE game_id = ?', [game_id])
-		frames_data = cur.fetchall()
-		frames_writer.writerows(frames_data)
-
-		for frame in frames_data:
-			frame_id = frame[0]
-			cur.execute('SELECT * FROM Enemies WHERE frame_id = ?', [frame_id])
-			enemies_data = cur.fetchall()
-			enemies_writer.writerows(enemies_data)
-			cur.execute('SELECT * FROM Bullets WHERE frame_id = ?', [frame_id])
-			bullets_data = cur.fetchall()
-			bullets_writer.writerows(bullets_data)
-			
-
+# Create a .csv of all the bullets for this player
+subprocess.call(["sqlite3", "game_logs.db", 
+  ".mode csv", ".output " + log_folder + "bullets.csv",
+  "SELECT * FROM Bullets WHERE frame_id IN " + frames_data + ";", ".quit "])
