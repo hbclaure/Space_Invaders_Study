@@ -18,6 +18,7 @@ var enemies_right;
 var enemies_practice;
 var debug_text;
 var game_log = [];                      //!< a log of all the information from this game
+var events;
 var frames;                             //!< the frames of this game
 var frame_number;                       //!< the number of the current frame
 var rounds_played = 0;                  //!< number of rounds that they have played

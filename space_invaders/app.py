@@ -42,6 +42,9 @@ def log_games():
 
 		game_id = cur.lastrowid
 
+		# Keep track of the event that we're checking
+		current_event = 0;
+
 		# Go through every frame of the game
 		for frame in log['frames']:
 			# log the actual frame and collect the id
@@ -80,6 +83,12 @@ def log_games():
 			for bullet in frame['bullets_right_positions']:
 				cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'Right\',?,?,?)',
 				   		    (frame_id, bullet[0], bullet[1]))
+
+			# log any events that occurred in this frame
+			while (current_event < len(log['events']) and log['events'][current_event]['frame'] == frame['frame_number']):
+				cur.execute('INSERT INTO Events(frame_id, killer, killed) VALUES(?,?,?)',
+					        (frame_id, log['events'][current_event]['killer'], log['events'][current_event]['killed']))
+				current_event += 1
 
 	con.commit()
 	return render_template('index.html')

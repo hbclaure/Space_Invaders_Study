@@ -1,19 +1,17 @@
 BEGIN TRANSACTION;
-CREATE TABLE IF NOT EXISTS "Enemies" (
+CREATE TABLE IF NOT EXISTS "Events" (
 	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-	"frame_id"	INTEGER NOT NULL,
-	"side"	TEXT,
-	"x"	INTEGER,
-	"y"	INTEGER,
+	"frame_id"	INTEGER,
+	"killer"	TEXT,
+	"killed"	TEXT,
 	FOREIGN KEY("frame_id") REFERENCES "Frames"("id")
 );
-CREATE TABLE IF NOT EXISTS "Bullets" (
+CREATE TABLE IF NOT EXISTS "Games" (
 	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-	"frame_id"	INTEGER NOT NULL,
-	"type"	INTEGER,
-	"x"	INTEGER,
-	"y"	INTEGER,
-	FOREIGN KEY("frame_id") REFERENCES "Frames"("id")
+	"player_id"	TEXT,
+	"date"	TEXT,
+	"mode"	INTEGER,
+	"round"	INTEGER
 );
 CREATE TABLE IF NOT EXISTS "Frames" (
 	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -27,11 +25,20 @@ CREATE TABLE IF NOT EXISTS "Frames" (
 	"ai_score"	INTEGER,
 	FOREIGN KEY("game_id") REFERENCES "Games"("id")
 );
-CREATE TABLE IF NOT EXISTS "Games" (
+CREATE TABLE IF NOT EXISTS "Bullets" (
 	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-	"player_id"	TEXT,
-	"date"	TEXT,
-	"mode"	INTEGER,
-	"round"	INTEGER
+	"frame_id"	INTEGER NOT NULL,
+	"type"	INTEGER,
+	"x"	INTEGER,
+	"y"	INTEGER,
+	FOREIGN KEY("frame_id") REFERENCES "Frames"("id")
+);
+CREATE TABLE IF NOT EXISTS "Enemies" (
+	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	"frame_id"	INTEGER NOT NULL,
+	"side"	TEXT,
+	"x"	INTEGER,
+	"y"	INTEGER,
+	FOREIGN KEY("frame_id") REFERENCES "Frames"("id")
 );
 COMMIT;

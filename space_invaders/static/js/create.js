@@ -9,6 +9,7 @@ function create ()
     frames = [];
     frame_number = 0;
     date = new Date();
+    events = [];
 
 	// flag to tell when the game is over
     gameover = false;
@@ -60,6 +61,7 @@ function create ()
     	   player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score); 	
         }
         enemy.hit = true;
+        events.push({frame: frame_number, killer: 'PLAYER', killed: 'LEFT'});
     });
 	this.physics.add.collider(enemies_right.enemies_group, player_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
@@ -78,6 +80,7 @@ function create ()
     	   ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
         }
         enemy.hit = true;
+        events.push({frame: frame_number, killer: 'PLAYER', killed: 'RIGHT'});
     });
 
     // --> enemies hit by Ai ship's bullets
@@ -98,6 +101,7 @@ function create ()
             player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
         }
         enemy.hit = true;
+        events.push({frame: frame_number, killer: 'AI', killed: 'LEFT'});
     });
 	this.physics.add.collider(enemies_right.enemies_group, ai_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
@@ -116,6 +120,7 @@ function create ()
             ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
         }
         enemy.hit = true;
+        events.push({frame: frame_number, killer: 'AI', killed: 'RIGHT'});
     });
 
     // --> enemies bullets hit ships bullets
@@ -168,6 +173,7 @@ function create ()
         if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
         else if (ship_sprite.props.lives >= 1) {
+            events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
@@ -183,6 +189,7 @@ function create ()
             });
         }
         else {
+            events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.dead = true;
             ship_sprite.props.lives -= 1;
@@ -197,6 +204,7 @@ function create ()
         if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
         else if (ship_sprite.props.lives >= 1) {
+            events.push({frame: frame_number, killer: 'RIGHT', killed: 'PLAYER'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
@@ -212,6 +220,7 @@ function create ()
             });
         }
         else {
+            events.push({frame: frame_number, killer: 'RIGHT', killed: 'PLAYER'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.dead = true;
             ship_sprite.props.lives -= 1;
@@ -228,6 +237,7 @@ function create ()
         if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
         else if (ship_sprite.props.lives >= 1) {
+            events.push({frame: frame_number, killer: 'RIGHT', killed: 'AI'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
@@ -243,6 +253,7 @@ function create ()
             });
         }
         else {
+            events.push({frame: frame_number, killer: 'RIGHT', killed: 'AI'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.play(ship_sprite.explote_anim, true);
@@ -262,6 +273,7 @@ function create ()
         if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
         else if (ship_sprite.props.lives >= 1) {
+            events.push({frame: frame_number, killer: 'LEFT', killed: 'AI'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
@@ -277,6 +289,7 @@ function create ()
             });
         }
         else {
+            events.push({frame: frame_number, killer: 'LEFT', killed: 'AI'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.play(ship_sprite.explote_anim, true);
