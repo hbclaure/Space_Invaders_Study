@@ -16,6 +16,7 @@ function create_practice_scene() {
     frames = [];
     frame_number = 0;
     date = new Date();
+    events = [];
 
 	// flag to tell when the game is over
     gameover = false;
@@ -54,6 +55,7 @@ function create_practice_scene() {
         if (enemy.hit == false) {   
     	   player_ship.sprite.props.score += enemy.score;
     	   player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score); 	
+           events.push({frame: frame_number, killer: 'PLAYER', killed: 'LEFT'});
         }
         enemy.hit = true;
     });
@@ -79,6 +81,7 @@ function create_practice_scene() {
         if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
         else if (ship_sprite.props.lives >= 1) {
+            events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
@@ -94,6 +97,7 @@ function create_practice_scene() {
             });
         }
         else {
+            events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.dead = true;
             ship_sprite.props.lives -= 1;
@@ -194,7 +198,7 @@ function update_practice_scene() {
 
     // switch to gameover screen
     if (gameover || enemies_practice_sprites.length == 0) {
-        game_log.push({player_id: player_id, date: date, round: 0, mode: mode, frames: frames});
+        game_log.push({player_id: player_id, date: date, round: 0, mode: mode, events, events, frames: frames});
         var xhr = new XMLHttpRequest();
         xhr.open('POST', '/log', true);
         xhr.setRequestHeader('Content-Type', 'application/json');

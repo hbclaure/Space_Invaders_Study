@@ -59,9 +59,9 @@ function create ()
         if (enemy.hit == false) {   
     	   player_ship.sprite.props.score += enemy.score;
     	   player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score); 	
+           events.push({frame: frame_number, killer: 'PLAYER', killed: 'LEFT'});
         }
         enemy.hit = true;
-        events.push({frame: frame_number, killer: 'PLAYER', killed: 'LEFT'});
     });
 	this.physics.add.collider(enemies_right.enemies_group, player_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
@@ -78,9 +78,9 @@ function create ()
         if (enemy.hit == false) {
     	   ai_ship.sprite.props.score += enemy.score;
     	   ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
+           events.push({frame: frame_number, killer: 'PLAYER', killed: 'RIGHT'});
         }
         enemy.hit = true;
-        events.push({frame: frame_number, killer: 'PLAYER', killed: 'RIGHT'});
     });
 
     // --> enemies hit by Ai ship's bullets
@@ -99,9 +99,9 @@ function create ()
         if (enemy.hit == false) {
             player_ship.sprite.props.score += enemy.score;
             player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
+            events.push({frame: frame_number, killer: 'AI', killed: 'LEFT'});
         }
         enemy.hit = true;
-        events.push({frame: frame_number, killer: 'AI', killed: 'LEFT'});
     });
 	this.physics.add.collider(enemies_right.enemies_group, ai_ship.bullets_group, (enemy, bullet) => {
         // destroy the enemy
@@ -118,9 +118,9 @@ function create ()
         if (enemy.hit == false) {
             ai_ship.sprite.props.score += enemy.score;
             ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
+            events.push({frame: frame_number, killer: 'AI', killed: 'RIGHT'});
         }
         enemy.hit = true;
-        events.push({frame: frame_number, killer: 'AI', killed: 'RIGHT'});
     });
 
     // --> enemies bullets hit ships bullets
