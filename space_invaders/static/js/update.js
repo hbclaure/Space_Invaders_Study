@@ -199,11 +199,6 @@ function update ()
             rounds_played += 1;
         }
         else {
-            // log this game
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/log', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.send(JSON.stringify(game_log));
             this.scene.start('gameover_scene');
         }
     }

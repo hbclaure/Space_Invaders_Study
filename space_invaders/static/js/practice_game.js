@@ -199,10 +199,6 @@ function update_practice_scene() {
     // switch to gameover screen
     if (gameover || enemies_practice_sprites.length == 0) {
         game_log.push({player_id: player_id, date: date, round: 0, mode: mode, events, events, frames: frames});
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', '/log', true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(JSON.stringify(game_log));
         this.scene.start('gameover_scene_practice');
     }
 }

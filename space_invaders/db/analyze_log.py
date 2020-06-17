@@ -1,8 +1,8 @@
+#!/usr/bin/env python3
 import csv
 import glob
 from os import path
 import sys
-
 
 # Get the ID of the player(s) whose data you want to analyze
 user_input = input('Type ID of player whose games you would like to analyze (or press enter to analyze all players\' logs): ')

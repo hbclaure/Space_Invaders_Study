@@ -1,4 +1,4 @@
-from flask import Flask, g, request, render_template
+from flask import Flask, g, request, render_template, Response
 import sqlite3
 import json
 
@@ -91,4 +91,4 @@ def log_games():
 				current_event += 1
 
 	con.commit()
-	return render_template('index.html')
+	return Response("{}", status=201, mimetype='application/json')
