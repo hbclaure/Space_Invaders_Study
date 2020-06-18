@@ -110,7 +110,8 @@ function update ()
 
         var x_diff = Math.abs(current_enemy.x - ai_ship.sprite.x);
 
-        if (mode == COOPERATIVE && x_diff < nearest_x_diff && !current_enemy.hit) {
+        if (mode == COOPERATIVE && enemies_right_sprites.length == 0 && 
+            x_diff < nearest_x_diff && !current_enemy.hit) {
             nearest_enemy.x = current_enemy.x;
             nearest_enemy.y = current_enemy.y;
             nearest_x_diff = x_diff;
