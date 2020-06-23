@@ -8,6 +8,7 @@ const COOPERATIVE = 1;
 const UNCOOPERATIVE = 2;
 
 var mode;                               //!< game mode
+var help_early;                         //!< whether the ai will help early or late in the game
 var cursors;                            //!< keyboard access
 var space_key;                          //!< space key
 var enter_key;                          //!< enter key
@@ -21,6 +22,8 @@ var game_log = [];                      //!< a log of all the information from t
 var events;
 var frames;                             //!< the frames of this game
 var frame_number;                       //!< the number of the current frame
+var total_shots = 0;                    //!< the number of shots the player has fired
+var shot_time = 0;                      //!< the amount of time it takes between shots
 var rounds_played = 0;                  //!< number of rounds that they have played
 var player_score;                       //!< total player score (accumulated over multiple rounds)
 var ai_score;                           //!< total ai score (accumulated over multiple rounds)
@@ -46,12 +49,9 @@ function findGetParameter(parameterName) {
 
 player_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
 mode = findGetParameter('mode'); 
-if (mode && !isNaN(mode) && parseInt(findGetParameter('mode'), 10) >= 0 && parseInt(findGetParameter('mode'), 10) <= 2) {
-    mode = parseInt(findGetParameter('mode'), 10);
-}
-else {
-    mode = COOPERATIVE;
-}
+mode = (mode && !isNaN(mode) && parseInt(mode, 10) >= 0 && parseInt(mode, 10) <= 2) ? parseInt(mode, 10) : COOPERATIVE;
+help_early = (findGetParameter('he') && findGetParameter('he') == '0') ? false : true;
+
 
 /**
  * Create bullets pool
@@ -191,6 +191,8 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props.image_id = image_id;
     sprite.props.invincible = false;
     sprite.props.invincibility_timer = 0;
+    sprite.props.last_shot = 0;
+    sprite.props.shot_cooldown = 40;
     sprite.props.exploding = false;
     sprite.explote_anim = image_id + '_exp';
 
@@ -260,6 +262,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
             } 
             // add bullet
             if (shoot && !this.sprite.props.invincible) {
+                this.sprite.props.last_shot = frame_number;
                 fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1);
                 sound.play();
             }

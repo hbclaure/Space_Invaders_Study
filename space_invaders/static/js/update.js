@@ -15,22 +15,28 @@ function update ()
     }
     else if (this.input.keyboard.checkDown(space_key, 500)) {
         player_shoots = true;
+        shot_time += (frame_number - player_ship.sprite.props.last_shot);
+        total_shots += 1;
     }
 
     player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
 
     // ---------- AI Logic
 
-    // Determine whether ai_ship is able to shoot
+    // Determine whether ai_ship is able to shoot: true if no AI bullet is active and the shot_cooldown timer has expired
 
     var ai_shoots = false;
     var ai_bullet = ai_ship.bullets_group.getChildren()[0];
     var ai_bullet_position = [];
 
+    if (total_shots >= 5) {
+        ai_ship.sprite.props.shot_cooldown = Math.min((shot_time / total_shots), 80);
+    }
+
     if (ai_bullet.active) {
         ai_bullet_position = [ai_bullet.body.x, ai_bullet.body.y];
     }
-    else {
+    else if (frame_number > (ai_ship.sprite.props.last_shot + ai_ship.sprite.props.shot_cooldown)) {
         ai_shoots = true;
     }
 
@@ -38,6 +44,34 @@ function update ()
     var right_final = false;
     var shoot_final = false;
     var hit = false;
+
+    var enemies_right_sprites = enemies_right.enemies_group.getChildren();
+    var enemies_left_sprites = enemies_left.enemies_group.getChildren();
+
+    // determine whether to attack left or right enemies
+    var attack_left = false;
+    if (mode == COOPERATIVE) {
+        if (help_early) {
+            if (enemies_right_sprites.length > 17) {
+                attack_left = false;
+            }
+            else if (enemies_left_sprites.length > 12) {
+                attack_left = true;
+            }
+            else if (enemies_right_sprites.length > 8) {
+                attack_left = false;
+            }
+            else if (enemies_left_sprites.length > 0) {
+                attack_left = true;
+            }
+            else {
+                attack_left = false;
+            }
+        }
+        else {
+            attack_left = (enemies_right_sprites.length == 0) ? true : false;
+        }
+    }
 
     // find the bullet that is closest to the AI player (on y-axis)
     var nearest_bullet = {x: 0, y: 0 };
@@ -79,7 +113,7 @@ function update ()
     var nearest_enemy = {x: 0, y: 0};
     var nearest_x_diff = this.sys.canvas.width;
 
-    var enemies_right_sprites = enemies_right.enemies_group.getChildren();
+    
     var enemies_right_positions = [];
     for (var i=0; i < enemies_right_sprites.length; i++) {
         var current_enemy = enemies_right_sprites[i];
@@ -91,14 +125,13 @@ function update ()
 
         var x_diff = Math.abs(current_enemy.x - ai_ship.sprite.x);
 
-        if (x_diff < nearest_x_diff && !current_enemy.hit) {
+        if (!attack_left && x_diff < nearest_x_diff && !current_enemy.hit) {
             nearest_enemy.x = current_enemy.x;
             nearest_enemy.y = current_enemy.y;
             nearest_x_diff = x_diff;
         }
     }
 
-    var enemies_left_sprites = enemies_left.enemies_group.getChildren();
     var enemies_left_positions = [];
     for (var i=0; i < enemies_left_sprites.length; i++) {
         var current_enemy = enemies_left_sprites[i];
@@ -110,8 +143,7 @@ function update ()
 
         var x_diff = Math.abs(current_enemy.x - ai_ship.sprite.x);
 
-        if (mode == COOPERATIVE && enemies_right_sprites.length == 0 && 
-            x_diff < nearest_x_diff && !current_enemy.hit) {
+        if (attack_left && x_diff < nearest_x_diff && !current_enemy.hit) {
             nearest_enemy.x = current_enemy.x;
             nearest_enemy.y = current_enemy.y;
             nearest_x_diff = x_diff;
@@ -198,6 +230,7 @@ function update ()
         if (rounds_played == 0) {
             this.scene.start('intermediate_scene');
             rounds_played += 1;
+            total_frames = frame_number;
         }
         else {
             this.scene.start('gameover_scene');

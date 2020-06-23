@@ -305,115 +305,133 @@ function create ()
 
     // --> enemies hit player_ship
     this.physics.add.collider(player_ship.sprite, enemies_left.enemies_group, (ship_sprite, enemy) => {
-        // play sounds
-        this.custom_sounds.player_explosion.play();
-        this.custom_sounds.enemy_explosion.play();
-        // update the score
-        ship_sprite.props.score += enemy.score;
-        ship_sprite.props.scoreText.setText("SCORE " + ship_sprite.props.score);
-        // kill the player and the enemy. The change in behavior takes place within the update function of the ship
-        if (ship_sprite.props.lives >= 1) {
-            ship_sprite.props.exploding = true;
-            ship_sprite.props.lives -= 1;
-            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
-            ship_sprite.play(ship_sprite.explote_anim, true);
-            enemy.play(enemy.explote_anim, true);
-            ship_sprite.on('animationcomplete', () => {
-                ship_sprite.x = this.sys.canvas.width / 2;
-                ship_sprite.setTexture(ship_sprite.props.image_id);
-                ship_sprite.props.exploding = false;
-                enemy.destroy();
-            });
-        }
-        else {
-            ship_sprite.props.dead = true;
-            ship_sprite.props.lives -= 1;
-            gameover = true;
+        if (!enemy.hit) {
+            // play sounds
+            this.custom_sounds.player_explosion.play();
+            this.custom_sounds.enemy_explosion.play();
+            // update the score
+            ship_sprite.props.score += enemy.score;
+            ship_sprite.props.scoreText.setText("SCORE " + ship_sprite.props.score);
+            // kill the player and the enemy. The change in behavior takes place within the update function of the ship
+            if (ship_sprite.props.lives >= 1) {
+                ship_sprite.props.exploding = true;
+                ship_sprite.props.lives -= 1;
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                ship_sprite.play(ship_sprite.explote_anim, true);
+                enemy.play(enemy.explote_anim, true);
+                ship_sprite.on('animationcomplete', () => {
+                    ship_sprite.x = this.sys.canvas.width / 2;
+                    ship_sprite.setTexture(ship_sprite.props.image_id);
+                    ship_sprite.props.exploding = false;
+                });
+                enemy.on('animationcomplete', () => {
+                    enemy.destroy();
+                });
+            }
+            else {
+                ship_sprite.props.dead = true;
+                ship_sprite.props.lives -= 1;
+                gameover = true;
+            }
+            enemy.hit = true;
         }
     });
     this.physics.add.collider(player_ship.sprite, enemies_right.enemies_group, (ship_sprite, enemy) => {
-        // play sound
-        this.custom_sounds.player_explosion.play();
-        this.custom_sounds.enemy_explosion.play();
-        // update the score
-        ai_ship.sprite.props.score += enemy.score;
-        ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
-        // kill the player and the enemy. The change in behavior takes place within the update function of the ship
-        if (ship_sprite.props.lives >= 1) {
-            ship_sprite.props.exploding = true;
-            ship_sprite.props.lives -= 1;
-            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
-            ship_sprite.play(ship_sprite.explote_anim, true);
-            enemy.play(enemy.explote_anim, true);
-            ship_sprite.on('animationcomplete', () => {
-                ship_sprite.x = this.sys.canvas.width / 2;
-                ship_sprite.setTexture(ship_sprite.props.image_id);
-                ship_sprite.props.exploding = false;
-                enemy.destroy()
-            });
-        }
-        else {
-            ship_sprite.props.dead = true;
-            ship_sprite.props.lives -= 1;
-            gameover = true;
+        if (!enemy.hit) {
+            // play sound
+            this.custom_sounds.player_explosion.play();
+            this.custom_sounds.enemy_explosion.play();
+            // update the score
+            ai_ship.sprite.props.score += enemy.score;
+            ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
+            // kill the player and the enemy. The change in behavior takes place within the update function of the ship
+            if (ship_sprite.props.lives >= 1) {
+                ship_sprite.props.exploding = true;
+                ship_sprite.props.lives -= 1;
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                ship_sprite.play(ship_sprite.explote_anim, true);
+                enemy.play(enemy.explote_anim, true);
+                ship_sprite.on('animationcomplete', () => {
+                    ship_sprite.x = this.sys.canvas.width / 2;
+                    ship_sprite.setTexture(ship_sprite.props.image_id);
+                    ship_sprite.props.exploding = false;
+                });
+                enemy.on('animationcomplete', () => {
+                    enemy.destroy();
+                });
+            }
+            else {
+                ship_sprite.props.dead = true;
+                ship_sprite.props.lives -= 1;
+                gameover = true;
+            }
+            enemy.hit = true;
         }
     });
 
     // --> enemies hit ai_ship
     this.physics.add.collider(ai_ship.sprite, enemies_left.enemies_group, (ship_sprite, enemy) => {
-        // play sounds
-        if (ship_sprite.props.dead == false) {
+        if (!enemy.hit) {
+            // play sounds
             this.custom_sounds.player_explosion.play();
             this.custom_sounds.enemy_explosion.play();
-        }
-        // update the score
-        player_ship.sprite.props.score += enemy.score;
-        player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
-        // kill the player and the enemy. The change in behavior takes place within the update function of the ship
-        if (ship_sprite.props.lives >= 1) {
-            ship_sprite.props.exploding = true;
-            ship_sprite.props.lives -= 1;
-            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+        
+            // update the score
+            player_ship.sprite.props.score += enemy.score;
+            player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
+            // kill the player and the enemy. The change in behavior takes place within the update function of the ship
+            if (ship_sprite.props.lives >= 1) {
+                ship_sprite.props.exploding = true;
+                ship_sprite.props.lives -= 1;
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+            }
+            else {
+                ship_sprite.props.dead = true;
+                ship_sprite.props.lives -= 1;
+            }
             ship_sprite.play(ship_sprite.explote_anim, true);
             enemy.play(enemy.explote_anim, true);
             ship_sprite.on('animationcomplete', () => {
                 ship_sprite.x = this.sys.canvas.width / 2 + 25;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
+            });
+            enemy.on('animationcomplete', () => {
                 enemy.destroy();
             });
-        }
-        else {
-            ship_sprite.props.dead = true;
-            ship_sprite.props.lives -= 1;
+            enemy.hit = true;
         }
     });
     this.physics.add.collider(ai_ship.sprite, enemies_right.enemies_group, (ship_sprite, enemy) => {
-        // play sounds
-        if (ship_sprite.props.dead == false) {
+        if (!enemy.hit) {
+            // play sounds
             this.custom_sounds.player_explosion.play();
             this.custom_sounds.enemy_explosion.play();
-        }
-        // update the score
-        ship_sprite.props.score += enemy.score;
-        ship_sprite.props.scoreText.setText("SCORE " + ship_sprite.props.score);
-        // kill the player and the enemy. The change in behavior takes place within the update function of the ship
-        if (ship_sprite.props.lives >= 1) {
-            ship_sprite.props.exploding = true;
-            ship_sprite.props.lives -= 1;
-            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+        
+            // update the score
+            ship_sprite.props.score += enemy.score;
+            ship_sprite.props.scoreText.setText("SCORE " + ship_sprite.props.score);
+            // kill the player and the enemy. The change in behavior takes place within the update function of the ship
+            if (ship_sprite.props.lives >= 1) {
+                ship_sprite.props.exploding = true;
+                ship_sprite.props.lives -= 1;
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+            }
+            else {
+                ship_sprite.props.dead = true;
+                ship_sprite.props.lives -= 1;
+            }
             ship_sprite.play(ship_sprite.explote_anim, true);
             enemy.play(enemy.explote_anim, true);
             ship_sprite.on('animationcomplete', () => {
                 ship_sprite.x = this.sys.canvas.width / 2 + 25;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
-                enemy.destroy()
             });
-        }
-        else {
-            ship_sprite.props.dead = true;
-            ship_sprite.props.lives -= 1;
+            enemy.on('animationcomplete', () => {
+                enemy.destroy();
+            });
+            enemy.hit = true;
         }
     });
 }
