@@ -30,7 +30,7 @@ function update ()
     var ai_bullet_position = [];
 
     if (total_shots >= 5) {
-        ai_ship.sprite.props.shot_cooldown = Math.min((shot_time / total_shots), 80);
+        ai_ship.sprite.props.shot_cooldown = Math.min((shot_time / total_shots), 65) - 2;
     }
 
     if (ai_bullet.active) {
@@ -50,28 +50,28 @@ function update ()
 
     // determine whether to attack left or right enemies
     var attack_left = false;
-    if (mode == COOPERATIVE) {
-        if (help_early) {
-            if (enemies_right_sprites.length > 17) {
-                attack_left = false;
-            }
-            else if (enemies_left_sprites.length > 12) {
-                attack_left = true;
-            }
-            else if (enemies_right_sprites.length > 8) {
-                attack_left = false;
-            }
-            else if (enemies_left_sprites.length > 0) {
-                attack_left = true;
-            }
-            else {
-                attack_left = false;
-            }
+   
+    if (mode == COOPERATIVE_EARLY) {
+        if (enemies_right_sprites.length > 17) {
+            attack_left = false;
+        }
+        else if (enemies_left_sprites.length > 12) {
+            attack_left = true;
+        }
+        else if (enemies_right_sprites.length > 9) {
+            attack_left = false;
+        }
+        else if (enemies_left_sprites.length > 0) {
+            attack_left = true;
         }
         else {
-            attack_left = (enemies_right_sprites.length == 0) ? true : false;
+            attack_left = false;
         }
     }
+    else if (mode == COOPERATIVE_LATE) {
+        attack_left = (enemies_right_sprites.length == 0) ? true : false;
+    }
+    
 
     // find the bullet that is closest to the AI player (on y-axis)
     var nearest_bullet = {x: 0, y: 0 };

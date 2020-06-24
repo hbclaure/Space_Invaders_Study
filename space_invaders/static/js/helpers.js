@@ -4,11 +4,11 @@ All the helper functions and global variables for space invaders
 
 // The different game modes
 const PRACTICE = 0;
-const COOPERATIVE = 1;
-const UNCOOPERATIVE = 2;
+const COOPERATIVE_EARLY = 1;
+const COOPERATIVE_LATE = 2;
+const UNCOOPERATIVE = 3;
 
 var mode;                               //!< game mode
-var help_early;                         //!< whether the ai will help early or late in the game
 var cursors;                            //!< keyboard access
 var space_key;                          //!< space key
 var enter_key;                          //!< enter key
@@ -49,8 +49,7 @@ function findGetParameter(parameterName) {
 
 player_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
 mode = findGetParameter('mode'); 
-mode = (mode && !isNaN(mode) && parseInt(mode, 10) >= 0 && parseInt(mode, 10) <= 2) ? parseInt(mode, 10) : COOPERATIVE;
-help_early = (findGetParameter('he') && findGetParameter('he') == '0') ? false : true;
+mode = (mode && !isNaN(mode) && parseInt(mode, 10) >= 0 && parseInt(mode, 10) <= 3) ? parseInt(mode, 10) : COOPERATIVE;
 
 
 /**
