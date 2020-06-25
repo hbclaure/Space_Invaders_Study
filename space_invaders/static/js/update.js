@@ -15,8 +15,10 @@ function update ()
     }
     else if (this.input.keyboard.checkDown(space_key, 500)) {
         player_shoots = true;
-        shot_time += (frame_number - player_ship.sprite.props.last_shot);
-        total_shots += 1;
+        if (previous_shots.length == 5) {
+            previous_shots.shift();
+        }
+        previous_shots.push(frame_number - player_ship.sprite.props.last_shot);
     }
 
     player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
@@ -29,8 +31,8 @@ function update ()
     var ai_bullet = ai_ship.bullets_group.getChildren()[0];
     var ai_bullet_position = [];
 
-    if (total_shots >= 5) {
-        ai_ship.sprite.props.shot_cooldown = Math.min((shot_time / total_shots), 65) - 2;
+    if (previous_shots.length == 5) {
+        ai_ship.sprite.props.shot_cooldown = Math.min(...previous_shots, 55) - 5;
     }
 
     if (ai_bullet.active) {

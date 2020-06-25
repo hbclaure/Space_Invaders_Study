@@ -22,8 +22,7 @@ var game_log = [];                      //!< a log of all the information from t
 var events;
 var frames;                             //!< the frames of this game
 var frame_number;                       //!< the number of the current frame
-var total_shots = 0;                    //!< the number of shots the player has fired
-var shot_time = 0;                      //!< the amount of time it takes between shots
+var previous_shots = [];                //!< the times of the last 5 shots the player fired
 var rounds_played = 0;                  //!< number of rounds that they have played
 var player_score;                       //!< total player score (accumulated over multiple rounds)
 var ai_score;                           //!< total ai score (accumulated over multiple rounds)
@@ -49,7 +48,7 @@ function findGetParameter(parameterName) {
 
 player_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
 mode = findGetParameter('mode'); 
-mode = (mode && !isNaN(mode) && parseInt(mode, 10) >= 0 && parseInt(mode, 10) <= 3) ? parseInt(mode, 10) : COOPERATIVE;
+mode = (mode && !isNaN(mode) && parseInt(mode, 10) >= 0 && parseInt(mode, 10) <= 3) ? parseInt(mode, 10) : COOPERATIVE_EARLY;
 
 
 /**
@@ -185,19 +184,19 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props.speed = speed;
     sprite.props.dead = false;
     sprite.props.score = 0;
-    sprite.props.scoreText = this.add.bitmapText(x, 3, 'PressStart2P_White', 'SCORE 0', 20);
+    var font_type = (image_id == 'ship') ? 'PressStart2P_Purple' : (image_id == 'avery') ? 'PressStart2P_Orange' : 'PressStart2P_Gray';
+    sprite.props.scoreText = this.add.bitmapText(x, 3, font_type, 'SCORE 0', 20);
     sprite.props.lives = 3;
     sprite.props.image_id = image_id;
     sprite.props.invincible = false;
     sprite.props.invincibility_timer = 0;
     sprite.props.last_shot = 0;
-    sprite.props.shot_cooldown = 40;
+    sprite.props.shot_cooldown = 35;
     sprite.props.exploding = false;
     sprite.explote_anim = image_id + '_exp';
 
     // animation for the player/ai explosions
-    var explosion = (image_id == 'ship') ? 'shipexplosion' : 
-                    (image_id == 'avery') ? 'averyexplosion' : 'jordanexplosion';
+    var explosion = (image_id == 'ship') ? 'shipexplosion' : (image_id == 'avery') ? 'averyexplosion' : 'jordanexplosion';
 
 
     if (!(this.anims.get(image_id + '_exp'))) { 
@@ -212,7 +211,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     
     sprite.lives = [] // add sprites to display lives
     var life_x = x - 200;
-    this.add.bitmapText(life_x, 3, 'PressStart2P_White', 'LIVES', 20);
+    this.add.bitmapText(life_x, 3, font_type, 'LIVES', 20);
     for (i = 0; i < sprite.props.lives; i++) {
         var life = this.physics.add.sprite(life_x + 125 + 25 * i, 25, image_id).setOrigin(0.5, 1.0);
         life.body.setImmovable(true);
