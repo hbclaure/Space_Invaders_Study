@@ -80,6 +80,8 @@ gameover_scene.preload = function () {
     this.load.bitmapFont('PressStart2P_Gray', 'assets/fonts/PressStart2P_Gray/font.png', 'assets/fonts/PressStart2P_Gray/font.fnt');
 }
 
+var gameover_cc;
+var practice_cc;
 // display Game Over and final scores
 gameover_scene.create = function() {
     player_score += player_ship.sprite.props.score;
@@ -93,26 +95,10 @@ gameover_scene.create = function() {
     var font_type = (mode == UNCOOPERATIVE) ? 'PressStart2P_Orange' : 'PressStart2P_Gray';
     var ai_text = this.add.bitmapText(400, 350, font_type, 'AI Final Score: ' + ai_score, 20).setOrigin(0.5).setCenterAlign();
     var cc_text = this.add.bitmapText(400, 450, 'PressStart2P_White', 'Completion Code:', 20).setOrigin(0.5).setCenterAlign();
-    var cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
+    gameover_cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
     // log this game
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/log', true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onreadystatechange = function () {
-        // In local files, status is 0 upon success in Mozilla Firefox
-        if(xhr.readyState === XMLHttpRequest.DONE) {
-            var status = xhr.status;
-            if (status === 0 || (status >= 200 && status < 400)) {
-                // The request has been completed successfully
-                cc.destroy()
-                cc = gameover_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
-            } else {
-                cc.destroy()
-                cc = gameover_scene_practice.add.bitmapText(400, 500, 'PressStart2P_Green', '0000', 40).setOrigin(0.5).setCenterAlign();
-            }
-        }
-    };
-    xhr.send(JSON.stringify(game_log));
+    console.log(game_log);
+    document.io.emit('log', { status: 'update', logs: game_log });
 }
 
 // --- Game Over Screen ---
@@ -135,24 +121,20 @@ gameover_scene_practice.create = function() {
     var gameover_text = this.add.bitmapText(400, 125, 'PressStart2P_Orange', 'GAME ENDED', 50).setOrigin(0.5);
     var player_text = this.add.bitmapText(400, 250, 'PressStart2P_Purple', 'Player Score: ' + player_ship.sprite.props.score, 20).setOrigin(0.5).setCenterAlign();;
     var cc_text = this.add.bitmapText(400, 450, 'PressStart2P_White', 'Completion Code:', 20).setOrigin(0.5).setCenterAlign();
-    var cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
+    practice_cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
     // log this game
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/log', true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onreadystatechange = function () {
-        // In local files, status is 0 upon success in Mozilla Firefox
-        if(xhr.readyState === XMLHttpRequest.DONE) {
-            var status = xhr.status;
-            if (status === 0 || (status >= 200 && status < 400)) {
-                // The request has been completed successfully
-                cc.destroy()
-                cc = gameover_scene_practice.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
-            } else {
-                cc.destroy()
-                cc = gameover_scene_practice.add.bitmapText(400, 500, 'PressStart2P_Green', '0000', 40).setOrigin(0.5).setCenterAlign();
-            }
-        }
-    };
-    xhr.send(JSON.stringify(game_log));
+    console.log(game_log);
+    document.io.emit('log', { status: 'update', logs: game_log });
 }
+
+document.io.on('logcomplete', function() {
+  // TODO: check if these exist before destroying
+  if (practice_cc) {
+    practice_cc.destroy();
+  }
+  if (gameover_cc) {
+    gameover_cc.destroy();
+  }
+  gameover_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
+  gameover_scene_practice.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
+});

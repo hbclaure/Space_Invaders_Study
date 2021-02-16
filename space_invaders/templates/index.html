@@ -18,6 +18,15 @@
         <!-- <script src="./js/agents.js"></script> -->
         <!-- Get the url for the static files -->
         <script>var static_url = " {{ url_for('static', filename='.') }}"; </script>
+
+        <script type="text/javascript"
+         src="{{ url_for('static', filename='js/socket.io.min.js') }}"></script>
+        <script type="text/javascript" charset="utf-8">
+            document.io = io();
+            document.io.on('connect', function() {
+                document.io.emit('log', {status: 'connected'});
+            });
+        </script>
         
         <!-- Script for the intermediate scenes of the game -->
         <script type="text/javascript"
@@ -40,6 +49,7 @@
          src="{{ url_for('static', filename='js/space_invaders.js') }}"></script>
         
         <!-- <script src="https://cdn.jsdelivr.net/npm/phaser@3.22.0/dist/phaser.min.js"></script> -->
+        
 
     </body>
 </html>
