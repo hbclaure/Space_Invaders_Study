@@ -10,6 +10,7 @@ import os
 import uuid
 import json
 import sqlite3
+import random
 
 WEBROOT = os.path.dirname(os.path.realpath(__file__))
 DATABASE = os.path.join(WEBROOT, 'db/game_logs.db')
@@ -35,8 +36,17 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
         return True
 
     def on_message(self, msg):
-        # TODO: get state, write back the action
-        pass
+        # TODO: do something with state
+        state = json.loads(msg)
+        
+
+        action = {
+            'left': False if random.randint(0,1) == 0 else True,
+            'right': False if random.randint(0,1) == 0 else True,
+            'shoot': False if random.randint(0,1) == 0 else True
+        }
+        # send a smarter (non-random) action
+        self.write_message(json.dumps(action))
 
 
 class LogHandler(tornado.websocket.WebSocketHandler):

@@ -5,6 +5,7 @@ function update ()
 {
     // --------- update the ship
 
+    // TODO: sync player ship and ai ship
     var player_shoots = false;
     var player_bullet = player_ship.bullets_group.getChildren()[0];
     var player_bullet_position = [];
@@ -23,21 +24,19 @@ function update ()
 
     player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
 
-    // Somewhere, tell the server about the state of the game:
-    //document.io.emit('gamestate', {});
 
-    // All happens on the server
-    // ---------- AI Logic
+    //// All happens on the server
+    //// ---------- AI Logic
 
-    // Determine whether ai_ship is able to shoot: true if no AI bullet is active and the shot_cooldown timer has expired
+    //// Determine whether ai_ship is able to shoot: true if no AI bullet is active and the shot_cooldown timer has expired
 
-    var ai_shoots = false;
+    //var ai_shoots = false;
     var ai_bullet = ai_ship.bullets_group.getChildren()[0];
     var ai_bullet_position = [];
 
-    if (previous_shots.length == 5) {
-        ai_ship.sprite.props.shot_cooldown = Math.min(...previous_shots, 55) - 5;
-    }
+    //if (previous_shots.length == 5) {
+    //    ai_ship.sprite.props.shot_cooldown = Math.min(...previous_shots, 55) - 5;
+    //}
 
     if (ai_bullet.active) {
         ai_bullet_position = [ai_bullet.body.x, ai_bullet.body.y];
@@ -46,10 +45,10 @@ function update ()
         ai_shoots = true;
     }
 
-    var left_final = false;
-    var right_final = false;
-    var shoot_final = false;
-    var hit = false;
+    //var left_final = false;
+    //var right_final = false;
+    //var shoot_final = false;
+    //var hit = false;
 
     var enemies_right_sprites = enemies_right.enemies_group.getChildren();
     var enemies_left_sprites = enemies_left.enemies_group.getChildren();
@@ -155,62 +154,49 @@ function update ()
             nearest_x_diff = x_diff;
         }
     }
-    
-    // dodge logic: dodges the closest bullet when ai player is unable to fire
-    if (!ai_shoots) {
-        if (nearest_bullet.x <= ai_ship.sprite.x + 30 && nearest_bullet.x >= ai_ship.sprite.x - 30) {
-            hit = true;
-        }
+    //
+    //// dodge logic: dodges the closest bullet when ai player is unable to fire
+    //if (!ai_shoots) {
+    //    if (nearest_bullet.x <= ai_ship.sprite.x + 30 && nearest_bullet.x >= ai_ship.sprite.x - 30) {
+    //        hit = true;
+    //    }
 
-        if (hit && nearest_bullet.x >= this.sys.canvas.width - 75) {
-            left_final = true;
-        }
-        else if (hit && nearest_bullet.x <= ai_ship.min_x + 55) {
-            right_final = true;
-        }
-        else if (hit && nearest_bullet.x > ai_ship.sprite.x) {
-            left_final = true;
-        }
-        else if (hit && nearest_bullet.x <= ai_ship.sprite.x) {
-            right_final = true;
-        }
-    }
-    // attack logic: move to the nearest enemy and shoot
-    else {
-        if (nearest_x_diff <= 24) {
-            shoot_final = true;
-        }
-        if (nearest_enemy.x < ai_ship.sprite.x) {
-            // make sure it doesn't drive into bullets
-            if (!(nearest_bullet.x < ai_ship.sprite.x && 
-                nearest_bullet.y < ai_ship.sprite.y + 200 &&
-                ai_ship.sprite.x - nearest_bullet.x <= 35)) {
-                left_final = true;
-            }
-        }
-        if (nearest_enemy.x > ai_ship.sprite.x) {
-            if (!(nearest_bullet.x > ai_ship.sprite.x && 
-                nearest_bullet.y < ai_ship.sprite.y + 200 && 
-                nearest_bullet.x - ai_ship.sprite.x <= 35)) {
-                right_final = true;
-            }
-        }
-    }
+    //    if (hit && nearest_bullet.x >= this.sys.canvas.width - 75) {
+    //        left_final = true;
+    //    }
+    //    else if (hit && nearest_bullet.x <= ai_ship.min_x + 55) {
+    //        right_final = true;
+    //    }
+    //    else if (hit && nearest_bullet.x > ai_ship.sprite.x) {
+    //        left_final = true;
+    //    }
+    //    else if (hit && nearest_bullet.x <= ai_ship.sprite.x) {
+    //        right_final = true;
+    //    }
+    //}
+    //// attack logic: move to the nearest enemy and shoot
+    //else {
+    //    if (nearest_x_diff <= 24) {
+    //        shoot_final = true;
+    //    }
+    //    if (nearest_enemy.x < ai_ship.sprite.x) {
+    //        // make sure it doesn't drive into bullets
+    //        if (!(nearest_bullet.x < ai_ship.sprite.x && 
+    //            nearest_bullet.y < ai_ship.sprite.y + 200 &&
+    //            ai_ship.sprite.x - nearest_bullet.x <= 35)) {
+    //            left_final = true;
+    //        }
+    //    }
+    //    if (nearest_enemy.x > ai_ship.sprite.x) {
+    //        if (!(nearest_bullet.x > ai_ship.sprite.x && 
+    //            nearest_bullet.y < ai_ship.sprite.y + 200 && 
+    //            nearest_bullet.x - ai_ship.sprite.x <= 35)) {
+    //            right_final = true;
+    //        }
+    //    }
+    //}
 
-
-    // REPLACES:
-    ai_ship.update(left_final, right_final, shoot_final);
-    //ai_ship.update(ship_state.left, ship_state.right, ship_state.shoot);
-    
-
-    // ---------- end AI logic
-
-    // update the enemies
-    enemies_left.update();
-    enemies_right.update();
-
-    // --- log this frame of the game ---
-
+    // TODO: this seems like state, probably should send the actual state you care about though
     var log_frame = {
         frame_number: frame_number,                          //!< Number of the frame
         player_position: player_ship.sprite.x,               //!< Player's position
@@ -229,6 +215,24 @@ function update ()
         enemies_right_positions: enemies_right_positions,    //!< Right side enemies' positions
         bullets_right_positions: bullets_right_positions,    //!< Positions of all right side enemies' bullets
     }
+
+    sockets.control.send(JSON.stringify(log_frame));
+
+
+
+    // REPLACES:
+    //ai_ship.update(left_final, right_final, shoot_final);
+    // TODO: wait for the response from the server for the update (as opposed to asyc, as it is now)
+    ai_ship.update(ai_commands.left, ai_commands.right, ai_commands.shoot);
+    
+
+    // ---------- end AI logic
+
+    // update the enemies
+    enemies_left.update();
+    enemies_right.update();
+
+    // --- log this frame of the game ---
 
     frames.push(log_frame);
     frame_number += 1;

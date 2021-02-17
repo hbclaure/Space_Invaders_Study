@@ -3,6 +3,20 @@ var sockets = {
   control: new WebSocket("ws://"+window.location.host+"/control")
 }
 
+// handle commands from the server
+var ai_commands = {
+  left: false,
+  right: false,
+  shoot: false,
+};
+sockets.control.onmessage = function(event) {
+  var msg = JSON.parse(event.data);
+  ai_commands.left = msg.left;
+  ai_commands.right = msg.right;
+  ai_commands.shoot = msg.shoot;
+};
+
+
 var config = {
     type: Phaser.AUTO,
     width: 800,
