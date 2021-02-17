@@ -8,6 +8,8 @@ const COOPERATIVE_EARLY = 1;
 const COOPERATIVE_LATE = 2;
 const UNCOOPERATIVE = 3;
 
+const static_url = '';
+
 var mode;                               //!< game mode
 var cursors;                            //!< keyboard access
 var space_key;                          //!< space key

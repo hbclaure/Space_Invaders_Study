@@ -1,15 +1,8 @@
-// Space Invaders game built with Phaser 3
-// This game is inspired by Lee Robinson's Space Invaders, https://leerob.io/blog/space-invaders-with-python
-// And an adaptation by Simon Mendelsohn, https://zoo.cs.yale.edu/classes/cs490/19-20a/mendelsohn.simon.sjm225
-// Framework for this code was built by Professor Marynel Vázquez, expanded upon by Ananya Parthasarathy as 
-// part of a CPSC 490 Senior project, and further expanded upon by Jamie Large.
+var sockets = {
+  log: new WebSocket("ws://"+window.location.host+"/log"),
+  control: new WebSocket("ws://"+window.location.host+"/control")
+}
 
-
-// --- actual game ---
-
-/**
- * Phaser 3 game configuration 
- */
 var config = {
     type: Phaser.AUTO,
     width: 800,
@@ -46,6 +39,5 @@ game.scene.add('gameover_scene', gameover_scene);
 game.scene.add('gameover_scene_practice', gameover_scene_practice);
 game.scene.add('game_scene', game_scene);
 game.scene.add('practice_scene', practice_scene);
-
 
 game.scene.start('start_scene');

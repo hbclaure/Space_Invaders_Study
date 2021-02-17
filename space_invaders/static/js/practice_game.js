@@ -18,7 +18,7 @@ function create_practice_scene() {
     date = new Date();
     events = [];
 
-	// flag to tell when the game is over
+  // flag to tell when the game is over
     gameover = false;
 
     // debug_text flag to run debugging text in developer tools
@@ -53,8 +53,8 @@ function create_practice_scene() {
         bullet.setActive(false);
         // update the score     
         if (enemy.hit == false) {   
-    	   player_ship.sprite.props.score += enemy.score;
-    	   player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score); 	
+         player_ship.sprite.props.score += enemy.score;
+         player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score); 	
            events.push({frame: frame_number, killer: 'PLAYER', killed: 'LEFT'});
         }
         enemy.hit = true;
@@ -202,5 +202,3 @@ function update_practice_scene() {
         this.scene.start('gameover_scene_practice');
     }
 }
-
-

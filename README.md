@@ -1,7 +1,7 @@
 Multi-Agent Space Invaders (Web Version)
 ----------------------------------------
 
-Space invaders game built in javascript and HTML 5 using [Flask](https://flask.palletsprojects.com/en/1.1.x/) and [Phaser 3](https://phaser.io/phaser3). 
+Space invaders game built in javascript, HTML 5, and [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) using [Tornado](https://www.tornadoweb.org/en/stable/) and [Phaser 3](https://phaser.io/phaser3). 
 
 
 ## Install
@@ -11,10 +11,7 @@ Follow the instructions in [docs/install_osx.md](docs/install_osx.md) to install
 ## Start the game
 
 ```bash
-$ cd space_invaders_web # this repository
-$ cd space_invaders
-$ . venv/bin/activate
-$ flask run
+pipenv run python space_invaders/websocket.py
 ```
 
 ## Code Organization
@@ -27,7 +24,7 @@ space_invaders_web/
 |-- docs/
     |   install_osx.md          # installation instructions
 |-- space_invaders/             # main code
-    |   app.py                  # flask application
+    |   websocket.py            # tornado application
     |-- db/                     # database files
         |   create_databse.sql  # how to create the database
         |   game_logs.db        # sqlite3 database of game logs

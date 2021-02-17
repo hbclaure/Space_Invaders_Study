@@ -80,8 +80,6 @@ gameover_scene.preload = function () {
     this.load.bitmapFont('PressStart2P_Gray', 'assets/fonts/PressStart2P_Gray/font.png', 'assets/fonts/PressStart2P_Gray/font.fnt');
 }
 
-var gameover_cc;
-var practice_cc;
 // display Game Over and final scores
 gameover_scene.create = function() {
     player_score += player_ship.sprite.props.score;
@@ -95,10 +93,13 @@ gameover_scene.create = function() {
     var font_type = (mode == UNCOOPERATIVE) ? 'PressStart2P_Orange' : 'PressStart2P_Gray';
     var ai_text = this.add.bitmapText(400, 350, font_type, 'AI Final Score: ' + ai_score, 20).setOrigin(0.5).setCenterAlign();
     var cc_text = this.add.bitmapText(400, 450, 'PressStart2P_White', 'Completion Code:', 20).setOrigin(0.5).setCenterAlign();
-    gameover_cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
+    var cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
     // log this game
-    console.log(game_log);
-    document.io.emit('log', { status: 'update', logs: game_log });
+    sockets.log.onmessage = function(event) {
+      cc.destroy();
+      gameover_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
+    }
+    sockets.log.send(JSON.stringify(game_log));
 }
 
 // --- Game Over Screen ---
@@ -121,20 +122,11 @@ gameover_scene_practice.create = function() {
     var gameover_text = this.add.bitmapText(400, 125, 'PressStart2P_Orange', 'GAME ENDED', 50).setOrigin(0.5);
     var player_text = this.add.bitmapText(400, 250, 'PressStart2P_Purple', 'Player Score: ' + player_ship.sprite.props.score, 20).setOrigin(0.5).setCenterAlign();;
     var cc_text = this.add.bitmapText(400, 450, 'PressStart2P_White', 'Completion Code:', 20).setOrigin(0.5).setCenterAlign();
-    practice_cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
+    var cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
     // log this game
-    console.log(game_log);
-    document.io.emit('log', { status: 'update', logs: game_log });
+    sockets.log.onmessage = function(event) {
+      cc.destroy();
+      gameover_scene_practice.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
+    }
+    sockets.log.send(JSON.stringify(game_log));
 }
-
-document.io.on('logcomplete', function() {
-  // TODO: check if these exist before destroying
-  if (practice_cc) {
-    practice_cc.destroy();
-  }
-  if (gameover_cc) {
-    gameover_cc.destroy();
-  }
-  gameover_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
-  gameover_scene_practice.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
-});
