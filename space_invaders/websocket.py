@@ -12,8 +12,12 @@ import json
 import sqlite3
 import random
 
+from agents.cooperative import Cooperative
+
 WEBROOT = os.path.dirname(os.path.realpath(__file__))
 DATABASE = os.path.join(WEBROOT, 'db/game_logs.db')
+
+current_agent = Cooperative()
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -40,18 +44,18 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
         state = json.loads(msg)
 
         ## or abstract the agent out into another object
-        #action = current_agent.update(state)
+        action = current_agent.update(state)
 
         ## or a nn agent
         #output = torchmodel.inference(state)
         #action = output
 
         # or random agent
-        action = {
-            'left': False if random.randint(0,1) == 0 else True,
-            'right': False if random.randint(0,1) == 0 else True,
-            'shoot': False if random.randint(0,1) == 0 else True
-        }
+        #action = {
+        #    'left': False if random.randint(0,1) == 0 else True,
+        #    'right': False if random.randint(0,1) == 0 else True,
+        #    'shoot': False if random.randint(0,1) == 0 else True
+        #}
 
         # send a smarter (non-random) action
         self.write_message(json.dumps(action))
