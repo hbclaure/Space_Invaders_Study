@@ -9,11 +9,13 @@ var ai_commands = {
   right: false,
   shoot: false,
 };
+var ai_ready = false;
 sockets.control.onmessage = function(event) {
   var msg = JSON.parse(event.data);
   ai_commands.left = msg.left;
   ai_commands.right = msg.right;
   ai_commands.shoot = msg.shoot;
+  ai_ready = true;
 };
 
 

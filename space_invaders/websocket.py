@@ -38,13 +38,21 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
     def on_message(self, msg):
         # TODO: do something with state
         state = json.loads(msg)
-        
 
+        ## or abstract the agent out into another object
+        #action = current_agent.update(state)
+
+        ## or a nn agent
+        #output = torchmodel.inference(state)
+        #action = output
+
+        # or random agent
         action = {
             'left': False if random.randint(0,1) == 0 else True,
             'right': False if random.randint(0,1) == 0 else True,
             'shoot': False if random.randint(0,1) == 0 else True
         }
+
         # send a smarter (non-random) action
         self.write_message(json.dumps(action))
 
@@ -53,7 +61,7 @@ class LogHandler(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
         '''Allow from all origins'''
         return True
-    
+
     def open(self):
         pass
         #self.write_message('hi')
@@ -73,7 +81,7 @@ class LogHandler(tornado.websocket.WebSocketHandler):
         for log in logs:
             # Log the actual game and collect the id
 
-            cur.execute('INSERT INTO Games(player_id, date, round, mode) VALUES(?, ?, ?, ?)', 
+            cur.execute('INSERT INTO Games(player_id, date, round, mode) VALUES(?, ?, ?, ?)',
                                    (log['player_id'], log['date'], log['round'], log['mode']))
 
             game_id = cur.lastrowid
@@ -84,9 +92,9 @@ class LogHandler(tornado.websocket.WebSocketHandler):
             # Go through every frame of the game
             for frame in log['frames']:
                 # log the actual frame and collect the id
-                cur.execute('''INSERT INTO Frames(game_id, frame_number, player_position, player_lives, 
-                            player_score, ai_position, ai_lives, ai_score) VALUES(?,?,?,?,?,?,?,?)''', 
-                             (game_id, frame['frame_number'], frame['player_position'], frame['player_lives'], 
+                cur.execute('''INSERT INTO Frames(game_id, frame_number, player_position, player_lives,
+                            player_score, ai_position, ai_lives, ai_score) VALUES(?,?,?,?,?,?,?,?)''',
+                             (game_id, frame['frame_number'], frame['player_position'], frame['player_lives'],
                               frame['player_score'], frame['ai_position'], frame['ai_lives'], frame['ai_score']))
                 frame_id = cur.lastrowid;
 
@@ -139,4 +147,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-        
+

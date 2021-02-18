@@ -22,15 +22,13 @@ function update ()
         previous_shots.push(frame_number - player_ship.sprite.props.last_shot);
     }
 
-    player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
-
 
     //// All happens on the server
     //// ---------- AI Logic
 
     //// Determine whether ai_ship is able to shoot: true if no AI bullet is active and the shot_cooldown timer has expired
 
-    //var ai_shoots = false;
+    var ai_shoots = false;
     var ai_bullet = ai_ship.bullets_group.getChildren()[0];
     var ai_bullet_position = [];
 
@@ -218,13 +216,18 @@ function update ()
 
     sockets.control.send(JSON.stringify(log_frame));
 
-
-
     // REPLACES:
     //ai_ship.update(left_final, right_final, shoot_final);
     // TODO: wait for the response from the server for the update (as opposed to asyc, as it is now)
-    ai_ship.update(ai_commands.left, ai_commands.right, ai_commands.shoot);
-    
+    if (ai_ready) {
+      player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
+      // enforce rules of the game
+      var shoot = ai_commands.shoot && ai_shoots;
+      var left = ai_commands.left && !ai_commands.right && !ai_shoots;
+      var right = ai_commands.right && !ai_commands.left && !ai_shoots;
+      ai_ship.update(left, right, shoot);
+      ai_ready = false;
+    }
 
     // ---------- end AI logic
 
