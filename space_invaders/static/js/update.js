@@ -32,9 +32,9 @@ function update ()
     var ai_bullet = ai_ship.bullets_group.getChildren()[0];
     var ai_bullet_position = [];
 
-    //if (previous_shots.length == 5) {
-    //    ai_ship.sprite.props.shot_cooldown = Math.min(...previous_shots, 55) - 5;
-    //}
+    if (previous_shots.length == 5) {
+       ai_ship.sprite.props.shot_cooldown = Math.min(...previous_shots, 55) - 5;
+    }
 
     if (ai_bullet.active) {
         ai_bullet_position = [ai_bullet.body.x, ai_bullet.body.y];
@@ -193,6 +193,7 @@ function update ()
     //        }
     //    }
     //}
+    var to_nearest_enemy = nearest_enemy.x - ai_ship.sprite.x
 
     // TODO: this seems like state, probably should send the actual state you care about though
     var log_frame = {
@@ -212,6 +213,12 @@ function update ()
 
         enemies_right_positions: enemies_right_positions,    //!< Right side enemies' positions
         bullets_right_positions: bullets_right_positions,    //!< Positions of all right side enemies' bullets
+
+        nearest_enemy: nearest_enemy,
+        nearest_bullet: nearest_bullet,
+
+        can_shoot: ai_shoots
+        
     }
 
     sockets.control.send(JSON.stringify(log_frame));
@@ -223,8 +230,8 @@ function update ()
       player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
       // enforce rules of the game
       var shoot = ai_commands.shoot && ai_shoots;
-      var left = ai_commands.left && !ai_commands.right && !ai_shoots;
-      var right = ai_commands.right && !ai_commands.left && !ai_shoots;
+      var left = ai_commands.left && !ai_commands.right //&& !ai_shoots;
+      var right = ai_commands.right && !ai_commands.left //&& !ai_shoots;
       ai_ship.update(left, right, shoot);
       ai_ready = false;
     }
