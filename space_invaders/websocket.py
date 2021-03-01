@@ -13,11 +13,12 @@ import sqlite3
 import random
 
 from agents.cooperative import Cooperative
+from agents.uncooperative import Uncooperative
 
 WEBROOT = os.path.dirname(os.path.realpath(__file__))
 DATABASE = os.path.join(WEBROOT, 'db/game_logs.db')
 
-current_agent = Cooperative()
+current_agent = Uncooperative()
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -30,6 +31,7 @@ class Application(tornado.web.Application):
         handlers = [
             (r"/log", LogHandler),
             (r"/control", ControlHandler),
+            (r"/image", ImageHandler),
             (r"/(.*)", tornado.web.StaticFileHandler, dict(path=settings['static_path'],default_filename="index.html"))
         ]
         super().__init__(handlers, **settings)
@@ -59,6 +61,28 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
 
         # send a smarter (non-random) action
         self.write_message(json.dumps(action))
+
+class ImageHandler(tornado.websocket.WebSocketHandler):
+    frame_count = 0
+
+    def check_origin(self, origin):
+        '''Allow from all origins'''
+        return True
+    
+    def open(self):
+        pass
+
+    def on_close(self):
+        pass
+
+    def on_message(self, msg):
+        image = msg
+        self.frame_count += 1
+        if image:
+            print("whoop!")
+            filename = "space_invaders/recorded_frames/frame_{}.jpg".format(str(self.frame_count))
+            with open(filename, "+wb") as f:
+                f.write(image)
 
 
 class LogHandler(tornado.websocket.WebSocketHandler):

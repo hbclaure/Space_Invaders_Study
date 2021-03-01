@@ -11,9 +11,25 @@
     <!-- <script data-main="js/space_invaders" src="js/require.js"></script> includes space invaders game already -->
 
     <link rel="shortcut icon" href="/favicon.ico">
+
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+     </style>
     
   </head>
   <body>
+    <div class="camera">
+        <video id="video"/>
+    </div>
+
+    <canvas id="canvas" style="display:none" />\]
+    
 
     <script type="text/javascript" src="/js/jquery.min.js"></script>
 

@@ -1,6 +1,7 @@
 var sockets = {
   log: new WebSocket("ws://"+window.location.host+"/log"),
-  control: new WebSocket("ws://"+window.location.host+"/control")
+  control: new WebSocket("ws://"+window.location.host+"/control"),
+  image: new WebSocket("ws://"+window.location.host+"/image"),
 }
 
 // handle commands from the server
