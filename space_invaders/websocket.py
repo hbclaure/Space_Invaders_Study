@@ -147,6 +147,7 @@ class LogHandler(tornado.websocket.WebSocketHandler):
 def main():
     app = Application()
     app.listen(8888, '0.0.0.0')
+    print("Listening on http://localhost:%i" % 8888)
     tornado.ioloop.IOLoop.current().start()
 
 if __name__ == "__main__":
