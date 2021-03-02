@@ -3,13 +3,14 @@ import sqlite3
 import os
 import subprocess
 
-DATABASE = '/Users/jamielarge/space_invaders_web/space_invaders/db/game_logs.db'
+WEBROOT = os.path.dirname(os.path.realpath(__file__))
+DATABASE = os.path.join(WEBROOT, 'game_logs.db')
 
 con = sqlite3.connect(DATABASE)
 cur = con.cursor()
 
 # Get the player's ID from the user
-user_input = input('Type ID of player whose games you would like to export (or press enter to export all players\' logs): ')
+user_input = input('Type ID of player whose games you would like to export (or press enter to export all players logs): ')
 
 player_ids = []
 
