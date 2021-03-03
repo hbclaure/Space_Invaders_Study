@@ -22,13 +22,18 @@ start_scene.create = function() {
 }
 
 start_scene.update = function() {
-    // begin practice game when the player presses spacebar
+
+    // begin game when the player presses spacebar
     if (this.input.keyboard.checkDown(space_key, 500)) {
         if (mode == PRACTICE) {
             this.scene.start('practice_scene');
+            //begin recording frames
+            save_image_loop(); 
         }
         else {
             this.scene.start('game_scene');
+            // begin recording frames
+            save_image_loop(); 
         }
     }
 }

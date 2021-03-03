@@ -2,6 +2,82 @@
 All the helper functions and global variables for space invaders
 **/
 
+// set image width; height will be matched accordingly
+var width = 500;
+var height = 0;
+
+var recording = null;
+
+var streaming = false;
+
+var video = null;
+var canvas = null;
+var photo = null;
+var image = null;
+
+function startup() {
+    video = document.getElementById('video');
+    //copy = document.getElementById('copy');
+    canvas = document.getElementById('canvas');
+    photo = document.getElementById('photo');
+    startbutton = document.getElementById('startbutton');
+
+    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+    .then(function(stream) {
+        // copy.srcObject = stream;
+        //copy.play();
+        video.srcObject = stream;
+        video.play();
+    })
+    .catch(function(err) {
+        console.log("An error occurred: " + err);
+    });
+    
+    video.addEventListener('canplay', function(ev){
+        if (!streaming) {
+
+            // maintain aspect ratio
+            height = video.videoHeight / (video.videoWidth/width);
+            ratio = video.videoWidth/width
+
+            ratio_data = {
+                ratio: ratio,
+            };
+            console.log('image logged')
+
+            video.setAttribute('width', width);
+            video.setAttribute('height', height);
+            canvas.setAttribute('width', width);
+            canvas.setAttribute('height', height);
+            streaming = true;
+        }
+    }, false);
+    //save_image_loop()
+}
+
+function save_image_loop() {
+    recording = setInterval(function(){
+        logpicture();
+    }, 66);
+}
+
+function logpicture() {
+    var context = canvas.getContext('2d');
+    var reader = new FileReader();
+    if (width && height) {
+        canvas.width = width;
+        canvas.height = height;
+        context.drawImage(video, 0, 0, width, height);
+
+        canvas.toBlob(function(blob) {
+            sockets.image.send(blob);
+        },'image/jpeg');
+    }
+}
+
+window.addEventListener('load', startup, false);
+
+
 // The different game modes
 const PRACTICE = 0;
 const COOPERATIVE_EARLY = 1;
