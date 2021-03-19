@@ -79,7 +79,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
         image = msg
         self.frame_count += 1
         if image:
-            print("whoop!")
+            print("frame {} recorded".format(str(self.frame_count)))
             filename = "space_invaders/recorded_frames/frame_{}.jpg".format(str(self.frame_count))
             with open(filename, "+wb") as f:
                 f.write(image)
