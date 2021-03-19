@@ -32,6 +32,7 @@ class Application(tornado.web.Application):
             (r"/log", LogHandler),
             (r"/control", ControlHandler),
             (r"/image", ImageHandler),
+            (r"/game", GameHandler),
             (r"/(.*)", tornado.web.StaticFileHandler, dict(path=settings['static_path'],default_filename="index.html"))
         ]
         super().__init__(handlers, **settings)
@@ -79,8 +80,30 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
         image = msg
         self.frame_count += 1
         if image:
-            print("whoop!")
-            filename = "space_invaders/recorded_frames/frame_{}.jpg".format(str(self.frame_count))
+            print("frame {} recorded".format(str(self.frame_count)))
+            filename = "recorded_frames/frame_{}.jpg".format(str(self.frame_count))
+            with open(filename, "+wb") as f:
+                f.write(image)
+
+class GameHandler(tornado.websocket.WebSocketHandler):
+    game_frame_count = 0
+
+    def check_origin(self, origin):
+        '''Allow from all origins'''
+        return True
+    
+    def open(self):
+        pass
+
+    def on_close(self):
+        pass
+
+    def on_message(self, msg):
+        image = msg
+        self.game_frame_count += 1
+        if image:
+            print("GAMEframe {} recorded".format(str(self.game_frame_count)))
+            filename = "game_frames/frame_{}.jpg".format(str(self.game_frame_count))
             with open(filename, "+wb") as f:
                 f.write(image)
 
