@@ -2,6 +2,7 @@ var sockets = {
   log: new WebSocket("ws://"+window.location.host+"/log"),
   control: new WebSocket("ws://"+window.location.host+"/control"),
   image: new WebSocket("ws://"+window.location.host+"/image"),
+  game: new WebSocket("ws://"+window.location.host+"/game"),
 }
 
 // handle commands from the server
@@ -21,7 +22,7 @@ sockets.control.onmessage = function(event) {
 
 
 var config = {
-    type: Phaser.AUTO,
+    type: Phaser.CANVAS, //Phaser.AUTO,
     width: 800,
     height: 600,
     physics: {

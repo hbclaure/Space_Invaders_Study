@@ -17,10 +17,8 @@ var image = null;
 
 function startup() {
     video = document.getElementById('video');
-    //copy = document.getElementById('copy');
     canvas = document.getElementById('canvas');
     photo = document.getElementById('photo');
-    startbutton = document.getElementById('startbutton');
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
     .then(function(stream) {
@@ -58,21 +56,28 @@ function startup() {
 function save_image_loop() {
     recording = setInterval(function(){
         logpicture();
+        loggame();
     }, 66);
 }
 
+// log user video frame
 function logpicture() {
     var context = canvas.getContext('2d');
-    var reader = new FileReader();
     if (width && height) {
         canvas.width = width;
         canvas.height = height;
         context.drawImage(video, 0, 0, width, height);
-
         canvas.toBlob(function(blob) {
             sockets.image.send(blob);
         },'image/jpeg');
     }
+}
+
+// record game frames
+function loggame() {
+    game.canvas.toBlob(function(blob) {
+        sockets.game.send(blob);
+    }, 'image/jpeg');
 }
 
 window.addEventListener('load', startup, false);
