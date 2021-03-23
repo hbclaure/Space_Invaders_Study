@@ -28,11 +28,15 @@ start_scene.update = function() {
         if (mode == PRACTICE) {
             this.scene.start('practice_scene');
             //begin recording frames
+            sockets.image.send(JSON.stringify(player_id));
+            sockets.game.send(JSON.stringify(player_id));
             save_image_loop(); 
         }
         else {
             this.scene.start('game_scene');
             // begin recording frames
+            sockets.image.send(JSON.stringify(player_id));
+            sockets.game.send(JSON.stringify(player_id));
             save_image_loop(); 
         }
     }
