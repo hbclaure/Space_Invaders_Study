@@ -14,11 +14,13 @@ import random
 
 from agents.cooperative import Cooperative
 from agents.uncooperative import Uncooperative
+from agents.cooperative_early import CooperativeEarly
+from agents.cooperative_late import CooperativeLate
 
 WEBROOT = os.path.dirname(os.path.realpath(__file__))
 DATABASE = os.path.join(WEBROOT, 'db/game_logs.db')
 
-current_agent = Uncooperative()
+current_agent = CooperativeEarly()
 
 class Application(tornado.web.Application):
     def __init__(self):

@@ -217,7 +217,11 @@ function update ()
         nearest_enemy: nearest_enemy,
         nearest_bullet: nearest_bullet,
 
-        can_shoot: ai_shoots
+        can_shoot: ai_shoots,
+
+        ai_pos_y: ai_ship.sprite.y,
+        ai_ship_min_x: ai_ship.min_x,
+        canvas_width: this.sys.canvas.width
         
     }
 
