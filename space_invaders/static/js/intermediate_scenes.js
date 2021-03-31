@@ -93,8 +93,8 @@ gameover_scene.preload = function () {
 
 // display Game Over and final scores
 gameover_scene.create = function() {
-    player_score += player_ship.sprite.props.score;
-    ai_score += ai_ship.sprite.props.score;
+    player_score = player_ship.sprite.props.score;
+    ai_score = ai_ship.sprite.props.score;
 
     // 4 digit random number
     var completion_code = Math.floor(Math.random() * 8999) + 1000;
