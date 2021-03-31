@@ -26,6 +26,7 @@ start_scene.update = function() {
     // begin game when the player presses spacebar
     if (this.input.keyboard.checkDown(space_key, 500)) {
         if (mode == PRACTICE) {
+            sockets.control.send(JSON.stringify(mode))
             this.scene.start('practice_scene');
             //begin recording frames
             sockets.image.send(JSON.stringify(player_id));
@@ -33,6 +34,7 @@ start_scene.update = function() {
             save_image_loop(); 
         }
         else {
+            sockets.control.send(JSON.stringify(mode))
             this.scene.start('game_scene');
             // begin recording frames
             sockets.image.send(JSON.stringify(player_id));

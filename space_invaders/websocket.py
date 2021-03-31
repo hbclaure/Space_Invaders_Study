@@ -38,30 +38,28 @@ class Application(tornado.web.Application):
         super().__init__(handlers, **settings)
 
 class ControlHandler(tornado.websocket.WebSocketHandler):
+    agent_mode = None
+
     def check_origin(self, origin):
         '''Allow from all origins'''
         return True
 
     def on_message(self, msg):
-        # TODO: do something with state
-        state = json.loads(msg)
+        if not self.agent_mode:
+            try:
+                self.agent_mode = int(json.loads(msg))
+                print("Mode: ", self.agent_mode)
+            except Exception as e:
+                print(e)
+        else:
+            # TODO: do something with state
+            state = json.loads(msg)
 
-        ## or abstract the agent out into another object
-        action = current_agent.update(state)
+            ## or abstract the agent out into another object
+            action = current_agent.update(state)
 
-        ## or a nn agent
-        #output = torchmodel.inference(state)
-        #action = output
-
-        # or random agent
-        #action = {
-        #    'left': False if random.randint(0,1) == 0 else True,
-        #    'right': False if random.randint(0,1) == 0 else True,
-        #    'shoot': False if random.randint(0,1) == 0 else True
-        #}
-
-        # send a smarter (non-random) action
-        self.write_message(json.dumps(action))
+            # send a smarter (non-random) action
+            self.write_message(json.dumps(action))
 
 class ImageHandler(tornado.websocket.WebSocketHandler):
 
