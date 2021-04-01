@@ -39,33 +39,33 @@ class Application(tornado.web.Application):
         super().__init__(handlers, **settings)
 
 class ControlHandler(tornado.websocket.WebSocketHandler):
+    agent_mode = None
+
     def check_origin(self, origin):
         '''Allow from all origins'''
         return True
 
     def on_message(self, msg):
-        # TODO: do something with state
-        state = json.loads(msg)
+        if not self.agent_mode:
+            try:
+                self.agent_mode = int(json.loads(msg))
+                print("Mode: ", self.agent_mode)
+            except Exception as e:
+                print(e)
+        else:
+            # TODO: do something with state
+            state = json.loads(msg)
 
-        ## or abstract the agent out into another object
-        action = current_agent.update(state)
+            ## or abstract the agent out into another object
+            action = current_agent.update(state)
 
-        ## or a nn agent
-        #output = torchmodel.inference(state)
-        #action = output
-
-        # or random agent
-        #action = {
-        #    'left': False if random.randint(0,1) == 0 else True,
-        #    'right': False if random.randint(0,1) == 0 else True,
-        #    'shoot': False if random.randint(0,1) == 0 else True
-        #}
-
-        # send a smarter (non-random) action
-        self.write_message(json.dumps(action))
+            # send a smarter (non-random) action
+            self.write_message(json.dumps(action))
 
 class ImageHandler(tornado.websocket.WebSocketHandler):
+
     frame_count = 0
+    player_id = None
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -78,16 +78,33 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
         pass
 
     def on_message(self, msg):
-        image = msg
-        self.frame_count += 1
-        if image:
-            print("frame {} recorded".format(str(self.frame_count)))
-            filename = "recorded_frames/frame_{}.jpg".format(str(self.frame_count))
-            with open(filename, "+wb") as f:
-                f.write(image)
+        if not self.player_id:
+            try:
+                self.player_id = json.loads(msg)
+                print(self.player_id)
+            except Exception as e:
+                print(e)
+                print("invalid")
+        else:
+            try:
+                image = msg
+                self.frame_count += 1
+                if image:
+                    #print("frame {} recorded".format(str(self.frame_count)))
+                    filename = f"recorded_frames/{self.player_id}/video/frame_{str(self.frame_count)}.jpg"
+
+                    if not os.path.exists(os.path.dirname(filename)):
+                        os.makedirs(os.path.dirname(filename))
+
+                    with open(filename, "+wb") as f:
+                        f.write(image)
+            except Exception as e:
+                print(e)
+                print("error")
 
 class GameHandler(tornado.websocket.WebSocketHandler):
-    game_frame_count = 0
+    frame_count = 0
+    player_id = None
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -100,14 +117,32 @@ class GameHandler(tornado.websocket.WebSocketHandler):
         pass
 
     def on_message(self, msg):
-        image = msg
-        self.game_frame_count += 1
-        if image:
-            print("GAMEframe {} recorded".format(str(self.game_frame_count)))
-            filename = "game_frames/frame_{}.jpg".format(str(self.game_frame_count))
-            with open(filename, "+wb") as f:
-                f.write(image)
+        if not self.player_id:
+            try:
+                self.player_id = json.loads(msg)
+                print(self.player_id)
+                print(f"Recording frames: {self.player_id}")
+            except Exception as e:
+                print(e)
+                print("invalid")
+        else:
+            try:
+                with open("handler_log", "+a") as f:
+                    f.write(str(self)+"\n")
+                image = msg
+                self.frame_count += 1
+                if image:
+                    #print("frame {} recorded".format(str(self.frame_count)))
+                    filename = f"recorded_frames/{self.player_id}/game/frame_{str(self.frame_count)}.jpg"
 
+                    if not os.path.exists(os.path.dirname(filename)):
+                        os.makedirs(os.path.dirname(filename))
+
+                    with open(filename, "+wb") as f:
+                        f.write(image)
+            except Exception as e:
+                print(e)
+                print("error")
 
 class LogHandler(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):

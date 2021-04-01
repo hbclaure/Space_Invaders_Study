@@ -156,13 +156,6 @@ function update ()
     // switch to game over screen
     if (gameover || (enemies_left_sprites.length == 0 && enemies_right_sprites.length == 0)) {
         game_log.push({player_id: player_id, date: date, round: rounds_played, mode: mode, events: events, frames: frames});
-        if (rounds_played == 0) {
-            this.scene.start('intermediate_scene');
-            rounds_played += 1;
-            total_frames = frame_number;
-        }
-        else {
-            this.scene.start('gameover_scene');
-        }
+        this.scene.start('gameover_scene')
     }
 }

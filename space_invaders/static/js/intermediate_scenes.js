@@ -26,13 +26,19 @@ start_scene.update = function() {
     // begin game when the player presses spacebar
     if (this.input.keyboard.checkDown(space_key, 500)) {
         if (mode == PRACTICE) {
+            sockets.control.send(JSON.stringify(mode))
             this.scene.start('practice_scene');
             //begin recording frames
+            sockets.image.send(JSON.stringify(player_id));
+            sockets.game.send(JSON.stringify(player_id));
             save_image_loop(); 
         }
         else {
+            sockets.control.send(JSON.stringify(mode))
             this.scene.start('game_scene');
             // begin recording frames
+            sockets.image.send(JSON.stringify(player_id));
+            sockets.game.send(JSON.stringify(player_id));
             save_image_loop(); 
         }
     }
@@ -87,8 +93,8 @@ gameover_scene.preload = function () {
 
 // display Game Over and final scores
 gameover_scene.create = function() {
-    player_score += player_ship.sprite.props.score;
-    ai_score += ai_ship.sprite.props.score;
+    player_score = player_ship.sprite.props.score;
+    ai_score = ai_ship.sprite.props.score;
 
     // 4 digit random number
     var completion_code = Math.floor(Math.random() * 8999) + 1000;
