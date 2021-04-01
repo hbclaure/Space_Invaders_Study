@@ -127,8 +127,6 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                 print("invalid")
         else:
             try:
-                with open("handler_log", "+a") as f:
-                    f.write(str(self)+"\n")
                 image = msg
                 self.frame_count += 1
                 if image:
