@@ -131,22 +131,24 @@ function update ()
     //ai_ship.update(left_final, right_final, shoot_final);
     // TODO: wait for the response from the server for the update (as opposed to asyc, as it is now)
     if (ai_ready) {
-        console.log("** Updating player")
+        //console.log("** Updating player")
         player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
         // enforce rules of the game
         var shoot = ai_commands.shoot && ai_shoots;
         var left = ai_commands.left && !ai_commands.right //&& !ai_shoots;
         var right = ai_commands.right && !ai_commands.left //&& !ai_shoots;
-        console.log("**Updating ai")
+        //console.log("**Updating ai")
         ai_ship.update(left, right, shoot);
         ai_ready = false;
+        // update the enemies
+        enemies_left.update();
+        enemies_right.update();
     }
+    //console.log("**Game running")
 
     // ---------- end AI logic
 
-    // update the enemies
-    enemies_left.update();
-    enemies_right.update();
+    
 
     // --- log this frame of the game ---
 

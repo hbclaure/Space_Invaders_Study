@@ -80,6 +80,9 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, msg):
         time = datetime.now()
+        playerid = self.player_id
+        id_time = str(playerid)+"_"+str(time.year)+"_" + str(time.month)+"_" + str(time.day)
+        hms = 'w_'+ str(time.hour)+ "_" + str(time.minute)+ "_" + str(time.second)+ "_" + str(time.microsecond)
         if not self.player_id:
             try:
                 self.player_id = json.loads(msg)
@@ -93,7 +96,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 self.frame_count += 1
                 if image:
                     #print("frame {} recorded".format(str(self.frame_count)))
-                    filename = f"recorded_frames/{self.player_id}/video/{time}.jpg"
+                    filename = f"recorded_frames/{id_time}/webcam/{hms}.jpg"
 
                     if not os.path.exists(os.path.dirname(filename)):
                         os.makedirs(os.path.dirname(filename))
@@ -120,6 +123,9 @@ class GameHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, msg):
         time = datetime.now()
+        playerid = self.player_id
+        id_time = str(playerid)+"_"+str(time.year)+"_" + str(time.month)+"_" + str(time.day)
+        hms = 'g_'+ str(time.hour)+ "_" + str(time.minute)+ "_" + str(time.second)+ "_" + str(time.microsecond)
         if not self.player_id:
             try:
                 self.player_id = json.loads(msg)
@@ -134,7 +140,7 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                 self.frame_count += 1
                 if image:
                     #print("frame {} recorded".format(str(self.frame_count)))
-                    filename = f"recorded_frames/{self.player_id}/game/{time}.jpg"
+                    filename = f"recorded_frames/{id_time}/gamescreen/{hms}.jpg"
 
                     if not os.path.exists(os.path.dirname(filename)):
                         os.makedirs(os.path.dirname(filename))
@@ -231,7 +237,7 @@ class LogHandler(tornado.websocket.WebSocketHandler):
 def main():
     app = Application()
     app.listen(8888, '0.0.0.0')
-    print("Listening on http://localhost:%i" % 8888)
+    print("Listening on http://127.0.0.1:%i" % 8888)
     tornado.ioloop.IOLoop.current().start()
 
 if __name__ == "__main__":
