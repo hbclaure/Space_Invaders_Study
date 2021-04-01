@@ -11,6 +11,7 @@ import uuid
 import json
 import sqlite3
 import random
+from datetime import datetime
 
 from agents.uncooperative import Uncooperative
 from agents.cooperative_early import CooperativeEarly
@@ -78,6 +79,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
         pass
 
     def on_message(self, msg):
+        time = datetime.now()
         if not self.player_id:
             try:
                 self.player_id = json.loads(msg)
@@ -91,7 +93,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 self.frame_count += 1
                 if image:
                     #print("frame {} recorded".format(str(self.frame_count)))
-                    filename = f"recorded_frames/{self.player_id}/video/frame_{str(self.frame_count)}.jpg"
+                    filename = f"recorded_frames/{self.player_id}/video/{time}.jpg"
 
                     if not os.path.exists(os.path.dirname(filename)):
                         os.makedirs(os.path.dirname(filename))
@@ -117,6 +119,7 @@ class GameHandler(tornado.websocket.WebSocketHandler):
         pass
 
     def on_message(self, msg):
+        time = datetime.now()
         if not self.player_id:
             try:
                 self.player_id = json.loads(msg)
@@ -131,7 +134,7 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                 self.frame_count += 1
                 if image:
                     #print("frame {} recorded".format(str(self.frame_count)))
-                    filename = f"recorded_frames/{self.player_id}/game/frame_{str(self.frame_count)}.jpg"
+                    filename = f"recorded_frames/{self.player_id}/game/{time}.jpg"
 
                     if not os.path.exists(os.path.dirname(filename)):
                         os.makedirs(os.path.dirname(filename))
