@@ -12,7 +12,6 @@ import json
 import sqlite3
 import random
 
-from agents.cooperative import Cooperative
 from agents.uncooperative import Uncooperative
 from agents.cooperative_early import CooperativeEarly
 from agents.cooperative_late import CooperativeLate

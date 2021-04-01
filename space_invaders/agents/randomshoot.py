@@ -1,6 +1,6 @@
 import random
 
-class Cooperative:
+class RandomShoot:
     def update(self, state):
         #TODO: make it non-random
         action = {
