@@ -115,7 +115,7 @@ function update ()
         bullets_right_positions: bullets_right_positions,    //!< Positions of all right side enemies' bullets
 
         nearest_enemy: nearest_enemy,
-        nearest_bullet: nearest_bullet,
+        //nearest_bullet: nearest_bullet,
 
         can_shoot: ai_shoots,
 
