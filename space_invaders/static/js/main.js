@@ -1,4 +1,4 @@
-proto = window.location.protocol === 'https:' ? 'wss' : 'ws',
+proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
 
 var sockets = {
   log: new WebSocket(proto + "://"+window.location.host+"/log"),
