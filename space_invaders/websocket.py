@@ -5,6 +5,7 @@ import tornado.options
 import tornado.web
 import tornado.websocket
 import tornado.gen
+import tornado.httpserver
 import os
 import uuid
 import json
@@ -328,7 +329,7 @@ def main():
         ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
         ssl_ctx.load_cert_chain(os.path.join(SSL_ROOT, "anna.cs.yale.edu.crt"),
                                 os.path.join(SSL_ROOT, "anna.cs.yale.edu.key"))
-        HTTPServer(application, ssl_options=ssl_ctx)
+        tornado.httpserver.HTTPServer(application, ssl_options=ssl_ctx)
         proto = 'https'
     app.listen(8888, '0.0.0.0')
     print(f"Listening on {proto}://0.0.0.0:%i" % 8888)
