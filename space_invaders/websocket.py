@@ -333,10 +333,9 @@ def main():
         server = tornado.httpserver.HTTPServer(app, ssl_options=ssl_ctx)
         proto = 'https'
         server.bind(port)
-        IOLoop.current().start()
     else:
         app.listen(port, '0.0.0.0')
-        tornado.ioloop.IOLoop.current().start()
+    tornado.ioloop.IOLoop.current().start()
     print(f"Listening on {proto}://0.0.0.0:%i" % port)
 
 if __name__ == "__main__":
