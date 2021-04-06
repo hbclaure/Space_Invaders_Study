@@ -5,7 +5,6 @@ import tornado.options
 import tornado.web
 import tornado.websocket
 import tornado.gen
-
 import os
 import uuid
 import json
@@ -19,6 +18,7 @@ from agents.cooperative_late import CooperativeLate
 
 WEBROOT = os.path.dirname(os.path.realpath(__file__))
 DATABASE = os.path.join(WEBROOT, 'db/game_logs.db')
+SSL_ROOT = "/etc/apache2/ssl"
 
 current_agent = CooperativeEarly()
 
@@ -322,8 +322,15 @@ class LogHandler(tornado.websocket.WebSocketHandler):
 
 def main():
     app = Application()
+    proto = 'http'
+    if os.path.exists(SSL_ROOT):
+        ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        ssl_ctx.load_cert_chain(os.path.join(data_dir, f"{SSL_ROOT}/anna.cs.yale.edu.crt"),
+                                os.path.join(data_dir, f"{SSL_ROOT}/anna.cs.yale.edu.key"))
+        HTTPServer(application, ssl_options=ssl_ctx)
+        proto = 'https'
     app.listen(8888, '0.0.0.0')
-    print("Listening on http://127.0.0.1:%i" % 8888)
+    print(f"Listening on {proto}://0.0.0.0:%i" % 8888)
     tornado.ioloop.IOLoop.current().start()
 
 if __name__ == "__main__":
