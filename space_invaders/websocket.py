@@ -324,16 +324,20 @@ class LogHandler(tornado.websocket.WebSocketHandler):
 
 def main():
     app = Application()
+    port = 8888
     proto = 'http'
     if os.path.exists(SSL_ROOT):
         ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
         ssl_ctx.load_cert_chain(os.path.join(SSL_ROOT, "anna.cs.yale.edu.crt"),
                                 os.path.join(SSL_ROOT, "anna.cs.yale.edu.key"))
-        tornado.httpserver.HTTPServer(app, ssl_options=ssl_ctx)
+        server = tornado.httpserver.HTTPServer(app, ssl_options=ssl_ctx)
         proto = 'https'
-    app.listen(8888, '0.0.0.0')
-    print(f"Listening on {proto}://0.0.0.0:%i" % 8888)
-    tornado.ioloop.IOLoop.current().start()
+        server.bind(port)
+        IOLoop.current().start()
+    else:
+        app.listen(port, '0.0.0.0')
+        tornado.ioloop.IOLoop.current().start()
+    print(f"Listening on {proto}://0.0.0.0:%i" % port)
 
 if __name__ == "__main__":
     main()
