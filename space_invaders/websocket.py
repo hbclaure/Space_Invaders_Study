@@ -326,17 +326,14 @@ def main():
     app = Application()
     port = 8888
     proto = 'http'
+    ssl_options = {}
     if os.path.exists(SSL_ROOT):
-        ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-        ssl_ctx.load_cert_chain(os.path.join(SSL_ROOT, "anna.cs.yale.edu.crt"),
-                                os.path.join(SSL_ROOT, "anna.cs.yale.edu.key"))
-        server = tornado.httpserver.HTTPServer(app, ssl_options=ssl_ctx)
+        ssl_options['certfile'] = os.path.join(SSL_ROOT, "anna.cs.yale.edu.crt")
+        ssl_options['keyfile'] = os.path.join(SSL_ROOT, "anna.cs.yale.edu.key")
         proto = 'https'
-        server.bind(port)
-    else:
-        app.listen(port, '0.0.0.0')
-    tornado.ioloop.IOLoop.current().start()
+    app.listen(port, '0.0.0.0', ssl_options=ssl_options)
     print(f"Listening on {proto}://0.0.0.0:%i" % port)
+    tornado.ioloop.IOLoop.current().start()
 
 if __name__ == "__main__":
     main()
