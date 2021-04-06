@@ -326,8 +326,8 @@ def main():
     proto = 'http'
     if os.path.exists(SSL_ROOT):
         ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-        ssl_ctx.load_cert_chain(os.path.join(data_dir, f"{SSL_ROOT}/anna.cs.yale.edu.crt"),
-                                os.path.join(data_dir, f"{SSL_ROOT}/anna.cs.yale.edu.key"))
+        ssl_ctx.load_cert_chain(os.path.join(SSL_ROOT, "anna.cs.yale.edu.crt"),
+                                os.path.join(SSL_ROOT, "anna.cs.yale.edu.key"))
         HTTPServer(application, ssl_options=ssl_ctx)
         proto = 'https'
     app.listen(8888, '0.0.0.0')
