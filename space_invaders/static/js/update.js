@@ -122,10 +122,13 @@ function update ()
         ai_pos_y: ai_ship.sprite.y,
         ai_ship_min_x: ai_ship.min_x,
         canvas_width: this.sys.canvas.width
-        
+
     }
 
     sockets.control.send(JSON.stringify(log_frame));
+    if (ai_ready == false) {
+        console.log("waiting");
+    }
 
     // REPLACES:
     //ai_ship.update(left_final, right_final, shoot_final);
@@ -143,6 +146,8 @@ function update ()
         // update the enemies
         enemies_left.update();
         enemies_right.update();
+        frames.push(log_frame);
+        frame_number += 1;
     }
     //console.log("**Game running")
 
@@ -152,13 +157,14 @@ function update ()
 
     // --- log this frame of the game ---
 
-    frames.push(log_frame);
-    frame_number += 1;
+    // frames.push(log_frame);
+    // frame_number += 1;
 
     // switch to game over screen
     if (gameover || (enemies_left_sprites.length == 0 && enemies_right_sprites.length == 0)) {
         game_log.push({player_id: player_id, date: date, round: rounds_played, mode: mode, events: events, frames: frames});
         clearInterval(recording);
+        sockets.control.send(JSON.stringify({player_id: player_id, date: date, events: events}))
         this.scene.start('gameover_scene');
     }
 }

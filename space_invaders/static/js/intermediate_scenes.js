@@ -110,7 +110,7 @@ gameover_scene.create = function() {
       cc.destroy();
       gameover_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
     }
-    sockets.log.send(JSON.stringify(game_log));
+    //sockets.log.send(JSON.stringify(game_log));
 }
 
 // --- Game Over Screen ---
@@ -139,5 +139,5 @@ gameover_scene_practice.create = function() {
       cc.destroy();
       gameover_scene_practice.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
     }
-    sockets.log.send(JSON.stringify(game_log));
+    //sockets.log.send(JSON.stringify(game_log));
 }

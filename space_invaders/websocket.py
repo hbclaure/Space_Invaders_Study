@@ -41,16 +41,82 @@ class Application(tornado.web.Application):
 
 class ControlHandler(tornado.websocket.WebSocketHandler):
     agent_mode = None
+    logs = None
 
     def check_origin(self, origin):
         '''Allow from all origins'''
         return True
+    
+    def log_data(self):
+        con = sqlite3.connect(DATABASE)
+        cur = con.cursor()
+
+        current_event = 0
+
+        cur.execute('INSERT INTO Games(player_id, date, mode) VALUES(?,?,?)',
+                                   (self.player_id, self.date, self.agent_mode))
+
+        game_id = cur.lastrowid
+
+        for frame in self.logs:
+            # log the actual frame and collect the id
+            cur.execute('''INSERT INTO Frames(game_id, frame_number, timestamp, player_position, player_lives,
+                        player_score, ai_position, ai_lives, ai_score) VALUES(?,?,?,?,?,?,?,?,?)''',
+                            (game_id, frame['frame_number'], frame['hms'], frame['player_position'], frame['player_lives'],
+                            frame['player_score'], frame['ai_position'], frame['ai_lives'], frame['ai_score']))
+            frame_id = cur.lastrowid;
+
+            # log the player bullet if it exists
+            if (len(frame['player_bullet_position']) > 0):
+                cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'Player\',?,?,?)',
+                                (frame_id, frame['player_bullet_position'][0], frame['player_bullet_position'][1]))
+
+            # log the ai bullet if it exists
+            if (len(frame['ai_bullet_position']) > 0):
+                cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'AI\',?,?,?)',
+                                (frame_id, frame['ai_bullet_position'][0], frame['ai_bullet_position'][1]))
+
+            # log every enemy on the left
+            for enemy in frame['enemies_left_positions']:
+                cur.execute('INSERT INTO Enemies(side, frame_id, x, y) VALUES(\'Left\',?,?,?)',
+                            (frame_id, enemy[0], enemy[1]))
+
+            # log every enemy bullet on the left
+            for bullet in frame['bullets_left_positions']:
+                cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'Left\',?,?,?)',
+                                (frame_id, bullet[0], bullet[1]))
+
+            # log every enemy on the right
+            for enemy in frame['enemies_right_positions']:
+                cur.execute('INSERT INTO Enemies(side, frame_id, x, y) VALUES(\'Right\',?,?,?)',
+                            (frame_id, enemy[0], enemy[1]))
+
+            # log every enemy bullet on the right
+            for bullet in frame['bullets_right_positions']:
+                cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'Right\',?,?,?)',
+                                (frame_id, bullet[0], bullet[1]))
+            
+            # log any events that occurred in this frame
+            while (current_event < len(self.events) and self.events[current_event]['frame'] == frame['frame_number']):
+                cur.execute('INSERT INTO Events(frame_id, killer, killed) VALUES(?,?,?)',
+                            (frame_id, self.events[current_event]['killer'], self.events[current_event]['killed']))
+                current_event += 1
+
+            cur.execute('INSERT INTO Actions(frame_id, timestamp, left, right, shoot) VALUES(?,?,?,?,?)',
+                            (frame_id, frame['hms'], frame['action']['left'], frame['action']['right'], frame['action']['shoot']))
+        con.commit()
+        con.close()
+        # self.write_message('saved')
 
     def on_message(self, msg):
+        time = datetime.now()
+        hms = 'w_'+ str(time.hour)+ "_" + str(time.minute)+ "_" + str(time.second)+ "_" + str(time.microsecond)
+
         if not self.agent_mode:
             try:
                 self.agent_mode = int(json.loads(msg))
                 print("Mode: ", self.agent_mode)
+                self.logs = []
             except Exception as e:
                 print(e)
         else:
@@ -58,10 +124,30 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
             state = json.loads(msg)
 
             ## or abstract the agent out into another object
-            action = current_agent.update(state)
+            if "frame_number" in state.keys():
+                action = current_agent.update(state)
 
-            # send a smarter (non-random) action
-            self.write_message(json.dumps(action))
+                state['action'] = action
+                state['hms'] = hms
+                self.logs.append(state)
+
+                # send a smarter (non-random) action
+                self.write_message(json.dumps(action))
+            else:
+                log = json.loads(msg)
+                self.events = log['events']
+                self.player_id = log['player_id']
+                self.date = log['date']
+                print("events received")
+
+                try:
+                    self.log_data()
+                    print(f"Saved to database: {self.player_id}")
+                except Exception as e:
+                    print("Logging error")
+                    print(e)
+
+
 
 class ImageHandler(tornado.websocket.WebSocketHandler):
 
@@ -86,7 +172,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
         if not self.player_id:
             try:
                 self.player_id = json.loads(msg)
-                print(self.player_id)
+                print(f"Player: {self.player_id}")
             except Exception as e:
                 print(e)
                 print("invalid")
