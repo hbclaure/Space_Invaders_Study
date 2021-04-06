@@ -10,6 +10,7 @@ import uuid
 import json
 import sqlite3
 import random
+import ssl
 from datetime import datetime
 
 from agents.uncooperative import Uncooperative
