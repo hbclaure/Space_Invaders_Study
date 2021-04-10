@@ -82,6 +82,9 @@ function update ()
         var current_enemy = enemies_right_sprites[i];
 
         enemies_right_positions.push([current_enemy.x, current_enemy.y]);
+        if (current_enemy.y > player_ship.sprite.y) {
+            gameover = true;
+        }
 
     }
 
@@ -90,7 +93,9 @@ function update ()
         var current_enemy = enemies_left_sprites[i];
 
         enemies_left_positions.push([current_enemy.x, current_enemy.y]);
-
+        if (current_enemy.y > player_ship.sprite.y) {
+            gameover = true;
+        }
     }
     
     var to_nearest_enemy = nearest_enemy.x - ai_ship.sprite.x
