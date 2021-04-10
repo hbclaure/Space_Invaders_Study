@@ -12,7 +12,8 @@ function create ()
     events = [];
 
 	// flag to tell when the game is over
-    gameover = false;
+    player_over = false;
+    ai_over = false;
 
     // debug_text flag to run debugging text in developer tools
     debug_text = false;
@@ -193,7 +194,7 @@ function create ()
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.dead = true;
             ship_sprite.props.lives -= 1;
-            gameover = true;
+            player_over = true;
         }
     });
     this.physics.add.collider(player_ship.sprite, enemies_right.bullets_group, (ship_sprite, bullet) => {
@@ -224,7 +225,7 @@ function create ()
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.dead = true;
             ship_sprite.props.lives -= 1;
-            gameover = true;
+            player_over = true;
         }
     });
 
@@ -263,6 +264,8 @@ function create ()
                 ship_sprite.props.lives -= 1;
                 ship_sprite.props.dead = true;
             });
+            ai_over = true;
+            console.log("AI OVER");
         }
     });
     this.physics.add.collider(ai_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
@@ -299,6 +302,8 @@ function create ()
                 ship_sprite.props.lives -= 1;
                 ship_sprite.props.dead = true;
             });
+            ai_over = true;
+            console.log("AI OVER");
         }
     });
 
@@ -331,7 +336,7 @@ function create ()
             else {
                 ship_sprite.props.dead = true;
                 ship_sprite.props.lives -= 1;
-                gameover = true;
+                player_over = true;
             }
             enemy.hit = true;
         }
@@ -363,7 +368,7 @@ function create ()
             else {
                 ship_sprite.props.dead = true;
                 ship_sprite.props.lives -= 1;
-                gameover = true;
+                player_over = true;
             }
             enemy.hit = true;
         }
@@ -388,6 +393,7 @@ function create ()
             else {
                 ship_sprite.props.dead = true;
                 ship_sprite.props.lives -= 1;
+                ai_over = true;
             }
             ship_sprite.play(ship_sprite.explote_anim, true);
             enemy.play(enemy.explote_anim, true);
@@ -420,6 +426,7 @@ function create ()
             else {
                 ship_sprite.props.dead = true;
                 ship_sprite.props.lives -= 1;
+                ai_over = true;
             }
             ship_sprite.play(ship_sprite.explote_anim, true);
             enemy.play(enemy.explote_anim, true);
