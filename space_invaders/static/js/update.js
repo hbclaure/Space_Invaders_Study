@@ -76,25 +76,27 @@ function update ()
     var nearest_enemy = {x: 0, y: 0};
     var nearest_x_diff = this.sys.canvas.width;
 
-    
+    // ai-side enemies
     var enemies_right_positions = [];
     for (var i=0; i < enemies_right_sprites.length; i++) {
         var current_enemy = enemies_right_sprites[i];
 
         enemies_right_positions.push([current_enemy.x, current_enemy.y]);
-        if (current_enemy.y > player_ship.sprite.y) {
-            gameover = true;
+        if (current_enemy.y > ai_ship.sprite.y) {
+            ai_over = true;
+            console.log("AI OVER")
         }
 
     }
 
+    // player-side enemies
     var enemies_left_positions = [];
     for (var i=0; i < enemies_left_sprites.length; i++) {
         var current_enemy = enemies_left_sprites[i];
 
         enemies_left_positions.push([current_enemy.x, current_enemy.y]);
         if (current_enemy.y > player_ship.sprite.y) {
-            gameover = true;
+            player_over = true;
         }
     }
     
@@ -166,7 +168,7 @@ function update ()
     // frame_number += 1;
 
     // switch to game over screen
-    if (gameover || (enemies_left_sprites.length == 0 && enemies_right_sprites.length == 0)) {
+    if ((player_over && ai_over) || (enemies_left_sprites.length == 0 && enemies_right_sprites.length == 0)) {
         game_log.push({player_id: player_id, date: date, round: rounds_played, mode: mode, events: events, frames: frames});
         clearInterval(recording);
         sockets.control.send(JSON.stringify({player_id: player_id, date: date, events: events}))
