@@ -20,7 +20,13 @@ from agents.cooperative_late import CooperativeLate
 WEBROOT = os.path.dirname(os.path.realpath(__file__))
 DATABASE = os.path.join(WEBROOT, 'db/game_logs.db')
 
-current_agent = CooperativeEarly()
+#current_agent = CooperativeEarly()
+
+agents = {
+    1: CooperativeEarly,
+    2: CooperativeLate,
+    3: Uncooperative
+}
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -40,7 +46,8 @@ class Application(tornado.web.Application):
         super().__init__(handlers, **settings)
 
 class ControlHandler(tornado.websocket.WebSocketHandler):
-    agent_mode = None
+    mode = None
+    current_agent = None
     logs = None
 
     def check_origin(self, origin):
@@ -54,7 +61,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
         current_event = 0
 
         cur.execute('INSERT INTO Games(player_id, date, mode) VALUES(?,?,?)',
-                                   (self.player_id, self.date, self.agent_mode))
+                                   (self.player_id, self.date, self.mode))
 
         game_id = cur.lastrowid
 
@@ -112,10 +119,12 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
         time = datetime.now()
         hms = 'w_'+ str(time.hour)+ "_" + str(time.minute)+ "_" + str(time.second)+ "_" + str(time.microsecond)
 
-        if not self.agent_mode:
+        if not self.mode:
             try:
-                self.agent_mode = int(json.loads(msg))
-                print("Mode: ", self.agent_mode)
+                self.mode = int(json.loads(msg))
+                print("Mode: ", self.mode)
+                self.current_agent = agents[self.mode]()
+                print("Current Agent: ", self.current_agent)
                 self.logs = []
             except Exception as e:
                 print(e)
@@ -125,7 +134,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
 
             ## or abstract the agent out into another object
             if "frame_number" in state.keys():
-                action = current_agent.update(state)
+                action = self.current_agent.update(state)
 
                 state['action'] = action
                 state['hms'] = hms
