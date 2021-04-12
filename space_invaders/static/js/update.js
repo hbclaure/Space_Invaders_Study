@@ -166,6 +166,12 @@ function update ()
 
     // frames.push(log_frame);
     // frame_number += 1;
+    if (enemies_left_sprites.length == 0) {
+        player_over = true;
+    }
+    if (enemies_right_sprites.length == 0) {
+        ai_over = true;
+    }
 
     // switch to game over screen
     if ((player_over && ai_over) || (enemies_left_sprites.length == 0 && enemies_right_sprites.length == 0)) {
