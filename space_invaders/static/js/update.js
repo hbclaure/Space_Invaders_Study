@@ -171,7 +171,7 @@ function update ()
     if ((player_over && ai_over) || (enemies_left_sprites.length == 0 && enemies_right_sprites.length == 0)) {
         game_log.push({player_id: player_id, date: date, round: rounds_played, mode: mode, events: events, frames: frames});
         clearInterval(recording);
-        sockets.control.send(JSON.stringify({player_id: player_id, date: date, events: events}))
+        //sockets.control.send(JSON.stringify({player_id: player_id, date: date, events: events}))
         this.scene.start('gameover_scene');
     }
 }

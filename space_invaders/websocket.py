@@ -153,6 +153,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
 
                 try:
                     self.log_data()
+                    self.write_message("saved")
                     print(f"Saved to database: {self.player_id}")
                 except Exception as e:
                     print("Logging error")
