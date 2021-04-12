@@ -112,6 +112,7 @@ var ai_score;                           //!< total ai score (accumulated over mu
 
 var date;                               //!< date
 var player_id;                          //!< unique ID
+var game_num                            //!< game number
 
 
 /**
@@ -132,7 +133,7 @@ function findGetParameter(parameterName) {
 player_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
 mode = findGetParameter('mode'); 
 mode = (mode && !isNaN(mode) && parseInt(mode, 10) >= 0 && parseInt(mode, 10) <= 3) ? parseInt(mode, 10) : COOPERATIVE_EARLY;
-
+game_num = findGetParameter('game') ? findGetParameter('game') : 0;
 
 /**
  * Create bullets pool

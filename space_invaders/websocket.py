@@ -165,6 +165,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
     #frame_count = 0
     player_id = None
     mode = None
+    game_num = None
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -183,8 +184,10 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
         if not self.player_id:
             try:
                 state = json.loads(msg)
+                print("STATE",state)
                 self.player_id = state['player_id']
                 self.mode = state['mode']
+                self.game_num = state['game_num']
                 print(f"Player: {self.player_id}")
             except Exception as e:
                 print(e)
@@ -195,7 +198,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 #self.frame_count += 1
                 if image:
                     #print("frame {} recorded".format(str(self.frame_count)))
-                    folder = "P"+str(self.player_id)+"_mode"+str(self.mode)+time_label
+                    folder = "P"+str(self.player_id)+"_mode"+str(self.mode)+"_gamenum"+str(self.game_num)+time_label
                     filename = f"recorded_frames/{folder}/webcam/{hms}.jpg"
 
                     if not os.path.exists(os.path.dirname(filename)):
@@ -211,6 +214,7 @@ class GameHandler(tornado.websocket.WebSocketHandler):
     #frame_count = 0
     player_id = None
     mode = None
+    game_num = None
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -231,6 +235,7 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                 state = json.loads(msg)
                 self.player_id = state['player_id']
                 self.mode = state['mode']
+                self.game_num = state['game_num']
                 print(f"Recording frames: {self.player_id}")
             except Exception as e:
                 print(e)
@@ -241,7 +246,7 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                 #self.frame_count += 1
                 if image:
                     #print("frame {} recorded".format(str(self.frame_count)))
-                    folder = "P"+str(self.player_id)+"_mode"+str(self.mode)+time_label
+                    folder = "P"+str(self.player_id)+"_mode"+str(self.mode)+"_gamenum"+str(self.game_num)+time_label
                     filename = f"recorded_frames/{folder}/gamescreen/{hms}.jpg"
 
                     if not os.path.exists(os.path.dirname(filename)):

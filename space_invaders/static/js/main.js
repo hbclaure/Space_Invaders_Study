@@ -1,7 +1,7 @@
 proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
 
 var sockets = {
-  log: new WebSocket(proto + "://"+window.location.host+"/log"),
+  // log: new WebSocket(proto + "://"+window.location.host+"/log"),
   control: new WebSocket(proto + "://"+window.location.host+"/control"),
   image: new WebSocket(proto + "://"+window.location.host+"/image"),
   game: new WebSocket(proto + "://"+window.location.host+"/game"),

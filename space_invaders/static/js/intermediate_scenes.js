@@ -29,16 +29,16 @@ start_scene.update = function() {
             sockets.control.send(JSON.stringify(mode))
             this.scene.start('practice_scene');
             //begin recording frames
-            sockets.image.send(JSON.stringify({player_id:player_id,mode:mode}));
-            sockets.game.send(JSON.stringify({player_id:player_id,mode:mode}));
+            sockets.image.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num}));
+            sockets.game.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num}));
             save_image_loop(); 
         }
         else {
             sockets.control.send(JSON.stringify(mode))
             this.scene.start('game_scene');
             // begin recording frames
-            sockets.image.send(JSON.stringify({player_id:player_id,mode:mode}));
-            sockets.game.send(JSON.stringify({player_id:player_id,mode:mode}));
+            sockets.image.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num}));
+            sockets.game.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num}));
             save_image_loop(); 
         }
     }
