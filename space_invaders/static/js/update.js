@@ -126,16 +126,16 @@ function update ()
 
         can_shoot: ai_shoots,
 
-        ai_pos_y: ai_ship.sprite.y,
-        ai_ship_min_x: ai_ship.min_x,
-        canvas_width: this.sys.canvas.width
+        //ai_pos_y: ai_ship.sprite.y,
+        //ai_ship_min_x: ai_ship.min_x,
+        //canvas_width: this.sys.canvas.width
 
     }
 
     sockets.control.send(JSON.stringify(log_frame));
-    if (ai_ready == false) {
-        console.log("waiting");
-    }
+    // if (ai_ready == false) {
+    //     console.log("waiting");
+    // }
 
     // REPLACES:
     //ai_ship.update(left_final, right_final, shoot_final);
@@ -174,7 +174,7 @@ function update ()
     }
 
     // switch to game over screen
-    if ((player_over && ai_over) || (enemies_left_sprites.length == 0 && enemies_right_sprites.length == 0)) {
+    if (player_over && ai_over) {
         game_log.push({player_id: player_id, date: date, round: rounds_played, mode: mode, events: events, frames: frames});
         clearInterval(recording);
         //sockets.control.send(JSON.stringify({player_id: player_id, date: date, events: events}))
