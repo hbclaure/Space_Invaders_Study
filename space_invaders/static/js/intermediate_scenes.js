@@ -29,16 +29,16 @@ start_scene.update = function() {
             sockets.control.send(JSON.stringify(mode))
             this.scene.start('practice_scene');
             //begin recording frames
-            sockets.image.send(JSON.stringify(player_id));
-            sockets.game.send(JSON.stringify(player_id));
+            sockets.image.send(JSON.stringify({player_id:player_id,mode:mode}));
+            sockets.game.send(JSON.stringify({player_id:player_id,mode:mode}));
             save_image_loop(); 
         }
         else {
             sockets.control.send(JSON.stringify(mode))
             this.scene.start('game_scene');
             // begin recording frames
-            sockets.image.send(JSON.stringify(player_id));
-            sockets.game.send(JSON.stringify(player_id));
+            sockets.image.send(JSON.stringify({player_id:player_id,mode:mode}));
+            sockets.game.send(JSON.stringify({player_id:player_id,mode:mode}));
             save_image_loop(); 
         }
     }
@@ -106,10 +106,10 @@ gameover_scene.create = function() {
     var cc_text = this.add.bitmapText(400, 450, 'PressStart2P_White', 'Completion Code:', 20).setOrigin(0.5).setCenterAlign();
     var cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
     // log this game
-    sockets.log.onmessage = function(event) {
-      cc.destroy();
-      gameover_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
-    }
+    //sockets.log.onmessage = function(event) {
+    cc.destroy();
+    gameover_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
+    //}
     //sockets.log.send(JSON.stringify(game_log));
 }
 
@@ -135,9 +135,9 @@ gameover_scene_practice.create = function() {
     var cc_text = this.add.bitmapText(400, 450, 'PressStart2P_White', 'Completion Code:', 20).setOrigin(0.5).setCenterAlign();
     var cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
     // log this game
-    sockets.log.onmessage = function(event) {
-      cc.destroy();
-      gameover_scene_practice.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
-    }
+    //sockets.log.onmessage = function(event) {
+    cc.destroy();
+    gameover_scene_practice.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
+    //}
     //sockets.log.send(JSON.stringify(game_log));
 }
