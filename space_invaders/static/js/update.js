@@ -82,7 +82,7 @@ function update ()
         var current_enemy = enemies_right_sprites[i];
 
         enemies_right_positions.push([current_enemy.x, current_enemy.y]);
-        if (current_enemy.y > ai_ship.sprite.y) {
+        if (current_enemy.y > ai_ship.sprite.y || current_enemy.y > player_ship.sprite.y) {
             ai_over = true;
             console.log("AI OVER")
         }
@@ -95,7 +95,7 @@ function update ()
         var current_enemy = enemies_left_sprites[i];
 
         enemies_left_positions.push([current_enemy.x, current_enemy.y]);
-        if (current_enemy.y > player_ship.sprite.y) {
+        if (current_enemy.y > player_ship.sprite.y || current_enemy.y > ai_ship.sprite.y) {
             player_over = true;
         }
     }
@@ -133,9 +133,9 @@ function update ()
     }
 
     sockets.control.send(JSON.stringify(log_frame));
-    // if (ai_ready == false) {
-    //     console.log("waiting");
-    // }
+    if (ai_ready == false) {
+        console.log("waiting");
+    }
 
     // REPLACES:
     //ai_ship.update(left_final, right_final, shoot_final);
