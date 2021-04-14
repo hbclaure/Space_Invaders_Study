@@ -67,17 +67,19 @@ function logpicture() {
         canvas.width = width;
         canvas.height = height;
         context.drawImage(video, 0, 0, width, height);
-        canvas.toBlob(function(blob) {
-            sockets.image.send(blob);
-        },'image/jpeg');
+        sockets.image.send(JSON.stringify({'img':canvas.toDataURL('image/jpeg'),'frame_number':frame_number}))
+        //canvas.toBlob(function(blob) {
+        //    sockets.image.send(blob);
+        //},'image/jpeg');
     }
 }
 
 // record game frames
 function loggame() {
-    game.canvas.toBlob(function(blob) {
-        sockets.game.send(blob);
-    }, 'image/jpeg');
+    sockets.game.send(JSON.stringify({'img':game.canvas.toDataURL('image/jpeg'),'frame_number':frame_number}))
+    //game.canvas.toBlob(function(blob) {
+    //    sockets.game.send(blob);
+    //}, 'image/jpeg');
 }
 
 window.addEventListener('load', startup, false);

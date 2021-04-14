@@ -13,6 +13,7 @@ import sqlite3
 import random
 import ssl
 from datetime import datetime
+import base64
 
 from agents.uncooperative import Uncooperative
 from agents.cooperative_early import CooperativeEarly
@@ -70,7 +71,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
             # log the actual frame and collect the id
             cur.execute('''INSERT INTO Frames(game_id, frame_number, timestamp, player_position, player_lives,
                         player_score, ai_position, ai_lives, ai_score) VALUES(?,?,?,?,?,?,?,?,?)''',
-                            (game_id, frame['frame_number'], frame['hms'], frame['player_position'], frame['player_lives'],
+                            (game_id, frame['frame_number'], frame['timestamp'], frame['player_position'], frame['player_lives'],
                             frame['player_score'], frame['ai_position'], frame['ai_lives'], frame['ai_score']))
             frame_id = cur.lastrowid;
 
@@ -111,14 +112,14 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 current_event += 1
 
             cur.execute('INSERT INTO Actions(frame_id, timestamp, left, right, shoot) VALUES(?,?,?,?,?)',
-                            (frame_id, frame['hms'], frame['action']['left'], frame['action']['right'], frame['action']['shoot']))
+                            (frame_id, frame['timestamp'], frame['action']['left'], frame['action']['right'], frame['action']['shoot']))
         con.commit()
         con.close()
         # self.write_message('saved')
 
     def on_message(self, msg):
-        time = datetime.now()
-        hms = 'w_'+ str(time.hour)+ "_" + str(time.minute)+ "_" + str(time.second)+ "_" + str(time.microsecond)
+        timestamp = datetime.utcnow()
+        #hms = str(time.hour)+ "_" + str(time.minute)+ "_" + str(time.second)+ "_" + str(time.microsecond)
 
         if not self.mode:
             try:
@@ -136,7 +137,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 action = self.current_agent.update(state)
 
                 state['action'] = action
-                state['hms'] = hms
+                state['timestamp'] = timestamp
                 self.logs.append(state)
 
                 # send action
@@ -160,10 +161,10 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
 
 class ImageHandler(tornado.websocket.WebSocketHandler):
 
-    #frame_count = 0
     player_id = None
     mode = None
     game_num = None
+    time_label = None
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -176,45 +177,47 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
         pass
 
     def on_message(self, msg):
-        time = datetime.now()
-        time_label = "_"+str(time.year)+"_" + str(time.month)+"_" + str(time.day)
-        hms = 'w_'+ str(time.hour)+ "_" + str(time.minute)+ "_" + str(time.second)+ "_" + str(time.microsecond)
         if not self.player_id:
             try:
                 state = json.loads(msg)
                 self.player_id = state['player_id']
                 self.mode = state['mode']
+                time = datetime.utcnow()
+                self.time_label = str(time.year)+"_" + str(time.month)+"_" + str(time.day)+"_" + str(time.hour)+"_" + str(time.minute)
                 gn = state['game_num']
-                while(os.path.exists(os.path.dirname(f"recorded_frames/P"+str(self.player_id)+"_mode"+str(self.mode)+"_gamenum"+str(gn)+time_label+"/"))):
+                while(os.path.exists(os.path.dirname(f"recorded_frames/P"+str(self.player_id)+"_m"+str(self.mode)+"_g"+str(gn)+"_t"+str(self.time_label)+"/"))):
                     gn = int(gn)+100
                 self.game_num = str(gn)
+                
                 print(f"Player: {self.player_id}")
             except Exception as e:
                 print(e)
                 print("invalid")
         else:
             try:
-                image = msg
-                #self.frame_count += 1
-                if image:
-                    #print("frame {} recorded".format(str(self.frame_count)))
-                    folder = "P"+str(self.player_id)+"_mode"+str(self.mode)+"_gamenum"+str(self.game_num)+time_label
-                    filename = f"recorded_frames/{folder}/webcam/{hms}.jpg"
+                r_msg = json.loads(msg)
+                if 'frame_number' in r_msg.keys():   
+                    frame_number = r_msg['frame_number']
+                    image = base64.b64decode(r_msg['img'].split('base64')[-1])
+                    if image:
+                        folder = "P"+str(self.player_id)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
+                        filename = f"recorded_frames/{folder}/webcam/w_{frame_number:05d}.jpg"
 
-                    if not os.path.exists(os.path.dirname(filename)):
-                        os.makedirs(os.path.dirname(filename))
+                        if not os.path.exists(os.path.dirname(filename)):
+                            os.makedirs(os.path.dirname(filename))
 
-                    with open(filename, "+wb") as f:
-                        f.write(image)
+                        with open(filename, "+wb") as f:
+                            f.write(image)
             except Exception as e:
                 print(e)
                 print("error")
 
 class GameHandler(tornado.websocket.WebSocketHandler):
-    #frame_count = 0
+    
     player_id = None
     mode = None
     game_num = None
+    time_label = None
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -227,16 +230,15 @@ class GameHandler(tornado.websocket.WebSocketHandler):
         pass
 
     def on_message(self, msg):
-        time = datetime.now()
-        time_label = "_"+str(time.year)+"_" + str(time.month)+"_" + str(time.day)
-        hms = 'g_'+ str(time.hour)+ "_" + str(time.minute)+ "_" + str(time.second)+ "_" + str(time.microsecond)
         if not self.player_id:
             try:
                 state = json.loads(msg)
                 self.player_id = state['player_id']
                 self.mode = state['mode']
+                time = datetime.utcnow()
+                self.time_label = str(time.year)+"_" + str(time.month)+"_" + str(time.day)+"_" + str(time.hour)+"_" + str(time.minute)
                 gn = state['game_num']
-                while(os.path.exists(os.path.dirname(f"recorded_frames/P"+str(self.player_id)+"_mode"+str(self.mode)+"_gamenum"+str(gn)+time_label+"/"))):
+                while(os.path.exists(os.path.dirname(f"recorded_frames/P"+str(self.player_id)+"_m"+str(self.mode)+"_g"+str(gn)+"_t"+str(self.time_label)+"/"))):
                     gn = int(gn)+100
                 self.game_num = str(gn)
                 print(f"Recording frames: {self.player_id}")
@@ -245,18 +247,19 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                 print("invalid")
         else:
             try:
-                image = msg
-                #self.frame_count += 1
-                if image:
-                    #print("frame {} recorded".format(str(self.frame_count)))
-                    folder = "P"+str(self.player_id)+"_mode"+str(self.mode)+"_gamenum"+str(self.game_num)+time_label
-                    filename = f"recorded_frames/{folder}/gamescreen/{hms}.jpg"
+                r_msg = json.loads(msg)
+                if 'frame_number' in r_msg.keys():
+                    frame_number = r_msg['frame_number']
+                    image = base64.b64decode(r_msg['img'].split('base64')[-1])
+                    if image:
+                        folder = "P"+str(self.player_id)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
+                        filename = f"recorded_frames/{folder}/gamescreen/g_{frame_number:05d}.jpg"
 
-                    if not os.path.exists(os.path.dirname(filename)):
-                        os.makedirs(os.path.dirname(filename))
+                        if not os.path.exists(os.path.dirname(filename)):
+                            os.makedirs(os.path.dirname(filename))
 
-                    with open(filename, "+wb") as f:
-                        f.write(image)
+                        with open(filename, "+wb") as f:
+                            f.write(image)
             except Exception as e:
                 print(e)
                 print("error")
