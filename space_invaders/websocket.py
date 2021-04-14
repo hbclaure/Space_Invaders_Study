@@ -21,6 +21,7 @@ from agents.cooperative_late import CooperativeLate
 
 from tornado.options import define, options
 define("port",default = 8888,help="run on the given port", type=int)
+define("machine",default='anna',help="run on machine",type=str)
 
 WEBROOT = os.path.dirname(os.path.realpath(__file__))
 DATABASE = os.path.join(WEBROOT, 'db/game_logs.db')
@@ -31,6 +32,11 @@ agents = {
     1: CooperativeEarly,
     2: CooperativeLate,
     3: Uncooperative
+}
+
+machines = {
+    'anna': ("anna.cs.yale.edu.crt","anna.cs.yale.edu.key"),
+    'xpm': ("apache.crt","apache.key")
 }
 
 class Application(tornado.web.Application):
@@ -271,11 +277,14 @@ def main():
     app = Application()
     tornado.options.parse_command_line()
     port = options.port
+    machine = options.machine
     proto = 'http'
     ssl_options = {}
     if os.path.exists(SSL_ROOT):
-        ssl_options['certfile'] = os.path.join(SSL_ROOT, "anna.cs.yale.edu.crt")
-        ssl_options['keyfile'] = os.path.join(SSL_ROOT, "anna.cs.yale.edu.key")
+        crt = machines[machine][0]
+        key = machines[machine][1]
+        ssl_options['certfile'] = os.path.join(SSL_ROOT, crt)
+        ssl_options['keyfile'] = os.path.join(SSL_ROOT, key)
         proto = 'https'
         app.listen(port, '0.0.0.0', ssl_options=ssl_options)
     else:
