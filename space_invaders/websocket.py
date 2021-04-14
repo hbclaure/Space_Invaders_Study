@@ -19,6 +19,9 @@ from agents.uncooperative import Uncooperative
 from agents.cooperative_early import CooperativeEarly
 from agents.cooperative_late import CooperativeLate
 
+from tornado.options import define, options
+define("port",default = 8888,help="run on the given port", type=int)
+
 WEBROOT = os.path.dirname(os.path.realpath(__file__))
 DATABASE = os.path.join(WEBROOT, 'db/game_logs.db')
 SSL_ROOT = "/etc/apache2/ssl"
@@ -119,7 +122,6 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, msg):
         timestamp = datetime.utcnow()
-        #hms = str(time.hour)+ "_" + str(time.minute)+ "_" + str(time.second)+ "_" + str(time.microsecond)
 
         if not self.mode:
             try:
@@ -267,7 +269,8 @@ class GameHandler(tornado.websocket.WebSocketHandler):
 
 def main():
     app = Application()
-    port = 8888
+    tornado.options.parse_command_line()
+    port = options.port
     proto = 'http'
     ssl_options = {}
     if os.path.exists(SSL_ROOT):
