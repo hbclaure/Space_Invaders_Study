@@ -1,8 +1,10 @@
+proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
+
 var sockets = {
-  log: new WebSocket("ws://"+window.location.host+"/log"),
-  control: new WebSocket("ws://"+window.location.host+"/control"),
-  image: new WebSocket("ws://"+window.location.host+"/image"),
-  game: new WebSocket("ws://"+window.location.host+"/game"),
+  // log: new WebSocket(proto + "://"+window.location.host+"/log"),
+  control: new WebSocket(proto + "://"+window.location.host+"/control"),
+  image: new WebSocket(proto + "://"+window.location.host+"/image"),
+  game: new WebSocket(proto + "://"+window.location.host+"/game"),
 }
 
 // handle commands from the server

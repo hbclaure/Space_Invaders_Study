@@ -174,6 +174,9 @@ function create ()
         if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
         else if (ship_sprite.props.lives >= 1) {
+            // give the player 50 frames of invincibility
+            ship_sprite.props.invincible = true;
+            ship_sprite.props.invincibility_timer = 50;
             events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
@@ -184,9 +187,6 @@ function create ()
                 ship_sprite.x = this.sys.canvas.width / 2;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
-                // give the player 50 frames of invincibility
-                ship_sprite.props.invincible = true;
-                ship_sprite.props.invincibility_timer = 50;
             });
         }
         else {
@@ -205,6 +205,9 @@ function create ()
         if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
         else if (ship_sprite.props.lives >= 1) {
+            // give the player 50 frames of invincibility
+            ship_sprite.props.invincible = true;
+            ship_sprite.props.invincibility_timer = 50;
             events.push({frame: frame_number, killer: 'RIGHT', killed: 'PLAYER'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
@@ -215,9 +218,6 @@ function create ()
                 ship_sprite.x = this.sys.canvas.width / 2;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
-                // give the player 50 frames of invincibility
-                ship_sprite.props.invincible = true;
-                ship_sprite.props.invincibility_timer = 50;
             });
         }
         else {
@@ -238,6 +238,9 @@ function create ()
         if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
         else if (ship_sprite.props.lives >= 1) {
+            // give the player 50 frames of invincibility
+            ship_sprite.props.invincible = true;
+            ship_sprite.props.invincibility_timer = 50;
             events.push({frame: frame_number, killer: 'RIGHT', killed: 'AI'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
@@ -248,9 +251,6 @@ function create ()
                 ship_sprite.x = this.sys.canvas.width / 2 + 25;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
-                // give the player 50 frames of invincibility
-                ship_sprite.props.invincible = true;
-                ship_sprite.props.invincibility_timer = 50;
             });
         }
         else {
@@ -276,6 +276,9 @@ function create ()
         if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
         else if (ship_sprite.props.lives >= 1) {
+            // give the player 50 frames of invincibility
+            ship_sprite.props.invincible = true;
+            ship_sprite.props.invincibility_timer = 50;
             events.push({frame: frame_number, killer: 'LEFT', killed: 'AI'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
@@ -286,9 +289,6 @@ function create ()
                 ship_sprite.x = this.sys.canvas.width / 2 + 25;
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
-                // give the player 50 frames of invincibility
-                ship_sprite.props.invincible = true;
-                ship_sprite.props.invincibility_timer = 50;
             });
         }
         else {

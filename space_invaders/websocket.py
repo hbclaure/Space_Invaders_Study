@@ -5,12 +5,13 @@ import tornado.options
 import tornado.web
 import tornado.websocket
 import tornado.gen
-
+import tornado.httpserver
 import os
 import uuid
 import json
 import sqlite3
 import random
+import ssl
 from datetime import datetime
 
 from agents.uncooperative import Uncooperative
@@ -19,6 +20,7 @@ from agents.cooperative_late import CooperativeLate
 
 WEBROOT = os.path.dirname(os.path.realpath(__file__))
 DATABASE = os.path.join(WEBROOT, 'db/game_logs.db')
+SSL_ROOT = "/etc/apache2/ssl"
 
 #current_agent = CooperativeEarly()
 
@@ -37,7 +39,7 @@ class Application(tornado.web.Application):
             xsrf_cookies=True,
         )
         handlers = [
-            (r"/log", LogHandler),
+            #(r"/log", LogHandler),
             (r"/control", ControlHandler),
             (r"/image", ImageHandler),
             (r"/game", GameHandler),
@@ -151,6 +153,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
 
                 try:
                     self.log_data()
+                    self.write_message("saved")
                     print(f"Saved to database: {self.player_id}")
                 except Exception as e:
                     print("Logging error")
@@ -160,8 +163,10 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
 
 class ImageHandler(tornado.websocket.WebSocketHandler):
 
-    frame_count = 0
+    #frame_count = 0
     player_id = None
+    mode = None
+    game_num = None
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -175,12 +180,15 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, msg):
         time = datetime.now()
-        playerid = self.player_id
-        id_time = str(playerid)+"_"+str(time.year)+"_" + str(time.month)+"_" + str(time.day)
+        time_label = "_"+str(time.year)+"_" + str(time.month)+"_" + str(time.day)
         hms = 'w_'+ str(time.hour)+ "_" + str(time.minute)+ "_" + str(time.second)+ "_" + str(time.microsecond)
         if not self.player_id:
             try:
-                self.player_id = json.loads(msg)
+                state = json.loads(msg)
+                print("STATE",state)
+                self.player_id = state['player_id']
+                self.mode = state['mode']
+                self.game_num = state['game_num']
                 print(f"Player: {self.player_id}")
             except Exception as e:
                 print(e)
@@ -188,10 +196,11 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
         else:
             try:
                 image = msg
-                self.frame_count += 1
+                #self.frame_count += 1
                 if image:
                     #print("frame {} recorded".format(str(self.frame_count)))
-                    filename = f"recorded_frames/{id_time}/webcam/{hms}.jpg"
+                    folder = "P"+str(self.player_id)+"_mode"+str(self.mode)+"_gamenum"+str(self.game_num)+time_label
+                    filename = f"recorded_frames/{folder}/webcam/{hms}.jpg"
 
                     if not os.path.exists(os.path.dirname(filename)):
                         os.makedirs(os.path.dirname(filename))
@@ -203,8 +212,10 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 print("error")
 
 class GameHandler(tornado.websocket.WebSocketHandler):
-    frame_count = 0
+    #frame_count = 0
     player_id = None
+    mode = None
+    game_num = None
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -218,13 +229,14 @@ class GameHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, msg):
         time = datetime.now()
-        playerid = self.player_id
-        id_time = str(playerid)+"_"+str(time.year)+"_" + str(time.month)+"_" + str(time.day)
+        time_label = "_"+str(time.year)+"_" + str(time.month)+"_" + str(time.day)
         hms = 'g_'+ str(time.hour)+ "_" + str(time.minute)+ "_" + str(time.second)+ "_" + str(time.microsecond)
         if not self.player_id:
             try:
-                self.player_id = json.loads(msg)
-                print(self.player_id)
+                state = json.loads(msg)
+                self.player_id = state['player_id']
+                self.mode = state['mode']
+                self.game_num = state['game_num']
                 print(f"Recording frames: {self.player_id}")
             except Exception as e:
                 print(e)
@@ -232,10 +244,11 @@ class GameHandler(tornado.websocket.WebSocketHandler):
         else:
             try:
                 image = msg
-                self.frame_count += 1
+                #self.frame_count += 1
                 if image:
                     #print("frame {} recorded".format(str(self.frame_count)))
-                    filename = f"recorded_frames/{id_time}/gamescreen/{hms}.jpg"
+                    folder = "P"+str(self.player_id)+"_mode"+str(self.mode)+"_gamenum"+str(self.game_num)+time_label
+                    filename = f"recorded_frames/{folder}/gamescreen/{hms}.jpg"
 
                     if not os.path.exists(os.path.dirname(filename)):
                         os.makedirs(os.path.dirname(filename))
@@ -246,93 +259,102 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                 print(e)
                 print("error")
 
-class LogHandler(tornado.websocket.WebSocketHandler):
-    def check_origin(self, origin):
-        '''Allow from all origins'''
-        return True
+# class LogHandler(tornado.websocket.WebSocketHandler):
+#     def check_origin(self, origin):
+#         '''Allow from all origins'''
+#         return True
 
-    def open(self):
-        pass
-        #self.write_message('hi')
-        #logging.info("connect: there are now %d connections", len(self.waiters))
+#     def open(self):
+#         pass
+#         #self.write_message('hi')
+#         #logging.info("connect: there are now %d connections", len(self.waiters))
 
-    def on_close(self):
-        pass
-        #logging.info("disconnect: there are now %d connections", len(self.waiters))
+#     def on_close(self):
+#         pass
+#         #logging.info("disconnect: there are now %d connections", len(self.waiters))
 
-    def on_message(self, msg):
-        logs = json.loads(msg)
+#     def on_message(self, msg):
+#         logs = json.loads(msg)
 
-        con = sqlite3.connect(DATABASE)
-        cur = con.cursor()
+#         con = sqlite3.connect(DATABASE)
+#         cur = con.cursor()
 
-        # Go through each game log
-        for log in logs:
-            # Log the actual game and collect the id
+#         # Go through each game log
+#         for log in logs:
+#             # Log the actual game and collect the id
 
-            cur.execute('INSERT INTO Games(player_id, date, round, mode) VALUES(?, ?, ?, ?)',
-                                   (log['player_id'], log['date'], log['round'], log['mode']))
+#             cur.execute('INSERT INTO Games(player_id, date, round, mode) VALUES(?, ?, ?, ?)',
+#                                    (log['player_id'], log['date'], log['round'], log['mode']))
 
-            game_id = cur.lastrowid
+#             game_id = cur.lastrowid
 
-            # Keep track of the event that we're checking
-            current_event = 0;
+#             # Keep track of the event that we're checking
+#             current_event = 0;
 
-            # Go through every frame of the game
-            for frame in log['frames']:
-                # log the actual frame and collect the id
-                cur.execute('''INSERT INTO Frames(game_id, frame_number, player_position, player_lives,
-                            player_score, ai_position, ai_lives, ai_score) VALUES(?,?,?,?,?,?,?,?)''',
-                             (game_id, frame['frame_number'], frame['player_position'], frame['player_lives'],
-                              frame['player_score'], frame['ai_position'], frame['ai_lives'], frame['ai_score']))
-                frame_id = cur.lastrowid;
+#             # Go through every frame of the game
+#             for frame in log['frames']:
+#                 # log the actual frame and collect the id
+#                 cur.execute('''INSERT INTO Frames(game_id, frame_number, player_position, player_lives,
+#                             player_score, ai_position, ai_lives, ai_score) VALUES(?,?,?,?,?,?,?,?)''',
+#                              (game_id, frame['frame_number'], frame['player_position'], frame['player_lives'],
+#                               frame['player_score'], frame['ai_position'], frame['ai_lives'], frame['ai_score']))
+#                 frame_id = cur.lastrowid;
 
-                # log the player bullet if it exists
-                if (len(frame['player_bullet_position']) > 0):
-                    cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'Player\',?,?,?)',
-                                   (frame_id, frame['player_bullet_position'][0], frame['player_bullet_position'][1]))
+#                 # log the player bullet if it exists
+#                 if (len(frame['player_bullet_position']) > 0):
+#                     cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'Player\',?,?,?)',
+#                                    (frame_id, frame['player_bullet_position'][0], frame['player_bullet_position'][1]))
 
-                # log the ai bullet if it exists
-                if (len(frame['ai_bullet_position']) > 0):
-                    cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'AI\',?,?,?)',
-                                   (frame_id, frame['ai_bullet_position'][0], frame['ai_bullet_position'][1]))
+#                 # log the ai bullet if it exists
+#                 if (len(frame['ai_bullet_position']) > 0):
+#                     cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'AI\',?,?,?)',
+#                                    (frame_id, frame['ai_bullet_position'][0], frame['ai_bullet_position'][1]))
 
-                # log every enemy on the left
-                for enemy in frame['enemies_left_positions']:
-                    cur.execute('INSERT INTO Enemies(side, frame_id, x, y) VALUES(\'Left\',?,?,?)',
-                               (frame_id, enemy[0], enemy[1]))
+#                 # log every enemy on the left
+#                 for enemy in frame['enemies_left_positions']:
+#                     cur.execute('INSERT INTO Enemies(side, frame_id, x, y) VALUES(\'Left\',?,?,?)',
+#                                (frame_id, enemy[0], enemy[1]))
 
-                # log every enemy bullet on the left
-                for bullet in frame['bullets_left_positions']:
-                    cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'Left\',?,?,?)',
-                                   (frame_id, bullet[0], bullet[1]))
+#                 # log every enemy bullet on the left
+#                 for bullet in frame['bullets_left_positions']:
+#                     cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'Left\',?,?,?)',
+#                                    (frame_id, bullet[0], bullet[1]))
 
-                # log every enemy on the right
-                for enemy in frame['enemies_right_positions']:
-                    cur.execute('INSERT INTO Enemies(side, frame_id, x, y) VALUES(\'Right\',?,?,?)',
-                               (frame_id, enemy[0], enemy[1]))
+#                 # log every enemy on the right
+#                 for enemy in frame['enemies_right_positions']:
+#                     cur.execute('INSERT INTO Enemies(side, frame_id, x, y) VALUES(\'Right\',?,?,?)',
+#                                (frame_id, enemy[0], enemy[1]))
 
-                # log every enemy bullet on the right
-                for bullet in frame['bullets_right_positions']:
-                    cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'Right\',?,?,?)',
-                                   (frame_id, bullet[0], bullet[1]))
+#                 # log every enemy bullet on the right
+#                 for bullet in frame['bullets_right_positions']:
+#                     cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'Right\',?,?,?)',
+#                                    (frame_id, bullet[0], bullet[1]))
 
-                # log any events that occurred in this frame
-                while (current_event < len(log['events']) and log['events'][current_event]['frame'] == frame['frame_number']):
-                    cur.execute('INSERT INTO Events(frame_id, killer, killed) VALUES(?,?,?)',
-                                (frame_id, log['events'][current_event]['killer'], log['events'][current_event]['killed']))
-                    current_event += 1
+#                 # log any events that occurred in this frame
+#                 while (current_event < len(log['events']) and log['events'][current_event]['frame'] == frame['frame_number']):
+#                     cur.execute('INSERT INTO Events(frame_id, killer, killed) VALUES(?,?,?)',
+#                                 (frame_id, log['events'][current_event]['killer'], log['events'][current_event]['killed']))
+#                     current_event += 1
 
-        con.commit()
-        con.close()
+#         con.commit()
+#         con.close()
 
-        self.write_message('saved')
+#         self.write_message('saved')
 
 
 def main():
     app = Application()
-    app.listen(8888, '0.0.0.0')
-    print("Listening on http://127.0.0.1:%i" % 8888)
+    port = 8888
+    proto = 'http'
+    ssl_options = {}
+    if os.path.exists(SSL_ROOT):
+        ssl_options['certfile'] = os.path.join(SSL_ROOT, "anna.cs.yale.edu.crt")
+        ssl_options['keyfile'] = os.path.join(SSL_ROOT, "anna.cs.yale.edu.key")
+        proto = 'https'
+        app.listen(port, '0.0.0.0', ssl_options=ssl_options)
+    else:
+        app.listen(port, '0.0.0.0')
+    print(f"Listening on {proto}://0.0.0.0:%i" % port)
     tornado.ioloop.IOLoop.current().start()
 
 if __name__ == "__main__":
