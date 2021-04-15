@@ -12,6 +12,8 @@ class Uncooperative:
 
         s = state
 
+        frame_number = s['frame_number']
+
         ship_x = s['ai_position']
 
         enemies_left_positions = s['enemies_left_positions']
@@ -21,6 +23,11 @@ class Uncooperative:
         bullets_right_positions = s['bullets_right_positions']
 
         ai_shoots = s['can_shoot']
+
+        ai_last_shot = s['ai_last_shot']
+        player_average_frequency = None
+        if s['player_avg_frequency']:
+            player_average_frequency = int(s['player_avg_frequency'])
 
         num_left_enemies = len(enemies_left_positions)
         num_right_enemies = len(enemies_right_positions)
@@ -57,7 +64,9 @@ class Uncooperative:
                 nearest_enemy = enemy
                 nearest_x_diff = check_distance
 
-        
+        # set restriction on frequency based on player's recent average
+        if player_average_frequency and frame_number - ai_last_shot < player_average_frequency - 10:
+            ai_shoots = False 
 
         if not(ai_shoots):
             #print("cant shoot")

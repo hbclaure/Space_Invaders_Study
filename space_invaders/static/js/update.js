@@ -16,11 +16,22 @@ function update ()
     }
     else if (this.input.keyboard.checkDown(space_key, 500)) {
         player_shoots = true;
+        time_since_last_shot = frame_number - player_ship.sprite.props.last_shot
         if (previous_shots.length == 5) {
             previous_shots.shift();
+            player_frequencies.shift();
         }
         previous_shots.push(frame_number - player_ship.sprite.props.last_shot);
+        player_frequencies.push(time_since_last_shot);
     }
+
+    // rolling average of player ship shot frequency
+    total = 0
+    for (i=0; i < player_frequencies.length; i += 1) {
+        total += player_frequencies[i]
+    }
+    average_frequency = total / player_frequencies.length
+
 
 
     //// All happens on the server
@@ -32,14 +43,21 @@ function update ()
     var ai_bullet = ai_ship.bullets_group.getChildren()[0];
     var ai_bullet_position = [];
 
-    if (previous_shots.length == 5) {
-       ai_ship.sprite.props.shot_cooldown = Math.min(...previous_shots, 55) - 5;
-    }
+    // if (previous_shots.length == 5) {
+    //    ai_ship.sprite.props.shot_cooldown = Math.min(...previous_shots, 55) - 5;
+    // }
+
+    // if (ai_bullet.active) {
+    //     ai_bullet_position = [ai_bullet.body.x, ai_bullet.body.y];
+    // }
+    // else if (frame_number > (ai_ship.sprite.props.last_shot + ai_ship.sprite.props.shot_cooldown)) {
+    //     ai_shoots = true;
+    // }
 
     if (ai_bullet.active) {
         ai_bullet_position = [ai_bullet.body.x, ai_bullet.body.y];
     }
-    else if (frame_number > (ai_ship.sprite.props.last_shot + ai_ship.sprite.props.shot_cooldown)) {
+    if (frame_number > ai_ship.sprite.props.last_shot + 25) {
         ai_shoots = true;
     }
 
@@ -126,9 +144,13 @@ function update ()
 
         can_shoot: ai_shoots,
 
-        //ai_pos_y: ai_ship.sprite.y,
-        //ai_ship_min_x: ai_ship.min_x,
-        //canvas_width: this.sys.canvas.width
+        player_last_shot: player_ship.sprite.props.last_shot, // frame when player last shot
+        ai_last_shot: ai_ship.sprite.props.last_shot,         // frame when ai last shot
+        player_avg_frequency: average_frequency,
+
+        ai_pos_y: ai_ship.sprite.y,
+        ai_ship_min_x: ai_ship.min_x,
+        canvas_width: this.sys.canvas.width
 
     }
 
