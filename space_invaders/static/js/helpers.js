@@ -114,6 +114,8 @@ var date;                               //!< date
 var player_id;                          //!< unique ID
 var game_num                            //!< game number
 
+var player_frequencies = [];
+
 
 /**
 Function to find the game id and game mode (which are passed as GET parameters)

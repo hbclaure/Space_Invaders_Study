@@ -16,11 +16,22 @@ function update ()
     }
     else if (this.input.keyboard.checkDown(space_key, 500)) {
         player_shoots = true;
+        time_since_last_shot = frame_number - player_ship.sprite.props.last_shot
         if (previous_shots.length == 5) {
             previous_shots.shift();
+            player_frequencies.shift();
         }
         previous_shots.push(frame_number - player_ship.sprite.props.last_shot);
+        player_frequencies.push(time_since_last_shot);
     }
+
+    // rolling average of player ship shot frequency
+    total = 0
+    for (i=0; i < player_frequencies.length; i += 1) {
+        total += player_frequencies[i]
+    }
+    average_frequency = total / player_frequencies.length
+
 
 
     //// All happens on the server
@@ -132,6 +143,10 @@ function update ()
         //nearest_bullet: nearest_bullet,
 
         can_shoot: ai_shoots,
+
+        player_last_shot: player_ship.sprite.props.last_shot, // frame when player last shot
+        ai_last_shot: ai_ship.sprite.props.last_shot,         // frame when ai last shot
+        player_avg_frequency: average_frequency,
 
         ai_pos_y: ai_ship.sprite.y,
         ai_ship_min_x: ai_ship.min_x,
