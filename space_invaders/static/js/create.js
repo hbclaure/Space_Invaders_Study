@@ -29,14 +29,17 @@ function create ()
     player_ship = this.create_ship("ship", 0, this.sys.canvas.width / 4, 540);
 
     //setting the left wall for the AI depending on what kind of agent it is
-    var minX = 0;
-    if (mode == UNCOOPERATIVE) {
-        minX = 425;
-        ai_ship = this.create_ship("avery", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", minX);
-    }
-    else  {
-        ai_ship = this.create_ship("jordan", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", minX);
-    }
+    ai_ship = this.create_ship("avery", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", 0)
+
+
+    // var minX = 0;
+    // if (mode == UNCOOPERATIVE) {
+    //     minX = 425;
+    //     ai_ship = this.create_ship("avery", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", minX);
+    // }
+    // else  {
+    //     ai_ship = this.create_ship("jordan", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", minX);
+    // }
 
     //creating the enemies on the left and right
     var enemy_rows = 5;
