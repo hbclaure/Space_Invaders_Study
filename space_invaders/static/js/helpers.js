@@ -107,6 +107,7 @@ var game_log = [];                      //!< a log of all the information from t
 var events;
 var frames;                             //!< the frames of this game
 var frame_number;                       //!< the number of the current frame
+var last_frame;                         //
 var previous_shots = [];                //!< the times of the last 5 shots the player fired
 var rounds_played = 0;                  //!< number of rounds that they have played
 var player_score;                       //!< total player score (accumulated over multiple rounds)

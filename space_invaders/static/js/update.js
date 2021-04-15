@@ -132,7 +132,10 @@ function update ()
 
     }
 
-    sockets.control.send(JSON.stringify(log_frame));
+    if (last_frame != frame_number){
+        sockets.control.send(JSON.stringify(log_frame));
+    }
+
     if (ai_ready == false) {
         console.log("waiting");
     }
@@ -154,6 +157,7 @@ function update ()
         enemies_left.update();
         enemies_right.update();
         frames.push(log_frame);
+        last_frame = frame_number;
         frame_number += 1;
     }
     //console.log("**Game running")
