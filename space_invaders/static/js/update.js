@@ -32,14 +32,21 @@ function update ()
     var ai_bullet = ai_ship.bullets_group.getChildren()[0];
     var ai_bullet_position = [];
 
-    if (previous_shots.length == 5) {
-       ai_ship.sprite.props.shot_cooldown = Math.min(...previous_shots, 55) - 5;
-    }
+    // if (previous_shots.length == 5) {
+    //    ai_ship.sprite.props.shot_cooldown = Math.min(...previous_shots, 55) - 5;
+    // }
+
+    // if (ai_bullet.active) {
+    //     ai_bullet_position = [ai_bullet.body.x, ai_bullet.body.y];
+    // }
+    // else if (frame_number > (ai_ship.sprite.props.last_shot + ai_ship.sprite.props.shot_cooldown)) {
+    //     ai_shoots = true;
+    // }
 
     if (ai_bullet.active) {
         ai_bullet_position = [ai_bullet.body.x, ai_bullet.body.y];
     }
-    else if (frame_number > (ai_ship.sprite.props.last_shot + ai_ship.sprite.props.shot_cooldown)) {
+    if (frame_number > ai_ship.sprite.props.last_shot + 25) {
         ai_shoots = true;
     }
 
