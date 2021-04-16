@@ -25,9 +25,9 @@ class Uncooperative:
         ai_shoots = s['can_shoot']
 
         ai_last_shot = s['ai_last_shot']
-        player_average_frequency = None
+        player_average_frequency = 70
         if s['player_avg_frequency']:
-            player_average_frequency = int(s['player_avg_frequency'])
+            player_average_frequency = min(player_average_frequency, int(s['player_avg_frequency']))
 
         num_left_enemies = len(enemies_left_positions)
         num_right_enemies = len(enemies_right_positions)
@@ -65,7 +65,7 @@ class Uncooperative:
                 nearest_x_diff = check_distance
 
         # set restriction on frequency based on player's recent average
-        if player_average_frequency and frame_number - ai_last_shot < player_average_frequency - 10:
+        if frame_number - ai_last_shot < player_average_frequency - 20:
             ai_shoots = False 
 
         if not(ai_shoots):

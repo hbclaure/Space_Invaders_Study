@@ -14,9 +14,10 @@ function update ()
     if (player_bullet.active) {
         player_bullet_position = [player_bullet.body.x, player_bullet.body.y];
     }
-    else if (this.input.keyboard.checkDown(space_key, 500)) {
+
+    time_since_last_shot = frame_number - player_ship.sprite.props.last_shot
+    if (this.input.keyboard.checkDown(space_key, 500) && time_since_last_shot >= max_player_frequency) {
         player_shoots = true;
-        time_since_last_shot = frame_number - player_ship.sprite.props.last_shot
         if (previous_shots.length == 5) {
             previous_shots.shift();
             player_frequencies.shift();
@@ -57,7 +58,7 @@ function update ()
     if (ai_bullet.active) {
         ai_bullet_position = [ai_bullet.body.x, ai_bullet.body.y];
     }
-    if (frame_number > ai_ship.sprite.props.last_shot + 25) {
+    if (frame_number > ai_ship.sprite.props.last_shot + max_ai_frquency) {
         ai_shoots = true;
     }
 
