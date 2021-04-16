@@ -115,6 +115,8 @@ var player_id;                          //!< unique ID
 var game_num                            //!< game number
 
 var player_frequencies = [];
+var max_player_frequency = 32;
+var max_ai_frquency = 27;
 
 
 /**
