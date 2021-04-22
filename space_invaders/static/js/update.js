@@ -16,7 +16,7 @@ function update ()
     }
 
     time_since_last_shot = frame_number - player_ship.sprite.props.last_shot
-    if (this.input.keyboard.checkDown(space_key, 500) && time_since_last_shot >= max_player_frequency) {
+    if (this.input.keyboard.checkDown(space_key, 500) && (!player_bullet.active || time_since_last_shot >= max_player_frequency)) {
         player_shoots = true;
         if (previous_shots.length == 5) {
             previous_shots.shift();
