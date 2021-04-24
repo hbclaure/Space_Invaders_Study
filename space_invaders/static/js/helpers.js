@@ -67,17 +67,19 @@ function logpicture() {
         canvas.width = width;
         canvas.height = height;
         context.drawImage(video, 0, 0, width, height);
-        canvas.toBlob(function(blob) {
-            sockets.image.send(blob);
-        },'image/jpeg');
+        sockets.image.send(JSON.stringify({'img':canvas.toDataURL('image/jpeg'),'frame_number':frame_number}))
+        //canvas.toBlob(function(blob) {
+        //    sockets.image.send(blob);
+        //},'image/jpeg');
     }
 }
 
 // record game frames
 function loggame() {
-    game.canvas.toBlob(function(blob) {
-        sockets.game.send(blob);
-    }, 'image/jpeg');
+    sockets.game.send(JSON.stringify({'img':game.canvas.toDataURL('image/jpeg'),'frame_number':frame_number}))
+    //game.canvas.toBlob(function(blob) {
+    //    sockets.game.send(blob);
+    //}, 'image/jpeg');
 }
 
 window.addEventListener('load', startup, false);
@@ -105,6 +107,7 @@ var game_log = [];                      //!< a log of all the information from t
 var events;
 var frames;                             //!< the frames of this game
 var frame_number;                       //!< the number of the current frame
+var last_frame;                         //
 var previous_shots = [];                //!< the times of the last 5 shots the player fired
 var rounds_played = 0;                  //!< number of rounds that they have played
 var player_score;                       //!< total player score (accumulated over multiple rounds)
@@ -115,7 +118,7 @@ var player_id;                          //!< unique ID
 var game_num                            //!< game number
 
 var player_frequencies = [];
-var max_player_frequency = 32;
+var max_player_frequency = 31;
 var max_ai_frquency = 27;
 
 

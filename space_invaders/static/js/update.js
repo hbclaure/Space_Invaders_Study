@@ -101,7 +101,7 @@ function update ()
         var current_enemy = enemies_right_sprites[i];
 
         enemies_right_positions.push([current_enemy.x, current_enemy.y]);
-        if (current_enemy.y > ai_ship.sprite.y) {
+        if (current_enemy.y > ai_ship.sprite.y || current_enemy.y > player_ship.sprite.y) {
             ai_over = true;
             console.log("AI OVER")
         }
@@ -114,7 +114,7 @@ function update ()
         var current_enemy = enemies_left_sprites[i];
 
         enemies_left_positions.push([current_enemy.x, current_enemy.y]);
-        if (current_enemy.y > player_ship.sprite.y) {
+        if (current_enemy.y > player_ship.sprite.y || current_enemy.y > ai_ship.sprite.y) {
             player_over = true;
         }
     }
@@ -155,7 +155,10 @@ function update ()
 
     }
 
-    sockets.control.send(JSON.stringify(log_frame));
+    if (last_frame != frame_number){
+        sockets.control.send(JSON.stringify(log_frame));
+    }
+
     if (ai_ready == false) {
         console.log("waiting");
     }
@@ -177,6 +180,7 @@ function update ()
         enemies_left.update();
         enemies_right.update();
         frames.push(log_frame);
+        last_frame = frame_number;
         frame_number += 1;
     }
     //console.log("**Game running")
@@ -192,12 +196,12 @@ function update ()
     if (enemies_left_sprites.length == 0) {
         player_over = true;
     }
-    if (enemies_right_sprites.length == 0) {
+    if (enemies_right_sprites.length == 0 && (mode == 3|| enemies_left_sprites.length == 0)) {
         ai_over = true;
     }
 
     // switch to game over screen
-    if ((player_over && ai_over) || (enemies_left_sprites.length == 0 && enemies_right_sprites.length == 0)) {
+    if (player_over && ai_over) {
         game_log.push({player_id: player_id, date: date, round: rounds_played, mode: mode, events: events, frames: frames});
         clearInterval(recording);
         //sockets.control.send(JSON.stringify({player_id: player_id, date: date, events: events}))

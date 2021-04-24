@@ -1,6 +1,9 @@
 from agents.uncooperative import Uncooperative
 
 class CooperativeEarly(Uncooperative):
+    def __init__(self):
+        self.min_x = 0
+        
     def check_attack_left(self, state):
         s = state
         enemies_left_positions = s['enemies_left_positions']
