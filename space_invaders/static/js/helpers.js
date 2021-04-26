@@ -53,21 +53,30 @@ function startup() {
     //save_image_loop()
 }
 
-function save_image_loop() {
+var startTime;
+function save_image_loop(stage=1) {
+    startTime = new Date().getTime();
     recording = setInterval(function(){
-        logpicture();
-        loggame();
+        logpicture(stage);
+        if (stage == 1) {
+            loggame();
+        }
+        if (stage==2 && new Date().getTime() - startTime >= 10000) {
+            clearInterval(recording);
+            console.log('stopped recording');
+        }
     }, 66);
 }
 
 // log user video frame
-function logpicture() {
+function logpicture(stage=1) {
+    // stage 0: start, 1: in-game, 2: end
     var context = canvas.getContext('2d');
     if (width && height) {
         canvas.width = width;
         canvas.height = height;
         context.drawImage(video, 0, 0, width, height);
-        sockets.image.send(JSON.stringify({'img':canvas.toDataURL('image/jpeg'),'frame_number':frame_number}))
+        sockets.image.send(JSON.stringify({'img':canvas.toDataURL('image/jpeg'),'frame_number':frame_number,'stage':stage}))
         //canvas.toBlob(function(blob) {
         //    sockets.image.send(blob);
         //},'image/jpeg');
@@ -106,7 +115,7 @@ var debug_text;
 var game_log = [];                      //!< a log of all the information from this game
 var events;
 var frames;                             //!< the frames of this game
-var frame_number;                       //!< the number of the current frame
+var frame_number = 0;                       //!< the number of the current frame
 var last_frame;                         //
 var previous_shots = [];                //!< the times of the last 5 shots the player fired
 var rounds_played = 0;                  //!< number of rounds that they have played

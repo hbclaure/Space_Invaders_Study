@@ -173,6 +173,8 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
     mode = None
     game_num = None
     time_label = None
+    start_frame_count = 0
+    end_frame_count = 0
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -206,10 +208,16 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 r_msg = json.loads(msg)
                 if 'frame_number' in r_msg.keys():   
                     frame_number = r_msg['frame_number']
+                    stage = r_msg['stage']
                     image = base64.b64decode(r_msg['img'].split('base64')[-1])
                     if image:
-                        folder = "P"+str(self.player_id)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
-                        filename = f"recorded_frames/{folder}/webcam/w_{frame_number:05d}.jpg"
+                        print(stage)
+                        if stage == 1:
+                            filename = self.in_game_path(frame_number)
+                        elif stage == 0:
+                            filename = self.start_path()
+                        elif stage == 2:
+                            filename = self.end_path()
 
                         if not os.path.exists(os.path.dirname(filename)):
                             os.makedirs(os.path.dirname(filename))
@@ -219,6 +227,23 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
             except Exception as e:
                 print(e)
                 print("error")
+
+    def start_path(self):
+        self.start_frame_count += 1
+        folder = "P"+str(self.player_id)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
+        filename = f"recorded_frames/{folder}/webcam/start/start_{self.start_frame_count}.jpg"
+        return filename
+
+    def in_game_path(self, frame_number):
+        folder = "P"+str(self.player_id)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
+        filename = f"recorded_frames/{folder}/webcam/w_{frame_number:05d}.jpg"
+        return filename
+
+    def end_path(self):
+        self.end_frame_count += 1
+        folder = "P"+str(self.player_id)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
+        filename = f"recorded_frames/{folder}/webcam/end/end_{self.end_frame_count}.jpg"
+        return filename
 
 class GameHandler(tornado.websocket.WebSocketHandler):
     
