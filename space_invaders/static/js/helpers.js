@@ -20,6 +20,10 @@ function startup() {
     canvas = document.getElementById('canvas');
     photo = document.getElementById('photo');
 
+    if(display_vid=='on'){
+        video.style.display='block'
+    }
+
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
     .then(function(stream) {
         // copy.srcObject = stream;
@@ -115,7 +119,8 @@ var ai_score;                           //!< total ai score (accumulated over mu
 
 var date;                               //!< date
 var player_id;                          //!< unique ID
-var game_num                            //!< game number
+var game_num;                           //!< game number
+var display_vid;
 
 var player_frequencies = [];
 var max_player_frequency = 31;
@@ -141,6 +146,7 @@ player_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
 mode = findGetParameter('mode'); 
 mode = (mode && !isNaN(mode) && parseInt(mode, 10) >= 0 && parseInt(mode, 10) <= 3) ? parseInt(mode, 10) : COOPERATIVE_EARLY;
 game_num = findGetParameter('game') ? findGetParameter('game') : 0;
+display_vid = findGetParameter('v') ? findGetParameter('v') :'off';
 
 /**
  * Create bullets pool
