@@ -14,6 +14,8 @@ import random
 import ssl
 from datetime import datetime
 import base64
+from cv2 import CascadeClassifier, imread, imdecode
+import numpy as np
 
 
 from tornado.options import define, options
@@ -30,6 +32,8 @@ machines = {
     'anna': ("anna.cs.yale.edu.crt","anna.cs.yale.edu.key"),
     'xpm': ("apache.crt","apache.key")
 }
+
+classifier = CascadeClassifier(f"classifiers/haarcascade_frontalface_default.xml")
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -54,6 +58,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
     player_id = None
     time_label = None
     count = 0
+    box_count = 0
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -66,7 +71,6 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
         pass
 
     def on_message(self, msg):
-        print("RECEIVED")
         if not self.player_id:
             try:
                 state = json.loads(msg)
@@ -76,6 +80,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 print(f"Player: {self.player_id}")
             except Exception as e:
                 print(e)
+                print(state)
                 print("invalid")
         else:
             try:
@@ -83,6 +88,14 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 r_msg = json.loads(msg)
                 image = base64.b64decode(r_msg['img'].split('base64')[-1])
                 if image:
+                    np_img = np.frombuffer(image, dtype=np.uint8)
+                    pixels = imdecode(np_img, flags=1)
+                    bboxes = classifier.detectMultiScale(pixels)
+                    if len(bboxes)==1:
+                        self.box_count += 1
+                    for box in bboxes:
+                        box_msg = {'x1': int(box[0]), 'y1': int(box[1]), 'width': int(box[2]), 'height': int(box[3]),'enough': self.box_count>50}
+                        self.write_message(json.dumps(box_msg))
                     folder = "P"+str(self.player_id)+"_t"+str(self.time_label)
                     filename = f"recorded_frames/{folder}/check/w_{self.count:05d}.jpg"
 
