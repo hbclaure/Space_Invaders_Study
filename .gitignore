@@ -2,5 +2,6 @@
 *~
 *#
 recorded_frames
+recorded_frames_*
 videos
 space_invaders/db/create_database_old.sql

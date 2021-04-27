@@ -4,6 +4,36 @@ var sockets = {
     image: new WebSocket(proto + "://"+window.location.host+"/image"),
   }
 
+// handle commands from the server
+var box = {
+    x1: 0,
+    y1: 0,
+    width: 0,
+    height: 0,
+    enough: false,
+};
+sockets.image.onmessage = function(event) {
+    console.log("receive image msg")
+    var msg = JSON.parse(event.data);
+    box.x1 = msg.x1;
+    box.y1 = msg.y1;
+    box.width = msg.width;
+    box.height = msg.height;
+    box.enough = msg.enough;
+    var ctx = canvas.getContext('2d');
+    ctx.beginPath();
+    ctx.lineWidth = "6";
+    ctx.strokeStyle = "magenta"; 
+    ctx.rect(box.x1, box.y1, box.width, box.height);
+    ctx.stroke();
+    if(box.enough){
+        ctx.fillStyle="magenta";
+        ctx.font = "20pt sans-serif";
+        ctx.fillText("MAGENTA",box.x1 + 5,box.y1 - 5);
+    }
+    
+};
+
 // set image width; height will be matched accordingly
 var width = 500;
 var height = 0;
@@ -71,11 +101,25 @@ function startup() {
             streaming = true;
         }
     }, false);
-    sockets.image.send(JSON.stringify({player_id:player_id}))
-    save_image_loop()
-    
+    //while(sockets.image.readyState != 1){
+    //    console.log(sockets.image.readyState)
+    //}
+    console.log(sockets.image.readyState)
+    if(sockets.image.readyState == 1){
+        //sockets.image.send(JSON.stringify({player_id:player_id}));
+        //console.log("sent a message");
+        //save_image_loop();
+        socket_start();
+    } else if(sockets.image.readyState == 0){
+        sockets.image.onopen = () => socket_start();
+    }
 }
-
+function socket_start() {
+    player_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
+    sockets.image.send(JSON.stringify({player_id:player_id}));
+    console.log("sent a message");
+    save_image_loop();
+}
 function save_image_loop() {
     recording = setInterval(function(){
         logpicture();
@@ -89,6 +133,7 @@ function logpicture() {
         canvas.width = width;
         canvas.height = height;
         context.drawImage(video, 0, 0, width, height);
+        console.log("sending image")
         sockets.image.send(JSON.stringify({'img':canvas.toDataURL('image/jpeg')}))
     }
 }
