@@ -3,7 +3,7 @@ All the helper functions and global variables for space invaders
 **/
 
 // set image width; height will be matched accordingly
-var width = 500;
+var width = 250;
 var height = 0;
 
 var recording = null;

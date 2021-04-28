@@ -101,7 +101,7 @@ function update ()
         var current_enemy = enemies_right_sprites[i];
 
         enemies_right_positions.push([current_enemy.x, current_enemy.y]);
-        if (current_enemy.y > ai_ship.sprite.y || current_enemy.y > player_ship.sprite.y) {
+        if (current_enemy.y > 540) {
             ai_over = true;
             console.log("AI OVER")
         }
@@ -114,7 +114,7 @@ function update ()
         var current_enemy = enemies_left_sprites[i];
 
         enemies_left_positions.push([current_enemy.x, current_enemy.y]);
-        if (current_enemy.y > player_ship.sprite.y || current_enemy.y > ai_ship.sprite.y) {
+        if (current_enemy.y > 540) {
             player_over = true;
         }
     }

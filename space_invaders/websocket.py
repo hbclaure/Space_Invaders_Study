@@ -175,6 +175,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
     time_label = None
     start_frame_count = 0
     end_frame_count = 0
+    display_vid = None
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -192,10 +193,11 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 state = json.loads(msg)
                 self.player_id = state['player_id']
                 self.mode = state['mode']
+                self.display_vid = state['display_vid']
                 time = datetime.utcnow()
                 self.time_label = str(time.year)+"_" + str(time.month)+"_" + str(time.day)+"_" + str(time.hour)+"_" + str(time.minute)
                 gn = state['game_num']
-                while(os.path.exists(os.path.dirname(f"recorded_frames/P"+str(self.player_id)+"_m"+str(self.mode)+"_g"+str(gn)+"_t"+str(self.time_label)+"/"))):
+                while(os.path.exists(os.path.dirname(f"recorded_frames/P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(gn)+"_t"+str(self.time_label)+"/"))):
                     gn = int(gn)+100
                 self.game_num = str(gn)
                 
@@ -230,19 +232,19 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
 
     def start_path(self):
         self.start_frame_count += 1
-        folder = "P"+str(self.player_id)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
-        filename = f"recorded_frames/{folder}/webcam/start/start_{self.start_frame_count}.jpg"
+        folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
+        filename = f"recorded_frames/{folder}/webcam_start/start_{self.start_frame_count:05d}.jpg"
         return filename
 
     def in_game_path(self, frame_number):
-        folder = "P"+str(self.player_id)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
+        folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
         filename = f"recorded_frames/{folder}/webcam/w_{frame_number:05d}.jpg"
         return filename
 
     def end_path(self):
         self.end_frame_count += 1
-        folder = "P"+str(self.player_id)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
-        filename = f"recorded_frames/{folder}/webcam/end/end_{self.end_frame_count}.jpg"
+        folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
+        filename = f"recorded_frames/{folder}/webcam_end/end_{self.end_frame_count:05d}.jpg"
         return filename
 
 class GameHandler(tornado.websocket.WebSocketHandler):
@@ -251,6 +253,7 @@ class GameHandler(tornado.websocket.WebSocketHandler):
     mode = None
     game_num = None
     time_label = None
+    display_vid = None
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -268,10 +271,11 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                 state = json.loads(msg)
                 self.player_id = state['player_id']
                 self.mode = state['mode']
+                self.display_vid = state['display_vid']
                 time = datetime.utcnow()
                 self.time_label = str(time.year)+"_" + str(time.month)+"_" + str(time.day)+"_" + str(time.hour)+"_" + str(time.minute)
                 gn = state['game_num']
-                while(os.path.exists(os.path.dirname(f"recorded_frames/P"+str(self.player_id)+"_m"+str(self.mode)+"_g"+str(gn)+"_t"+str(self.time_label)+"/"))):
+                while(os.path.exists(os.path.dirname(f"recorded_frames/P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(gn)+"_t"+str(self.time_label)+"/"))):
                     gn = int(gn)+100
                 self.game_num = str(gn)
                 print(f"Recording frames: {self.player_id}")
@@ -285,7 +289,7 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                     frame_number = r_msg['frame_number']
                     image = base64.b64decode(r_msg['img'].split('base64')[-1])
                     if image:
-                        folder = "P"+str(self.player_id)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
+                        folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
                         filename = f"recorded_frames/{folder}/gamescreen/g_{frame_number:05d}.jpg"
 
                         if not os.path.exists(os.path.dirname(filename)):
