@@ -19,8 +19,8 @@ start_scene.create = function() {
     }
 
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    sockets.image.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num}));
-    sockets.game.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num}));
+    sockets.image.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
+    sockets.game.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
     save_image_loop(stage=0);
 }
 
