@@ -211,7 +211,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                     stage = r_msg['stage']
                     image = base64.b64decode(r_msg['img'].split('base64')[-1])
                     if image:
-                        print(stage)
+                        #print(stage)
                         if stage == 1:
                             filename = self.in_game_path(frame_number)
                         elif stage == 0:
