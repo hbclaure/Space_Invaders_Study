@@ -20,13 +20,10 @@ sockets.image.onmessage = function(event) {
     box.width = msg.width;
     box.height = msg.height;
     enough_faces = msg.enough;
-    console.log(msg.too_many)
     if(msg.too_many && !too_many_faces){
-        console.log("set true")
         too_many_faces = msg.too_many;
         startTime = new Date().getTime();
     } else if(!msg.too_many && new Date().getTime() - startTime >= 5000){
-        console.log("set false")
         too_many_faces = msg.too_many;
     }
     var ctx = canvas.getContext('2d');
