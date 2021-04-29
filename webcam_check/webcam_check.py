@@ -94,7 +94,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                     if len(bboxes)==1:
                         self.box_count += 1
                     for box in bboxes:
-                        box_msg = {'x1': int(box[0]), 'y1': int(box[1]), 'width': int(box[2]), 'height': int(box[3]),'enough': self.box_count>50}
+                        box_msg = {'x1': int(box[0]), 'y1': int(box[1]), 'width': int(box[2]), 'height': int(box[3]),'enough': self.box_count>50,'too_many':len(bboxes)>1}
                         self.write_message(json.dumps(box_msg))
                     folder = "P"+str(self.player_id)+"_t"+str(self.time_label)
                     filename = f"recorded_frames/{folder}/check/w_{self.count:05d}.jpg"
