@@ -19,6 +19,19 @@ start_scene.create = function() {
     }
 
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    //sockets.image.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
+    //sockets.game.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
+    //save_image_loop(stage=0);
+    if(sockets.image.readyState == 1 && sockets.game.readyState==1){
+        socket_start();
+    } else if(sockets.image.readyState == 0){
+        sockets.image.onopen = () => socket_start();
+    } else if(sockets.game.readyState == 0) {
+        sockets.game.onopen = () => socket_start();
+    }
+}
+
+function socket_start() {
     sockets.image.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
     sockets.game.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
     save_image_loop(stage=0);
