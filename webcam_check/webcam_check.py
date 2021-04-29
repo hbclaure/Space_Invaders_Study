@@ -90,7 +90,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 if image:
                     np_img = np.frombuffer(image, dtype=np.uint8)
                     pixels = imdecode(np_img, flags=1)
-                    bboxes = classifier.detectMultiScale(pixels)
+                    bboxes = classifier.detectMultiScale(pixels, minNeighbors=5)
                     if len(bboxes)==1:
                         self.box_count += 1
                     for box in bboxes:
@@ -130,4 +130,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
