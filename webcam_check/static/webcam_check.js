@@ -86,7 +86,7 @@ function startup() {
     })
     .catch(function(err) {
         console.log("An error occurred: " + err);
-        webcam_off_error()
+        webcam_off_error();
     });
     
     video.addEventListener('canplay', function(ev){
