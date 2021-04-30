@@ -86,6 +86,7 @@ function startup() {
     })
     .catch(function(err) {
         console.log("An error occurred: " + err);
+        webcam_off_error()
     });
     
     video.addEventListener('canplay', function(ev){
@@ -132,6 +133,15 @@ function save_image_loop() {
     recording = setInterval(function(){
         logpicture();
     }, 66);
+}
+
+function webcam_off_error(){
+    var ctx2 = canvas2.getContext('2d');
+    ctx2.beginPath();
+    ctx2.fillStyle="red";
+    ctx2.font = "15pt sans-serif";
+    ctx2.fillText("ERROR: PLEASE ENABLE", 20, 50);
+    ctx2.fillText("YOUR WEBCAM", 20, 75);
 }
 
 // log user video frame
