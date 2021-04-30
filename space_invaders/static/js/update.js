@@ -16,8 +16,22 @@ function update ()
     }
 
     time_since_last_shot = frame_number - player_ship.sprite.props.last_shot
-    if (this.input.keyboard.checkDown(space_key, 500) && (!player_bullet.active || time_since_last_shot >= max_player_frequency)) {
+    if (this.input.keyboard.checkDown(space_key, 500) && time_since_last_shot >= max_player_frequency) {
+        if (player_bullet.active) {
+            player_bullet_position = [player_bullet.body.x, player_bullet.body.y];
+        }
         player_shoots = true;
+        if (previous_shots.length == 5) {
+            previous_shots.shift();
+            player_frequencies.shift();
+        }
+        previous_shots.push(frame_number - player_ship.sprite.props.last_shot);
+        player_frequencies.push(time_since_last_shot);
+    } else if (player_bullet.active) {
+        player_bullet_position = [player_bullet.body.x, player_bullet.body.y];
+    } else if (this.input.keyboard.checkDown(space_key, 500)) {
+        player_shoots = true;
+        console.log("HI")
         if (previous_shots.length == 5) {
             previous_shots.shift();
             player_frequencies.shift();
