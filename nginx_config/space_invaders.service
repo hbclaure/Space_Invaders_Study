@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI instance to serve the space invaders project
+After=network.target
+
+[Service]
+User=si_app
+Group=www-data
+WorkingDirectory=/home/si_app/implicit_feedback_si
+Environment="PATH=/home/si_app/.local/share/virtualenvs/implicit_feedback_si-lWX7cTjz"
+ExecStart=/home/si_app/.local/share/virtualenvs/implicit_feedback_si-lWX7cTjz/bin/uwsgi --ini nginx_config/space_invaders.ini --logto /home/si_app/log/uwsgi.log
+
+[Install]
+WantedBy=multi-user.target
