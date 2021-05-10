@@ -9,6 +9,7 @@ verify_ssl = true
 tornado = "*"
 opencv-python = "*"
 newrelic = "*"
+uwsgi = "*"
 
 [requires]
 python_version = "3.7"
