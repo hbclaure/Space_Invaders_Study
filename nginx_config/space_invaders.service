@@ -7,7 +7,8 @@ User=si_app
 Group=www-data
 WorkingDirectory=/home/si_app/implicit_feedback_si/
 Environment="PATH=/home/si_app/.local/share/virtualenvs/implicit_feedback_si-lWX7cTjz"
-ExecStart=/home/si_app/.local/share/virtualenvs/implicit_feedback_si-lWX7cTjz/bin/python space_invaders/websocket.py
+Environment=NEW_RELIC_CONFIG_FILE=newrelic.ini
+ExecStart=/home/si_app/.local/share/virtualenvs/implicit_feedback_si-lWX7cTjz/bin/newrelic-admin run-program /home/si_app/.local/share/virtualenvs/implicit_feedback_si-lWX7cTjz/bin/python space_invaders/websocket.py
 Type=simple
 
 [Install]
