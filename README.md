@@ -36,3 +36,11 @@ space_invaders_web/
         |   index.html          # main website
 ```
 
+NGINX notes 
+
+sudo ln -sf /home/si_app/implicit_feedback_si/nginx_config/nginx.conf /etc/nginx/sites-enabled/space_invaders
+
+sudo service nginx restart
+sudo service nginx status
+
+sudo ln -sf /home/si_app/implicit_feedback_si/nginx_config/space_invaders.service /etc/systemd/system/space_invaders.service
