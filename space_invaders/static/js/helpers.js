@@ -137,7 +137,7 @@ var events;
 var frames;                             //!< the frames of this game
 var frame_number = 0;                       //!< the number of the current frame
 var last_frame;                         //
-var previous_shots = [];                //!< the times of the last 5 shots the player fired
+var previous_shots_time = [];                //!< the times of the last 5 shots the player fired
 var rounds_played = 0;                  //!< number of rounds that they have played
 var player_score;                       //!< total player score (accumulated over multiple rounds)
 var ai_score;                           //!< total ai score (accumulated over multiple rounds)
@@ -148,8 +148,8 @@ var game_num;                           //!< game number
 var display_vid;
 
 var player_frequencies = [];
-var max_player_frequency = 31;
-var max_ai_frquency = 27;
+var max_player_frequency = 1000;
+var max_ai_frequency = max_player_frequency * 0.8;
 
 
 /**
@@ -312,7 +312,8 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props.image_id = image_id;
     sprite.props.invincible = false;
     sprite.props.invincibility_timer = 0;
-    sprite.props.last_shot = 0;
+    sprite.props.last_shot_frame = 0;
+    sprite.props.last_shot_time = 0;
     sprite.props.shot_cooldown = 35;
     sprite.props.exploding = false;
     sprite.explote_anim = image_id + '_exp';
@@ -382,7 +383,9 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
             } 
             // add bullet
             if (shoot && !this.sprite.props.invincible) {
-                this.sprite.props.last_shot = frame_number;
+            
+                this.sprite.props.last_shot_frame = frame_number;
+                this.sprite.props.last_shot_time = Date.now();
                 fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1);
                 sound.play();
             }

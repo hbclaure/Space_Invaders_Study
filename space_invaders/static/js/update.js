@@ -15,37 +15,45 @@ function update ()
         player_bullet_position = [player_bullet.body.x, player_bullet.body.y];
     }
 
-    time_since_last_shot = frame_number - player_ship.sprite.props.last_shot
-    if (this.input.keyboard.checkDown(space_key, 500) && time_since_last_shot >= max_player_frequency) {
+
+    var frames_since_last_shot = frame_number - player_ship.sprite.props.last_shot_frame;
+    var time_since_last_shot = Date.now() - player_ship.sprite.props.last_shot_time;
+    //console.log('frames_since_last_shot', frames_since_last_shot);
+    //console.log('time_since_last_shot', time_since_last_shot);
+    if (this.input.keyboard.checkDown(space_key, 0)) {
+      if (time_since_last_shot >= max_player_frequency) {
         if (player_bullet.active) {
             player_bullet_position = [player_bullet.body.x, player_bullet.body.y];
         }
         player_shoots = true;
-        if (previous_shots.length == 5) {
-            previous_shots.shift();
+        if (previous_shots_time.length == 5) {
+            previous_shots_time.shift();
             player_frequencies.shift();
         }
-        previous_shots.push(frame_number - player_ship.sprite.props.last_shot);
+        previous_shots_time.push(time_since_last_shot);
         player_frequencies.push(time_since_last_shot);
+      } else {
+        //console.log(`can't shoot, last shot was only ${time_since_last_shot}ms ago`)
+      }
     } else if (player_bullet.active) {
         player_bullet_position = [player_bullet.body.x, player_bullet.body.y];
     } else if (this.input.keyboard.checkDown(space_key, 500)) {
         player_shoots = true;
         console.log("HI")
-        if (previous_shots.length == 5) {
-            previous_shots.shift();
+        if (previous_shots_time.length == 5) {
+            previous_shots_time.shift();
             player_frequencies.shift();
         }
-        previous_shots.push(frame_number - player_ship.sprite.props.last_shot);
+        previous_shots_time.push(time_since_last_shot);
         player_frequencies.push(time_since_last_shot);
     }
 
     // rolling average of player ship shot frequency
-    total = 0
+    total = 0;
     for (i=0; i < player_frequencies.length; i += 1) {
-        total += player_frequencies[i]
+        total += player_frequencies[i];
     }
-    average_frequency = total / player_frequencies.length
+    average_frequency = total / player_frequencies.length;
 
 
 
@@ -72,7 +80,8 @@ function update ()
     if (ai_bullet.active) {
         ai_bullet_position = [ai_bullet.body.x, ai_bullet.body.y];
     }
-    if (frame_number > ai_ship.sprite.props.last_shot + max_ai_frquency) {
+    //if (frame_number > ai_ship.sprite.props.last_shot + max_ai_frequency) {
+    if (Date.now() > ai_ship.sprite.props.last_shot_time + max_ai_frequency) {
         ai_shoots = true;
     }
 
@@ -159,8 +168,10 @@ function update ()
 
         can_shoot: ai_shoots,
 
-        player_last_shot: player_ship.sprite.props.last_shot, // frame when player last shot
-        ai_last_shot: ai_ship.sprite.props.last_shot,         // frame when ai last shot
+        player_last_shot_time: player_ship.sprite.props.last_shot_time, // frame when player last shot
+        ai_last_shot_time: ai_ship.sprite.props.last_shot_time,         // frame when ai last shot
+        player_last_shot_frame: player_ship.sprite.props.last_shot_frame, // frame when player last shot
+        ai_last_shot_frame: ai_ship.sprite.props.last_shot_frame,         // frame when ai last shot
         player_avg_frequency: average_frequency,
 
         ai_pos_y: ai_ship.sprite.y,
