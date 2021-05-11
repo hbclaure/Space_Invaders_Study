@@ -95,7 +95,7 @@ function logpicture(stage=1) {
         canvas.height = height;
         context.drawImage(video, 0, 0, width, height);
         nowTime = new Date().getTime();
-        millis = startTimeM - nowTime;
+        millis = nowTime - startTimeM;
         sockets.image.send(JSON.stringify({'img':canvas.toDataURL('image/jpeg'),'frame_number':frame_number,'stage':stage,'millis':millis}))
         //canvas.toBlob(function(blob) {
         //    sockets.image.send(blob);
