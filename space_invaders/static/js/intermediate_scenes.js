@@ -121,7 +121,16 @@ gameover_scene.create = function() {
     ai_score = ai_ship.sprite.props.score;
 
     // 4 digit random number
-    var completion_code = Math.floor(Math.random() * 8999) + 1000;
+    var completion_code_num = Math.floor(Math.random() * 899) + 100;
+    if(mode ==1){
+        var completion_code = completion_code_num.toString()+'e'
+    } else if(mode==2){
+        var completion_code = completion_code_num.toString()+'l'
+    } else if(mode==3){
+        var completion_code = completion_code_num.toString()+'u'
+    } else{
+        var completion_code = completion_code_num.toString()+'o'
+    }
 
     var gameover_text = this.add.bitmapText(400, 125, 'PressStart2P_Orange', 'GAME ENDED', 50).setOrigin(0.5);
     var player_text = this.add.bitmapText(400, 250, 'PressStart2P_Purple', 'Player Final Score: ' + player_score, 20).setOrigin(0.5).setCenterAlign();
