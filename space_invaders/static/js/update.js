@@ -28,10 +28,8 @@ function update ()
         player_shoots = true;
         if (previous_shots_time.length == 5) {
             previous_shots_time.shift();
-            player_frequencies.shift();
         }
         previous_shots_time.push(time_since_last_shot);
-        player_frequencies.push(time_since_last_shot);
       } else {
         //console.log(`can't shoot, last shot was only ${time_since_last_shot}ms ago`)
       }
@@ -42,18 +40,16 @@ function update ()
         console.log("HI")
         if (previous_shots_time.length == 5) {
             previous_shots_time.shift();
-            player_frequencies.shift();
         }
         previous_shots_time.push(time_since_last_shot);
-        player_frequencies.push(time_since_last_shot);
     }
 
     // rolling average of player ship shot frequency
     total = 0;
-    for (i=0; i < player_frequencies.length; i += 1) {
-        total += player_frequencies[i];
+    for (i=0; i < previous_shots_time.length; i += 1) {
+        total += previous_shots_time[i];
     }
-    average_frequency = total / player_frequencies.length;
+    average_frequency = total / previous_shots_time.length;
 
 
 

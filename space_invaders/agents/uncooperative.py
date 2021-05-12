@@ -27,7 +27,7 @@ class Uncooperative:
         ai_shoots = s['can_shoot']
 
         ai_last_shot = s['ai_last_shot_time']
-        player_average_frequency = 5000
+        player_average_frequency = 1500
         if s['player_avg_frequency']:
             player_average_frequency = min(player_average_frequency, int(s['player_avg_frequency']))
 
