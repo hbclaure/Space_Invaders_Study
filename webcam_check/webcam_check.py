@@ -24,7 +24,7 @@ define("machine",default='anna',help="run on machine",type=str)
 
 WEBROOT = os.path.dirname(os.path.realpath(__file__))
 DATABASE = os.path.join(WEBROOT, 'db/game_logs.db')
-SSL_ROOT = "/etc/apache2/ssl"
+SSL_ROOT = "/home/si_app/ssl"
 
 
 
