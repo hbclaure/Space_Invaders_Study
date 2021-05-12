@@ -54,6 +54,9 @@ var game_num;                            //!< game number
 var enough_faces = false;
 var too_many_faces = false;
 var startTime;
+var startTimeM = new Date().getTime();
+var nowTime;
+var millis;
 
 /**
 Function to find the game id and game mode (which are passed as GET parameters)
@@ -153,7 +156,9 @@ function logpicture() {
         canvas.height = height;
         context.drawImage(video, 0, 0, width, height);
         //console.log("sending image");
-        sockets.image.send(JSON.stringify({'img':canvas.toDataURL('image/jpeg')}))
+        nowTime = new Date().getTime();
+        millis = nowTime - startTimeM;
+        sockets.image.send(JSON.stringify({'img':canvas.toDataURL('image/jpeg'),'millis':millis}));
         ctx2.clearRect(0,0, ctx2.canvas.width, ctx2.canvas.height);
         ctx2.beginPath();
         ctx2.fillStyle="black";

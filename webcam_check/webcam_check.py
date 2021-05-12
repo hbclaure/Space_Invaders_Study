@@ -87,6 +87,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 self.count +=1
                 r_msg = json.loads(msg)
                 image = base64.b64decode(r_msg['img'].split('base64')[-1])
+                millis = r_msg['millis']
                 if image:
                     np_img = np.frombuffer(image, dtype=np.uint8)
                     pixels = imdecode(np_img, flags=1)
@@ -97,7 +98,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                         box_msg = {'x1': int(box[0]), 'y1': int(box[1]), 'width': int(box[2]), 'height': int(box[3]),'enough': self.box_count>50,'too_many':len(bboxes)>1}
                         self.write_message(json.dumps(box_msg))
                     folder = "P"+str(self.player_id)+"_t"+str(self.time_label)
-                    filename = f"recorded_frames/{folder}/check/w_{self.count:05d}.jpg"
+                    filename = f"recorded_frames/{folder}/check/w_{self.count:05d}_m{millis}.jpg"
 
                     if not os.path.exists(os.path.dirname(filename)):
                         os.makedirs(os.path.dirname(filename))
