@@ -177,7 +177,7 @@ function create ()
 
         if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
-        else if (ship_sprite.props.lives >= 1) {
+        else if (ship_sprite.props.lives > 1) {
             // give the player 50 frames of invincibility
             ship_sprite.props.invincible = true;
             ship_sprite.props.invincibility_timer = 50;
@@ -198,6 +198,7 @@ function create ()
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.dead = true;
             ship_sprite.props.lives -= 1;
+            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
             player_over = true;
         }
     });
@@ -208,7 +209,7 @@ function create ()
         bullet.setActive(false);
         if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
-        else if (ship_sprite.props.lives >= 1) {
+        else if (ship_sprite.props.lives > 1) {
             // give the player 50 frames of invincibility
             ship_sprite.props.invincible = true;
             ship_sprite.props.invincibility_timer = 50;
@@ -229,6 +230,7 @@ function create ()
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.dead = true;
             ship_sprite.props.lives -= 1;
+            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
             player_over = true;
         }
     });
@@ -241,7 +243,7 @@ function create ()
         bullet.setActive(false);
         if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
-        else if (ship_sprite.props.lives >= 1) {
+        else if (ship_sprite.props.lives > 1) {
             // give the player 50 frames of invincibility
             ship_sprite.props.invincible = true;
             ship_sprite.props.invincibility_timer = 50;
@@ -266,6 +268,7 @@ function create ()
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
                 ship_sprite.props.lives -= 1;
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
                 ship_sprite.props.dead = true;
             });
             ai_over = true;
@@ -279,7 +282,7 @@ function create ()
         bullet.setActive(false);
         if (ship_sprite.props.invincible) { }
         // kill the player. The change in behavior takes place within the update function of the ship
-        else if (ship_sprite.props.lives >= 1) {
+        else if (ship_sprite.props.lives > 1) {
             // give the player 50 frames of invincibility
             ship_sprite.props.invincible = true;
             ship_sprite.props.invincibility_timer = 50;
@@ -304,6 +307,7 @@ function create ()
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
                 ship_sprite.props.lives -= 1;
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
                 ship_sprite.props.dead = true;
             });
             ai_over = true;
@@ -322,7 +326,7 @@ function create ()
             ship_sprite.props.score += enemy.score;
             ship_sprite.props.scoreText.setText("SCORE " + ship_sprite.props.score);
             // kill the player and the enemy. The change in behavior takes place within the update function of the ship
-            if (ship_sprite.props.lives >= 1) {
+            if (ship_sprite.props.lives > 1) {
                 ship_sprite.props.exploding = true;
                 ship_sprite.props.lives -= 1;
                 ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
@@ -340,6 +344,7 @@ function create ()
             else {
                 ship_sprite.props.dead = true;
                 ship_sprite.props.lives -= 1;
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
                 player_over = true;
             }
             enemy.hit = true;
@@ -354,7 +359,7 @@ function create ()
             ai_ship.sprite.props.score += enemy.score;
             ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
             // kill the player and the enemy. The change in behavior takes place within the update function of the ship
-            if (ship_sprite.props.lives >= 1) {
+            if (ship_sprite.props.lives > 1) {
                 ship_sprite.props.exploding = true;
                 ship_sprite.props.lives -= 1;
                 ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
@@ -372,6 +377,7 @@ function create ()
             else {
                 ship_sprite.props.dead = true;
                 ship_sprite.props.lives -= 1;
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
                 player_over = true;
             }
             enemy.hit = true;
@@ -389,7 +395,7 @@ function create ()
             player_ship.sprite.props.score += enemy.score;
             player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
             // kill the player and the enemy. The change in behavior takes place within the update function of the ship
-            if (ship_sprite.props.lives >= 1) {
+            if (ship_sprite.props.lives > 1) {
                 ship_sprite.props.exploding = true;
                 ship_sprite.props.lives -= 1;
                 ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
@@ -397,6 +403,7 @@ function create ()
             else {
                 ship_sprite.props.dead = true;
                 ship_sprite.props.lives -= 1;
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
                 ai_over = true;
             }
             ship_sprite.play(ship_sprite.explote_anim, true);
@@ -422,7 +429,7 @@ function create ()
             ship_sprite.props.score += enemy.score;
             ship_sprite.props.scoreText.setText("SCORE " + ship_sprite.props.score);
             // kill the player and the enemy. The change in behavior takes place within the update function of the ship
-            if (ship_sprite.props.lives >= 1) {
+            if (ship_sprite.props.lives > 1) {
                 ship_sprite.props.exploding = true;
                 ship_sprite.props.lives -= 1;
                 ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
@@ -430,6 +437,7 @@ function create ()
             else {
                 ship_sprite.props.dead = true;
                 ship_sprite.props.lives -= 1;
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
                 ai_over = true;
             }
             ship_sprite.play(ship_sprite.explote_anim, true);

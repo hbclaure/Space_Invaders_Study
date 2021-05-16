@@ -306,8 +306,10 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props.dead = false;
     sprite.props.score = 0;
     var font_type = (image_id == 'ship') ? 'PressStart2P_Purple' : (image_id == 'avery') ? 'PressStart2P_Orange' : 'PressStart2P_Gray';
-    sprite.props.scoreText = this.add.bitmapText(x, 3, font_type, 'SCORE 0', 20);
-    sprite.props.lives = 3;
+    // sprite.props.scoreText = this.add.bitmapText(x, 3, font_type, 'SCORE 0', 20);
+    // sprite.props.lives = 3;
+    sprite.props.scoreText = this.add.bitmapText(x+22, 3, font_type, 'SCORE 0', 18);
+    sprite.props.lives = 4;
     sprite.props.image_id = image_id;
     sprite.props.invincible = false;
     sprite.props.invincibility_timer = 0;
