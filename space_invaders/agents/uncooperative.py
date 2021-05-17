@@ -75,6 +75,8 @@ class Uncooperative:
         if round(time.time() * 1000) - ai_last_shot < player_average_frequency * 0.8:
             ai_shoots = False 
 
+        # print (f" Y CONDITION: {nearest_bullet[1] < SHIP_Y + 240}")
+
         if not(ai_shoots):
             #print("cant shoot")
             if nearest_bullet[0] <= ship_x +30 and nearest_bullet[0] >= ship_x - 30:
@@ -92,10 +94,10 @@ class Uncooperative:
             if nearest_x_diff <= 24:
                 shoot = True
             if nearest_enemy[0] < ship_x:
-                if not(nearest_bullet[0] < ship_x and nearest_bullet[1] < SHIP_Y + 240 and ship_x - nearest_bullet[0] <= 45):
+                if not(nearest_bullet[0] < ship_x and SHIP_Y - nearest_bullet[1] < 240 and ship_x - nearest_bullet[0] <= 45):
                     left = True
             if nearest_enemy[0] > ship_x:
-                if not(nearest_bullet[0] > ship_x and nearest_bullet[1] < SHIP_Y + 240 and nearest_bullet[0] - ship_x <= 45):
+                if not(nearest_bullet[0] > ship_x and SHIP_Y - nearest_bullet[1] < 240 and nearest_bullet[0] - ship_x <= 45):
                     right = True
 
         if num_right_enemies==0 and not(attack_left):
