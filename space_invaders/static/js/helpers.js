@@ -3,7 +3,7 @@ All the helper functions and global variables for space invaders
 **/
 
 // set image width; height will be matched accordingly
-var width = 250;
+var width = 500;
 var height = 0;
 
 var recording = null;
@@ -51,8 +51,8 @@ function startup() {
             };
             console.log('image logged')
 
-            video.setAttribute('width', width);
-            video.setAttribute('height', height);
+            video.setAttribute('width', width/2);
+            video.setAttribute('height', height/2);
             canvas.setAttribute('width', width);
             canvas.setAttribute('height', height);
             streaming = true;
