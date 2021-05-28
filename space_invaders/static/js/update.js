@@ -179,7 +179,7 @@ function update ()
     if (last_frame != frame_number){
         sockets.control.send(JSON.stringify(log_frame));
         last_frame = frame_number;
-        console.log(frame_number)
+        console.log("SEND",frame_number)
     }
 
     player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
