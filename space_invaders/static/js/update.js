@@ -200,6 +200,7 @@ function update ()
     enemies_left.update();
     enemies_right.update();
     frames.push(log_frame);
+    console.log(frame_number)
         //last_frame = frame_number;
     frame_number += 1;
     //}
