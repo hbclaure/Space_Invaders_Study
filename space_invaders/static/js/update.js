@@ -185,26 +185,26 @@ function update ()
     player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
     // REPLACES:
     //ai_ship.update(left_final, right_final, shoot_final);
-    //if (ai_ready == false) {
-    //    console.log("waiting");
-    //} else if (ai_ready) {
+    if (ai_ready == false) {
+        console.log("waiting");
+    } else if (ai_ready) {
         //console.log("** Updating player")
         //player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
         // enforce rules of the game
-    var shoot = ai_commands.shoot && ai_shoots;
-    var left = ai_commands.left && !ai_commands.right //&& !ai_shoots;
-    var right = ai_commands.right && !ai_commands.left //&& !ai_shoots;
+        var shoot = ai_commands.shoot && ai_shoots;
+        var left = ai_commands.left && !ai_commands.right //&& !ai_shoots;
+        var right = ai_commands.right && !ai_commands.left //&& !ai_shoots;
         //console.log("**Updating ai")
-    ai_ship.update(left, right, shoot);
-    ai_ready = false;
+        ai_ship.update(left, right, shoot);
+        ai_ready = false;
         // update the enemies
-    enemies_left.update();
-    enemies_right.update();
-    frames.push(log_frame);
-    //console.log(frame_number)
+        enemies_left.update();
+        enemies_right.update();
+        frames.push(log_frame);
+        //console.log(frame_number)
         //last_frame = frame_number;
-    frame_number += 1;
-    //}
+        frame_number += 1;
+    }
     //console.log("**Game running")
 
     // ---------- end AI logic
