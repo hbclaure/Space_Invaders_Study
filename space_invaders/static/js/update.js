@@ -178,7 +178,7 @@ function update ()
 
     if (last_frame != frame_number){
         sockets.control.send(JSON.stringify(log_frame));
-        last_frame = frame_number;
+        //last_frame = frame_number;
         console.log("SEND",frame_number)
     }
 
@@ -202,7 +202,7 @@ function update ()
         enemies_right.update();
         frames.push(log_frame);
         //console.log(frame_number)
-        //last_frame = frame_number;
+        last_frame = frame_number;
         frame_number += 1;
     }
     //console.log("**Game running")
