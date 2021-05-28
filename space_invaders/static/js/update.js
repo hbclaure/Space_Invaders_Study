@@ -183,9 +183,10 @@ function update ()
 
     // REPLACES:
     //ai_ship.update(left_final, right_final, shoot_final);
-    if (ai_ready == false) {
-        console.log("waiting");
-    } else if (ai_ready) {
+    //if (ai_ready == false) {
+    //    console.log("waiting");
+    //} else 
+    if (ai_ready) {
         //console.log("** Updating player")
         player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
         // enforce rules of the game
