@@ -179,6 +179,7 @@ function update ()
     if (last_frame != frame_number){
         sockets.control.send(JSON.stringify(log_frame));
         last_frame = frame_number;
+        console.log(frame_number)
     }
 
     player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
@@ -200,7 +201,7 @@ function update ()
     enemies_left.update();
     enemies_right.update();
     frames.push(log_frame);
-    console.log(frame_number)
+    //console.log(frame_number)
         //last_frame = frame_number;
     frame_number += 1;
     //}
