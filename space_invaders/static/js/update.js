@@ -178,16 +178,14 @@ function update ()
 
     if (last_frame != frame_number){
         sockets.control.send(JSON.stringify(log_frame));
-    }
-
-    if (ai_ready == false) {
-        console.log("waiting");
+        last_frame = frame_number;
     }
 
     // REPLACES:
     //ai_ship.update(left_final, right_final, shoot_final);
-    // TODO: wait for the response from the server for the update (as opposed to asyc, as it is now)
-    if (ai_ready) {
+    if (ai_ready == false) {
+        console.log("waiting");
+    } else if (ai_ready) {
         //console.log("** Updating player")
         player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
         // enforce rules of the game
@@ -201,7 +199,7 @@ function update ()
         enemies_left.update();
         enemies_right.update();
         frames.push(log_frame);
-        last_frame = frame_number;
+        //last_frame = frame_number;
         frame_number += 1;
     }
     //console.log("**Game running")
