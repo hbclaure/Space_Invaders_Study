@@ -176,20 +176,20 @@ function update ()
 
     }
 
-    if (last_frame != frame_number){
-        sockets.control.send(JSON.stringify(log_frame));
-        last_frame = frame_number;
-        console.log("SEND",frame_number)
-    }
+    // if (last_frame != frame_number){
+    //     sockets.control.send(JSON.stringify(log_frame));
+    //     last_frame = frame_number;
+    //     console.log("SEND",frame_number)
+    // }
 
-    player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
+    //player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
     // REPLACES:
     //ai_ship.update(left_final, right_final, shoot_final);
-    if (ai_ready == false) {
-        console.log("waiting");
-    } else if (ai_ready) {
+    if (ai_ready == false && frame_number != 0) {
+        console.log("waiting: ", frame_number);
+    } else if (ai_ready || frame_number == 0) {
         //console.log("** Updating player")
-        //player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
+        player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
         // enforce rules of the game
         var shoot = ai_commands.shoot && ai_shoots;
         var left = ai_commands.left && !ai_commands.right //&& !ai_shoots;
@@ -200,11 +200,13 @@ function update ()
         // update the enemies
         enemies_left.update();
         enemies_right.update();
-        frames.push(log_frame);
+        //frames.push(log_frame);
+        sockets.control.send(JSON.stringify(log_frame))
         //console.log(frame_number)
         //last_frame = frame_number;
-        frame_number += 1;
     }
+    frames.push(log_frame);
+    frame_number += 1;
     //console.log("**Game running")
 
     // ---------- end AI logic

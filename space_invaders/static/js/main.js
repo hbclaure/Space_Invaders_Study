@@ -20,7 +20,7 @@ sockets.control.onmessage = function(event) {
   ai_commands.right = msg.right;
   ai_commands.shoot = msg.shoot;
   ai_ready = true;
-  console.log("RECEIVE", frame_number)
+  //console.log("RECEIVE", frame_number)
 };
 
 
