@@ -53,14 +53,12 @@ start_scene.update = function() {
             sockets.control.send(JSON.stringify(mode))
             this.scene.start('practice_scene');
             //begin recording frames
-            clearInterval(recording)
             save_image_loop(); 
         }
         else {
             sockets.control.send(JSON.stringify(mode))
             this.scene.start('game_scene');
             // begin recording frames
-            clearInterval(recording)
             save_image_loop(); 
         }
     }
@@ -115,8 +113,7 @@ gameover_scene.preload = function () {
 
 // display Game Over and final scores
 gameover_scene.create = function() {
-    clearInterval(recording)
-    save_image_loop(2)
+    save_image_loop(2);
     player_score = player_ship.sprite.props.score;
     ai_score = ai_ship.sprite.props.score;
 
