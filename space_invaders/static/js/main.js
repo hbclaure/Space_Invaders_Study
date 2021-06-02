@@ -14,17 +14,17 @@ var ai_commands = {
   shoot: false,
 };
 var ai_ready = false;
-var game_paused = false;
+//var game_paused = false;
 sockets.control.onmessage = function(event) {
   var msg = JSON.parse(event.data);
   ai_commands.left = msg.left;
   ai_commands.right = msg.right;
   ai_commands.shoot = msg.shoot;
   ai_ready = true;
-  if(game_paused){
-    intermediate_scene.scene.resume('game_scene');
-    game_paused = false;
-  }
+  //if(game_paused){
+  //  intermediate_scene.scene.resume('game_scene');
+  //  game_paused = false;
+  //}
   //console.log("RECEIVE", frame_number)
 };
 
