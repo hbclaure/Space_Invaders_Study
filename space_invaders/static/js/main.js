@@ -20,6 +20,7 @@ sockets.control.onmessage = function(event) {
   ai_commands.right = msg.right;
   ai_commands.shoot = msg.shoot;
   ai_ready = true;
+  game.pause = false;
   //console.log("RECEIVE", frame_number)
 };
 
