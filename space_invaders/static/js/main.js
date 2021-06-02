@@ -22,7 +22,6 @@ sockets.control.onmessage = function(event) {
   ai_commands.shoot = msg.shoot;
   ai_ready = true;
   if(game_paused){
-    console.log("HI");
     intermediate_scene.scene.resume('game_scene');
     game_paused = false;
   }
