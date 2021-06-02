@@ -189,6 +189,7 @@ function update ()
         console.log("waiting: ", frame_number);
         this.scene.pause();
         game_paused = true;
+        console.log("PAUSE")
     } else if (ai_ready || frame_number == 0) {
         //console.log("** Updating player")
         player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
@@ -206,6 +207,7 @@ function update ()
         sockets.control.send(JSON.stringify(log_frame))
         //console.log(frame_number)
         //last_frame = frame_number;
+        console.log("NO PAUSE")
     }
     console.log("Log frame")
     frames.push(log_frame);
