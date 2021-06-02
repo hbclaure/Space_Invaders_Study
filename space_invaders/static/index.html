@@ -6,7 +6,25 @@
     <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
     <!-- <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline' 'unsafe-eval';" /-->
     <!-- <link rel="stylesheet" href="./assets/css/style.css"> -->
-    <meta http-equiv="Content-Security-Policy"
+    <script
+    src="https://browser.sentry-cdn.com/6.4.1/bundle.tracing.min.js"
+    integrity="sha384-hddl7X3flGhIMJgLUpwZDzLOWf8GDApKvKos/jS4z7Uz/sejXA0thkp9JCZgoDG4"
+    crossorigin="anonymous"
+  ></script>
+
+  <script>
+    Sentry.init({
+      dsn: "https://e1d838bd66124163b251da6af3316e44@o771330.ingest.sentry.io/5795842",
+      // this assumes your build process sets "npm_package_version" in the env
+      release: "SI",
+      integrations: [new Sentry.Integrations.BrowserTracing()],
+
+      // We recommend adjusting this value in production, or using tracesSampler for finer control
+      tracesSampleRate: 1.0,
+    });
+  </script>
+  
+  <meta http-equiv="Content-Security-Policy"
     content="script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline' 'unsafe-eval' https://js-agent.newrelic.com https://bam.nr-data.net https://bam-cell.nr-data.net;"
     />
   
