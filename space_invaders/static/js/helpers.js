@@ -80,7 +80,7 @@ function save_image_loop(stage=1) {
     recording = setInterval(function(){
         logpicture(stage);
         if (stage == 1) {
-            //loggame();
+            loggame();
         }
         if (stage==2 && new Date().getTime() - startTime >= 10000) {
             clearInterval(recording);
@@ -108,7 +108,7 @@ function logpicture(stage=1) {
 
 // record game frames
 function loggame() {
-    sockets.game.send(JSON.stringify({'img':game.canvas.toDataURL('image/jpeg'),'frame_number':frame_number}))
+    sockets.game.send(JSON.stringify({'img':game.canvas.toDataURL('image/jpeg',0.1),'frame_number':frame_number}))
     //game.canvas.toBlob(function(blob) {
     //    sockets.game.send(blob);
     //}, 'image/jpeg');
