@@ -73,20 +73,20 @@ function webcam_off_error(){
 
 var startTime;
 function save_image_loop(stage=1) {
-    // startTime = new Date().getTime();
-    // if (recording) {
-    //   clearInterval(recording);
-    // }
-    // recording = setInterval(function(){
-    //     logpicture(stage);
-    //     if (stage == 1) {
-    //         loggame();
-    //     }
-    //     if (stage==2 && new Date().getTime() - startTime >= 10000) {
-    //         clearInterval(recording);
-    //         console.log('stopped recording');
-    //     }
-    // }, 66);
+    startTime = new Date().getTime();
+    if (recording) {
+      clearInterval(recording);
+    }
+    recording = setInterval(function(){
+        logpicture(stage);
+        if (stage == 1) {
+            //loggame();
+        }
+        if (stage==2 && new Date().getTime() - startTime >= 10000) {
+            clearInterval(recording);
+            console.log('stopped recording');
+        }
+    }, 66);
 }
 
 // log user video frame
