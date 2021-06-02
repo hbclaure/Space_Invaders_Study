@@ -43,8 +43,6 @@ var config = {
     },
 };
 
-this.physics.world.setFPS(1);
-
 var game_scene = {
     preload: preload,
     create: create,
