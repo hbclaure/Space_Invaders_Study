@@ -187,7 +187,8 @@ function update ()
     //ai_ship.update(left_final, right_final, shoot_final);
     if (ai_ready == false && frame_number != 0) {
         console.log("waiting: ", frame_number);
-        game.pause = true;
+        this.scene.pause();
+        game_paused = true;
     } else if (ai_ready || frame_number == 0) {
         //console.log("** Updating player")
         player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
@@ -206,6 +207,7 @@ function update ()
         //console.log(frame_number)
         //last_frame = frame_number;
     }
+    console.log("Log frame")
     frames.push(log_frame);
     frame_number += 1;
     //console.log("**Game running")
