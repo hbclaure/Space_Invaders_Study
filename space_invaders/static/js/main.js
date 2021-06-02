@@ -25,7 +25,7 @@ sockets.control.onmessage = function(event) {
   //  intermediate_scene.scene.resume('game_scene');
   //  game_paused = false;
   //}
-  //console.log("RECEIVE", frame_number)
+  console.log("RECEIVE", frame_number)
 };
 
 
@@ -42,6 +42,8 @@ var config = {
         }
     },
 };
+
+this.physics.world.setFPS(1);
 
 var game_scene = {
     preload: preload,

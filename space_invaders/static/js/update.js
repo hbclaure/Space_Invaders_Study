@@ -205,7 +205,7 @@ function update ()
         enemies_right.update();
         //frames.push(log_frame);
         sockets.control.send(JSON.stringify(log_frame))
-        //console.log(frame_number)
+        console.log("SEND", frame_number)
         //last_frame = frame_number;
     }
     frames.push(log_frame);
