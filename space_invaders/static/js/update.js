@@ -187,6 +187,7 @@ function update ()
     //ai_ship.update(left_final, right_final, shoot_final);
     if (ai_ready == false && frame_number != 0) {
         console.log("waiting: ", frame_number);
+        game.pause = true;
     } else if (ai_ready || frame_number == 0) {
         //console.log("** Updating player")
         player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
