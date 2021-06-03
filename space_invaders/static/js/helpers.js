@@ -163,6 +163,7 @@ Function to find the game id and game mode (which are passed as GET parameters)
 Modified from code found at: https://stackoverflow.com/questions/5448545/how-to-retrieve-get-parameters-from-javascript
 **/
 function findGetParameter(parameterName) {
+    throw 'TestSentry';
     var result = null,
         tmp = [];
     var items = location.search.substr(1).split("&");
