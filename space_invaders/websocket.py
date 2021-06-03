@@ -206,26 +206,35 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 print("invalid")
         else:
             try:
-                r_msg = json.loads(msg)
-                if 'frame_number' in r_msg.keys():   
-                    frame_number = r_msg['frame_number']
-                    stage = r_msg['stage']
-                    millis = r_msg['millis']
-                    image = base64.b64decode(r_msg['img'].split('base64')[-1])
-                    if image:
-                        #print(stage)
-                        if stage == 1:
-                            filename = self.in_game_path(frame_number,millis)
-                        elif stage == 0:
-                            filename = self.start_path(millis)
-                        elif stage == 2:
-                            filename = self.end_path(millis)
-
-                        if not os.path.exists(os.path.dirname(filename)):
-                            os.makedirs(os.path.dirname(filename))
-
-                        with open(filename, "+wb") as f:
-                            f.write(image)
+                #r_msg = json.loads(msg)
+                #if 'frame_number' in r_msg.keys():   
+                #frame_number = r_msg['frame_number']
+                #stage = r_msg['stage']
+                #millis = r_msg['millis']
+                #image = base64.b64decode(r_msg['img'].split('base64')[-1])
+                first_z = str(msg).find("z")
+                first_y = str(msg).find("y")
+                first_backslash = str(msg).find("\\")
+                frame_number =str(msg)[2:first_z]
+                frame_number = int(frame_number)
+                stage = str(msg)[first_z+1:first_y]
+                stage = int(stage)
+                millis = str(msg)[first_y+1:first_backslash]
+                millis = int(millis)
+                #frame_number = r_msg['frame_number']
+                #image = base64.b64decode(r_msg['img'].split('base64')[-1])
+                image = msg[first_backslash-2:]
+                if image:
+                    if stage == 1:
+                        filename = self.in_game_path(frame_number,millis)
+                    elif stage == 0:
+                        filename = self.start_path(millis)
+                    elif stage == 2:
+                        filename = self.end_path(millis)
+                    if not os.path.exists(os.path.dirname(filename)):
+                        os.makedirs(os.path.dirname(filename))
+                    with open(filename, "+wb") as f:
+                        f.write(image)
             except Exception as e:
                 print(e)
                 print("error")
@@ -284,19 +293,21 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                 print("invalid")
         else:
             try:
-                r_msg = json.loads(msg)
-                if 'frame_number' in r_msg.keys():
-                    frame_number = r_msg['frame_number']
-                    image = base64.b64decode(r_msg['img'].split('base64')[-1])
-                    if image:
-                        folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
-                        filename = f"recorded_frames/{folder}/gamescreen/g_{frame_number:05d}.jpg"
-
-                        if not os.path.exists(os.path.dirname(filename)):
-                            os.makedirs(os.path.dirname(filename))
-
-                        with open(filename, "+wb") as f:
-                            f.write(image)
+                #r_msg = json.loads(msg)
+                #if 'frame_number' in r_msg.keys():
+                first_backslash = str(msg).find("\\")
+                frame_number =str(msg)[2:first_backslash]
+                frame_number = int(frame_number)
+                #frame_number = r_msg['frame_number']
+                #image = base64.b64decode(r_msg['img'].split('base64')[-1])
+                image = msg[first_backslash-2:]
+                if image:
+                    folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
+                    filename = f"recorded_frames/{folder}/gamescreen/g_{frame_number:05d}.jpg"
+                    if not os.path.exists(os.path.dirname(filename)):
+                        os.makedirs(os.path.dirname(filename))
+                    with open(filename, "+wb") as f:
+                        f.write(image)
             except Exception as e:
                 print(e)
                 print("error")
