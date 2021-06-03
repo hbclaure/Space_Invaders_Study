@@ -272,7 +272,7 @@ function create ()
                 ship_sprite.props.dead = true;
             });
             ai_over = true;
-            console.log("AI OVER");
+            //console.log("AI OVER");
         }
     });
     this.physics.add.collider(ai_ship.sprite, enemies_left.bullets_group, (ship_sprite, bullet) => {
@@ -311,7 +311,7 @@ function create ()
                 ship_sprite.props.dead = true;
             });
             ai_over = true;
-            console.log("AI OVER");
+            //console.log("AI OVER");
         }
     });
 

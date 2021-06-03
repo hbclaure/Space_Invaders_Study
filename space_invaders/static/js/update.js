@@ -37,7 +37,7 @@ function update ()
         player_bullet_position = [player_bullet.body.x, player_bullet.body.y];
     } else if (this.input.keyboard.checkDown(space_key, 500)) {
         player_shoots = true;
-        console.log("HI")
+        //console.log("HI")
         if (previous_shots_time.length == 5) {
             previous_shots_time.shift();
         }
@@ -122,7 +122,7 @@ function update ()
         enemies_right_positions.push([current_enemy.x, current_enemy.y]);
         if (current_enemy.y > 540) {
             ai_over = true;
-            console.log("AI OVER")
+            //console.log("AI OVER")
         }
 
     }
@@ -186,7 +186,7 @@ function update ()
     // REPLACES:
     //ai_ship.update(left_final, right_final, shoot_final);
     if (ai_ready == false && frame_number != 0) {
-        console.log("waiting: ", frame_number);
+        //console.log("waiting: ", frame_number);
         //this.scene.pause();
         //game_paused = true;
         //console.log("PAUSE");
@@ -205,7 +205,7 @@ function update ()
         enemies_right.update();
         //frames.push(log_frame);
         sockets.control.send(JSON.stringify(log_frame))
-        console.log("SEND", frame_number)
+        //console.log("SEND", frame_number)
         //last_frame = frame_number;
     }
     frames.push(log_frame);
