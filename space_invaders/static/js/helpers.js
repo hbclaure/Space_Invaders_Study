@@ -17,6 +17,8 @@ var image = null;
 var startTimeM = new Date().getTime();
 var nowTime;
 var millis;
+var gameBlob;
+var imgBlob;
 
 function startup() {
     video = document.getElementById('video');
@@ -99,19 +101,21 @@ function logpicture(stage=1) {
         context.drawImage(video, 0, 0, width, height);
         nowTime = new Date().getTime();
         millis = nowTime - startTimeM;
-        sockets.image.send(JSON.stringify({'img':canvas.toDataURL('image/jpeg'),'frame_number':frame_number,'stage':stage,'millis':millis}))
-        //canvas.toBlob(function(blob) {
-        //    sockets.image.send(blob);
-        //},'image/jpeg');
+        //sockets.image.send(JSON.stringify({'img':canvas.toDataURL('image/jpeg'),'frame_number':frame_number,'stage':stage,'millis':millis}))
+        canvas.toBlob(function(blob) {
+            imgBlob = new Blob([frame_number,'z',stage,'y',millis,blob]);
+            sockets.image.send(imgBlob);
+        },'image/jpeg');
     }
 }
 
 // record game frames
 function loggame() {
-    sockets.game.send(JSON.stringify({'img':game.canvas.toDataURL('image/jpeg',0.1),'frame_number':frame_number}))
-    //game.canvas.toBlob(function(blob) {
-    //    sockets.game.send(blob);
-    //}, 'image/jpeg');
+    //sockets.game.send(JSON.stringify({'img':game.canvas.toDataURL('image/jpeg',0.1),'frame_number':frame_number}))
+    game.canvas.toBlob(function(blob) {
+        gameBlob = new Blob([frame_number,blob]);
+        sockets.game.send(gameBlob);
+    }, 'image/jpeg',0.1);
 }
 
 window.addEventListener('load', startup, false);
