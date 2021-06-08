@@ -14,6 +14,8 @@ var ai_commands = {
   shoot: false,
 };
 var ai_ready = false;
+var send_msg = false;
+var frame_sent = false; 
 //var game_paused = false;
 sockets.control.onmessage = function(event) {
   var msg = JSON.parse(event.data);

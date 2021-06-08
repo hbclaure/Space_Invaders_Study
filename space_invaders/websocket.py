@@ -84,14 +84,14 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
             frame_id = cur.lastrowid;
 
             # log the player bullet if it exists
-            if (len(frame['player_bullet_position']) > 0):
+            for bullet in frame['player_bullets_positions']:
                 cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'Player\',?,?,?)',
-                                (frame_id, frame['player_bullet_position'][0], frame['player_bullet_position'][1]))
+                                (frame_id, bullet[0], bullet[1]))
 
             # log the ai bullet if it exists
-            if (len(frame['ai_bullet_position']) > 0):
+            for bullet in frame['ai_bullets_positions']:
                 cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'AI\',?,?,?)',
-                                (frame_id, frame['ai_bullet_position'][0], frame['ai_bullet_position'][1]))
+                                (frame_id, bullet[0], bullet[1]))
 
             # log every enemy on the left
             for enemy in frame['enemies_left_positions']:
