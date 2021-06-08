@@ -198,7 +198,7 @@ function update_practice_scene() {
 
     // switch to gameover screen
     if (gameover || enemies_practice_sprites.length == 0) {
-        game_log.push({player_id: player_id, date: date, round: 0, mode: mode, events, events, frames: frames});
+        game_log = {player_id: player_id, date: date, events: events, frames: frames};
         this.scene.start('gameover_scene_practice');
     }
 }

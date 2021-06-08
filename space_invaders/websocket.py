@@ -58,7 +58,7 @@ class Application(tornado.web.Application):
 class ControlHandler(tornado.websocket.WebSocketHandler):
     mode = None
     current_agent = None
-    logs = None
+    #logs = None
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -75,12 +75,12 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
 
         game_id = cur.lastrowid
 
-        for frame in self.logs:
+        for frame in self.frames:
             # log the actual frame and collect the id
             cur.execute('''INSERT INTO Frames(game_id, frame_number, timestamp, player_position, player_lives,
-                        player_score, ai_position, ai_lives, ai_score) VALUES(?,?,?,?,?,?,?,?,?)''',
+                        player_score, ai_position, ai_lives, ai_score, frame_sent) VALUES(?,?,?,?,?,?,?,?,?,?)''',
                             (game_id, frame['frame_number'], frame['timestamp'], frame['player_position'], frame['player_lives'],
-                            frame['player_score'], frame['ai_position'], frame['ai_lives'], frame['ai_score']))
+                            frame['player_score'], frame['ai_position'], frame['ai_lives'], frame['ai_score'], frame['frame_sent']))
             frame_id = cur.lastrowid;
 
             # log the player bullet if it exists
@@ -119,8 +119,15 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                             (frame_id, self.events[current_event]['killer'], self.events[current_event]['killed']))
                 current_event += 1
 
-            cur.execute('INSERT INTO Actions(frame_id, timestamp, left, right, shoot) VALUES(?,?,?,?,?)',
-                            (frame_id, frame['timestamp'], frame['action']['left'], frame['action']['right'], frame['action']['shoot']))
+            try:
+                cur.execute('INSERT INTO Actions(frame_id, frame_sent, player_left, player_right, player_shoot, player_tried, ai_actual_left, ai_actual_right, ai_actual_shoot, ai_rec_left, ai_rec_right, ai_rec_shoot) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
+                            (frame_id, frame['frame_sent'],
+                             frame['player_action']['left'], frame['player_action']['right'], frame['player_action']['shoot'], frame['player_action']['tried_to_shoot'],
+                             frame['ai_actual_action']['left'], frame['ai_actual_action']['right'], frame['ai_actual_action']['shoot'],
+                             frame['ai_received_action']['left'], frame['ai_received_action']['right'], frame['ai_received_action']['shoot']))
+            except Exception as e:
+                print("Action error: ", frame['frame_number'])
+                
         con.commit()
         con.close()
         # self.write_message('saved')
@@ -143,14 +150,15 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
             if "frame_number" in state.keys():
                 action = self.current_agent.update(state)
 
-                state['action'] = action
-                state['timestamp'] = timestamp
-                self.logs.append(state)
+                #state['action'] = action
+                #state['timestamp'] = timestamp
+                #self.logs.append(state)
 
                 # send action
                 self.write_message(json.dumps(action))
             else:
                 log = json.loads(msg)
+                self.frames = log['frames']
                 self.events = log['events']
                 self.player_id = log['player_id']
                 self.date = log['date']

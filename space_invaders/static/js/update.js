@@ -143,6 +143,8 @@ function update ()
     // TODO: this seems like state, probably should send the actual state you care about though
     var log_frame = {
         frame_number: frame_number,                          //!< Number of the frame
+        timestamp: Date.now(),
+
         player_position: player_ship.sprite.x,               //!< Player's position
         player_lives: player_ship.sprite.props.lives,        //!< Player's lives
         player_score: player_ship.sprite.props.score,        //!< Player's score
@@ -190,21 +192,30 @@ function update ()
         //this.scene.pause();
         //game_paused = true;
         //console.log("PAUSE");
+        log_frame.player_action ={left: cursors.left.isDown, right: cursors.right.isDown, shoot: player_shoots, tried_to_shoot: this.input.keyboard.checkDown(space_key, 0)};
+        log_frame.ai_actual_action = {left: false, right: false, shoot: false};
+        log_frame.ai_received_action = {left: ai_commands.left, right: ai_commands.right, shoot: ai_commands.shoot};
+        log_frame.frame_sent = false;
     } else if (ai_ready || frame_number == 0) {
         //console.log("** Updating player")
         player_ship.update(cursors.left.isDown, cursors.right.isDown, player_shoots);
+        log_frame.player_action ={left: cursors.left.isDown, right: cursors.right.isDown, shoot: player_shoots, tried_to_shoot: this.input.keyboard.checkDown(space_key, 0)};
         // enforce rules of the game
         var shoot = ai_commands.shoot && ai_shoots;
         var left = ai_commands.left && !ai_commands.right //&& !ai_shoots;
         var right = ai_commands.right && !ai_commands.left //&& !ai_shoots;
         //console.log("**Updating ai")
         ai_ship.update(left, right, shoot);
+        log_frame.ai_actual_action = {left: left, right: right, shoot: shoot};
+        log_frame.ai_received_action = {left: ai_commands.left, right: ai_commands.right, shoot: ai_commands.shoot};
         ai_ready = false;
         // update the enemies
         enemies_left.update();
         enemies_right.update();
         //frames.push(log_frame);
-        sockets.control.send(JSON.stringify(log_frame))
+        sockets.control.send(JSON.stringify(log_frame));
+        log_frame.frame_sent = true;
+
         //console.log("SEND", frame_number)
         //last_frame = frame_number;
     }
@@ -229,7 +240,7 @@ function update ()
 
     // switch to game over screen
     if (player_over && ai_over) {
-        game_log.push({player_id: player_id, date: date, round: rounds_played, mode: mode, events: events, frames: frames});
+        game_log = {player_id: player_id, date: date, events: events, frames: frames};
         // clearInterval(recording);
         //sockets.control.send(JSON.stringify({player_id: player_id, date: date, events: events}))
         this.scene.start('gameover_scene');
