@@ -154,7 +154,7 @@ var player_id;                          //!< unique ID
 var game_num;                           //!< game number
 var display_vid;
 
-var max_player_frequency = 350;
+var max_player_frequency = 500;
 var max_ai_frequency = max_player_frequency * 0.6;
 
 
