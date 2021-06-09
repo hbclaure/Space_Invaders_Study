@@ -20,7 +20,7 @@ class Uncooperative:
         VERTICAL_BUFFER = 440 # vertical buffer for bullets (higher numbers means closer to ship)
 
         AI_RELATIVE_SPEED = 0.6 # relatively how much shorter time between bullets is for ai_agent
-        FREQUENCY_BOUND = 500 # ai max time between shots
+        FREQUENCY_BOUND = 800 # ai max time between shots
 
         # gather state information
         s = state
