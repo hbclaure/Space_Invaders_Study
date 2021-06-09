@@ -8,7 +8,7 @@ function update ()
     var player_shoots = false;
     var time_since_last_shot = Date.now() - player_ship.sprite.props.last_shot_time;
 
-    if (this.input.keyboard.checkDown(space_key, 500)) {
+    if (this.input.keyboard.checkDown(space_key, 0)) {
         player_tried_to_shoot = true;
         //console.log("max:",max_player_frequency);
         //console.log("time since:", time_since_last_shot);
