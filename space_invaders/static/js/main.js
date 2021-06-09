@@ -37,10 +37,10 @@ var config = {
     height: 600,
     physics: {
         default: 'arcade',
-        fps: 15,
         arcade: {
             debug: false, // set to true to enable physics visualization
-            gravity: { y: 100 }
+            gravity: { y: 0.001 },
+            //fps: 1
         }
     },
 };

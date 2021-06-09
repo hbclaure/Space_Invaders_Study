@@ -466,7 +466,8 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
     { width: num_horizontal, height: 5, cellWidth: 60, cellHeight: 50, position: Phaser.Display.Align.CENTER, x: x, y: y });
     // set initial velocity for group
     Phaser.Actions.Call(enemies.getChildren(), function(e) {
-        e.setVelocityX(-horizontal_speed)
+        e.setVelocityX(-horizontal_speed);
+        e.setVelocityY(5);
     })
     // store number of columns in the grid
     var children = enemies.getChildren();
