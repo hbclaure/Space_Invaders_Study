@@ -5,8 +5,8 @@ class Uncooperative:
         self.min_x = 425
 
     def check_attack_left(self, state):
+        """ Check whether ship should target left (human player's) enemies """
         return False
-
 
     def update(self, state):
         SHIP_Y = 540
@@ -14,7 +14,7 @@ class Uncooperative:
 
         s = state
 
-        frame_number = s['frame_number']
+        #frame_number = s['frame_number']
 
         ship_x = s['ai_position']
 
@@ -49,10 +49,33 @@ class Uncooperative:
             bullets_to_search = bullets_right_positions
         else:
             bullets_to_search = bullets_left_positions
+        
+        if ship_x >= 375 and ship_x <= 425:
+            bullets_to_search = bullets_left_positions + bullets_right_positions
 
         for bullet in bullets_to_search:
-            if bullet[1] < SHIP_Y + 15 and bullet[1] > nearest_bullet[1]:
+            x_diff = abs(bullet[0] - ship_x)
+            if bullet[1] > SHIP_Y or x_diff > 200:
+                bullets_to_search.remove(bullet)
+
+        for bullet in bullets_to_search:
+            x_diff = abs(bullet[0] - ship_x)
+            x_diff_prev = abs(nearest_bullet[0] - ship_x)
+            # h_dist_to_prev_bullet = abs(nearest_bullet[0] - ship_x)
+            if bullet[1] > nearest_bullet[1]:
                 nearest_bullet = bullet
+            elif bullet[1] > SHIP_Y - 125 and x_diff < x_diff_prev:
+                nearest_bullet = bullet
+        
+        #print(nearest_bullet)
+
+        # h_dist_to_bullet = float('inf')
+        # for bullet in bullets_to_search:
+        #     d = abs(bullet[0] - ship_x)
+        #     if d < h_dist_to_bullet:
+        #        h_dist_to_bullet = d
+        #        nearest_bullet = bullet
+        #fadsFASDJFKASD
 
         nearest_enemy = [0,0]
         nearest_x_diff = CANVAS
@@ -75,12 +98,21 @@ class Uncooperative:
         if round(time.time() * 1000) - ai_last_shot < player_average_frequency * 0.8:
             ai_shoots = False 
 
-        # print (f" Y CONDITION: {nearest_bullet[1] < SHIP_Y + 240}")
+        # print (f" Y CONDITION: {nearest_bullet[1] > SHIP_Y - 350}")
+        # print (f" Y_DIFF: {SHIP_Y - nearest_bullet[1]}, X_DIFF: {ship_x- nearest_bullet[0]}")
+
+        HIT_RANGE = 40 # range for dodging bullets
+        SECOND_HIT_RANGE = 75 # range check for moving towards enemies
+
+        #print("AI SHOOTS: ", ai_shoots)
+
+        if nearest_bullet[0] <= ship_x + HIT_RANGE and nearest_bullet[0] >= ship_x - HIT_RANGE:
+            hit = True
+
+        approached_enemy = False
 
         if not(ai_shoots):
             #print("cant shoot")
-            if nearest_bullet[0] <= ship_x +30 and nearest_bullet[0] >= ship_x - 30:
-                hit = True
             if hit:
                 if nearest_bullet[0] >= CANVAS-75:
                     left = True
@@ -91,13 +123,30 @@ class Uncooperative:
                 elif nearest_bullet[0] <= ship_x:
                     right = True
         else:
+            #IF AI CAN SHOOT
             if nearest_x_diff <= 24:
                 shoot = True
+
             if nearest_enemy[0] < ship_x:
-                if not(nearest_bullet[0] < ship_x and SHIP_Y - nearest_bullet[1] < 240 and ship_x - nearest_bullet[0] <= 45):
+                if not(nearest_bullet[0] < ship_x and SHIP_Y - nearest_bullet[1] < 200 and ship_x - nearest_bullet[0] <= SECOND_HIT_RANGE):
+                    #print("TARGET LEFT")
                     left = True
-            if nearest_enemy[0] > ship_x:
-                if not(nearest_bullet[0] > ship_x and SHIP_Y - nearest_bullet[1] < 240 and nearest_bullet[0] - ship_x <= 45):
+                    approached_enemy = True
+            elif nearest_enemy[0] > ship_x:
+                if not(nearest_bullet[0] > ship_x and SHIP_Y - nearest_bullet[1] < 200 and nearest_bullet[0] - ship_x <= SECOND_HIT_RANGE):
+                    #print("TARGET RIGHT")
+                    right = True
+                    approached_enemy = True
+                    
+            if not approached_enemy and hit:
+                #print("GOTTA MOVE")
+                if nearest_bullet[0] >= CANVAS-75:
+                    left = True
+                elif nearest_bullet[0] <= self.min_x + 55:
+                    right = True
+                elif nearest_bullet[0] > ship_x:
+                    left = True
+                elif nearest_bullet[0] <= ship_x:
                     right = True
 
         if num_right_enemies==0 and not(attack_left):
