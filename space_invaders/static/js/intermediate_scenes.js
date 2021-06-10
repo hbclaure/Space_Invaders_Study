@@ -82,7 +82,14 @@ start_scene.update = function() {
             //sockets.control.send(JSON.stringify(mode))
             this.scene.start('practice_scene');
             //begin recording frames
-            save_image_loop(); 
+            waitForSocketConnection(sockets.image, function(){
+                console.log("image open 2");
+                waitForSocketConnection(sockets.game, function(){
+                    console.log("game open 2");
+                    save_image_loop();
+                })
+            })
+            //save_image_loop(); 
         }
         else {
             waitForSocketConnection(sockets.control, function(){
@@ -92,7 +99,14 @@ start_scene.update = function() {
             //sockets.control.send(JSON.stringify(mode))
             this.scene.start('game_scene');
             // begin recording frames
-            save_image_loop(); 
+            waitForSocketConnection(sockets.image, function(){
+                console.log("image open 2");
+                waitForSocketConnection(sockets.game, function(){
+                    console.log("game open 2");
+                    save_image_loop();
+                })
+            })
+            //save_image_loop(); 
         }
     }
 }
