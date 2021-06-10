@@ -157,6 +157,8 @@ var display_vid;
 var max_player_frequency = 500;
 var max_ai_frequency = max_player_frequency * 0.6;
 
+var frames_per_message = 200;
+
 
 /**
 Function to find the game id and game mode (which are passed as GET parameters)
@@ -326,6 +328,13 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props.exploding = false;
     sprite.explote_anim = image_id + '_exp';
 
+    sprite.props.emote = this.add.circle(x, y, 5);
+    sprite.props.emote.setFillStyle(0xFFFFFF, 1.0);
+
+    sprite.props.message = this.add.bitmapText(x, y+15, font_type, 'hello', 14);
+    sprite.props.message.originX = 0.5;
+    sprite.props.message.visible = false;
+
     // animation for the player/ai explosions
     var explosion = (image_id == 'ship') ? 'shipexplosion' : (image_id == 'avery') ? 'averyexplosion' : 'jordanexplosion';
 
@@ -397,6 +406,10 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
                 fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1);
                 sound.play();
             }
+
+            this.sprite.props.message.x = this.sprite.x;
+
+            this.sprite.props.emote.x = this.sprite.x;
         },
     };
 }
@@ -529,4 +542,8 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
             }
         },
     };
+}
+
+function create_text() {
+    var gameover_text = this.add.bitmapText(ai_ship.sprite.x, ai_ship.sprite.y + 25, 'PressStart2P_Orange', 'Sorry!', 10).setOrigin(0.5);
 }

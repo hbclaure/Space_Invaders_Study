@@ -1,6 +1,9 @@
 /**
  * Update the state of the game
  */
+
+var last_msg_frame = -500;
+
 function update ()
 {
     // --- player shooting logic ---
@@ -41,6 +44,45 @@ function update ()
 
     player_left = cursors.left.isDown;
     player_right = cursors.right.isDown;
+
+    player_up = cursors.up.isDown;
+    player_down = cursors.down.isDown;
+
+    // if(player_up){
+    //     console.log('up pressed')
+    // }
+
+    // if (player_down){
+    //     console.log('down pressed')
+    // }
+
+    // reset emote/message after certain amount of time/frames
+    if (frame_number >= last_msg_frame + frames_per_message) {
+        player_ship.sprite.props.message.visible = false;
+        ai_ship.sprite.props.message.visible = false;
+
+        player_ship.sprite.props.emote.setFillStyle(0xFFFFFF);
+    }
+
+    if (this.input.keyboard.checkDown(cursors.up, 5000) && frame_number >= last_msg_frame + frames_per_message) {
+        console.log('up check pressed');
+
+        ai_ship.sprite.props.message.text = ':)';
+        ai_ship.sprite.props.message.visible = true;
+
+        player_ship.sprite.props.emote.setFillStyle(0x00FF00)
+        last_msg_frame = frame_number;
+    } else if (this.input.keyboard.checkDown(cursors.down, 5000) && frame_number >= last_msg_frame + frames_per_message) {
+        console.log('down check pressed');
+
+        player_ship.sprite.props.emote.setFillStyle(0xFF0000)
+        ai_ship.sprite.props.message.text = 'Sorry,\n I messed up!';
+        ai_ship.sprite.props.message.visible = true;
+        ai_ship.sprite.props.message.align = 1;
+        last_msg_frame = frame_number;
+    }
+
+
     player_action = {left: player_left, right: player_right, shoot: player_shoots, tried_to_shoot: player_tried_to_shoot};
 
     ai_received_action = {left: ai_commands.left, right: ai_commands.right, shoot: ai_commands.shoot};
