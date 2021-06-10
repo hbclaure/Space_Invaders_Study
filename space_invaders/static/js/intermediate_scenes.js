@@ -22,21 +22,46 @@ start_scene.create = function() {
     //sockets.image.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
     //sockets.game.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
     //save_image_loop(stage=0);
-    if(sockets.image.readyState == 1 && sockets.game.readyState==1){
-        socket_start();
-    } else if(sockets.image.readyState == 0){
-        sockets.image.onopen = () => socket_start_image();
-    } else if(sockets.game.readyState == 0) {
-        sockets.game.onopen = () => socket_start();
-    }
+    waitForSocketConnection(sockets.image, function(){
+        console.log("image open");
+        socket_start_image();
+    });
+    // if(sockets.image.readyState == 1 && sockets.game.readyState==1){
+    //     socket_start();
+    // } else if(sockets.image.readyState == 0){
+    //     sockets.image.onopen = () => socket_start_image();
+    // } else if(sockets.game.readyState == 0) {
+    //     sockets.game.onopen = () => socket_start();
+    // }
+}
+
+// Make the function wait until the connection is made...
+function waitForSocketConnection(socket, callback){
+    setTimeout(
+        function () {
+            if (socket.readyState === 1) {
+                console.log("Connection is made");
+                if (callback != null){
+                    callback();
+                }
+            } else {
+                console.log("wait for connection...");
+                waitForSocketConnection(socket, callback);
+            }
+
+        }, 5); // wait 5 milisecond for the connection...
 }
 
 function socket_start_image() {
-    if(sockets.game.readyState==1){
+    // if(sockets.game.readyState==1){
+    //     socket_start();
+    // } else if(sockets.game.readyState == 0) {
+    //     sockets.game.onopen = () => socket_start();
+    // }
+    waitForSocketConnection(sockets.game, function(){
+        console.log("game open");
         socket_start();
-    } else if(sockets.game.readyState == 0) {
-        sockets.game.onopen = () => socket_start();
-    }
+    });
 }
 
 function socket_start() {
@@ -50,13 +75,21 @@ start_scene.update = function() {
     // begin game when the player presses spacebar
     if (this.input.keyboard.checkDown(space_key, 500)) {
         if (mode == PRACTICE) {
-            sockets.control.send(JSON.stringify(mode))
+            waitForSocketConnection(sockets.control, function(){
+                console.log("control open");
+                sockets.control.send(JSON.stringify(mode));
+            });
+            //sockets.control.send(JSON.stringify(mode))
             this.scene.start('practice_scene');
             //begin recording frames
             save_image_loop(); 
         }
         else {
-            sockets.control.send(JSON.stringify(mode))
+            waitForSocketConnection(sockets.control, function(){
+                console.log("control open");
+                sockets.control.send(JSON.stringify(mode));
+            });
+            //sockets.control.send(JSON.stringify(mode))
             this.scene.start('game_scene');
             // begin recording frames
             save_image_loop(); 
