@@ -84,7 +84,7 @@ function save_image_loop(stage=1) {
         if (stage == 1) {
             loggame();
         }
-        if (stage==2 && new Date().getTime() - startTime >= 10000) {
+        if ((stage==2 || stage==0) && new Date().getTime() - startTime >= 10000) {
             clearInterval(recording);
             console.log('stopped recording');
         }
