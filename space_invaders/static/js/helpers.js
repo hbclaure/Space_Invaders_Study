@@ -2,6 +2,15 @@
 All the helper functions and global variables for space invaders
 **/
 
+var SHIP_BULLET_SPEED = 350
+
+var ai_messages = {
+    4: "I\’m sorry!\nPlease don\’t be mad!",
+    5: "I’m sorry!\nThanks for reminding me!",
+    6: "My bad, I should\nattack the enemies!",
+    7: "Oops,\nsorry!"
+}
+
 // set image width; height will be matched accordingly
 var width = 500;
 var height = 0;
@@ -154,7 +163,7 @@ var player_id;                          //!< unique ID
 var game_num;                           //!< game number
 var display_vid;
 
-var max_player_frequency = 500;
+var max_player_frequency = 750;
 var max_ai_frequency = max_player_frequency * 0.6;
 
 var frames_per_message = 200;
@@ -177,7 +186,7 @@ function findGetParameter(parameterName) {
 
 player_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
 mode = findGetParameter('mode'); 
-mode = (mode && !isNaN(mode) && parseInt(mode, 10) >= 0 && parseInt(mode, 10) <= 3) ? parseInt(mode, 10) : COOPERATIVE_EARLY;
+mode = (mode && !isNaN(mode) && parseInt(mode, 10) >= 0 && parseInt(mode, 10) <= 7) ? parseInt(mode, 10) : COOPERATIVE_EARLY;
 game_num = findGetParameter('game') ? findGetParameter('game') : 0;
 display_vid = findGetParameter('v') ? findGetParameter('v') :'off';
 
@@ -403,7 +412,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
             
                 this.sprite.props.last_shot_frame = frame_number;
                 this.sprite.props.last_shot_time = Date.now();
-                fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1);
+                fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1, SHIP_BULLET_SPEED);
                 sound.play();
             }
 

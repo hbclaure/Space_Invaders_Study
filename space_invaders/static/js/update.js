@@ -3,6 +3,8 @@
  */
 
 var last_msg_frame = -500;
+var up_signal = false;
+var down_signal = false;
 
 function update ()
 {
@@ -76,10 +78,13 @@ function update ()
         console.log('down check pressed');
 
         player_ship.sprite.props.emote.setFillStyle(0xFF0000)
-        ai_ship.sprite.props.message.text = 'Sorry,\n I messed up!';
+        ai_ship.sprite.props.message.text = ai_messages[mode];
+        console.log(mode)
         ai_ship.sprite.props.message.visible = true;
         ai_ship.sprite.props.message.align = 1;
         last_msg_frame = frame_number;
+
+        down_signal = true;
     }
 
 
@@ -231,7 +236,10 @@ function update ()
         frame_sent: frame_sent,
         player_action: player_action,
         ai_actual_action: ai_actual_action,
-        ai_received_action: ai_received_action
+        ai_received_action: ai_received_action,
+
+        // for error signaling
+        down_signal: down_signal,
     }
     
     // --- send state if server was ready
@@ -243,6 +251,9 @@ function update ()
     // --- log frame of game
     frames.push(log_frame);
     frame_number += 1;
+
+    down_signal = false;
+    up_signal = false;
 
     // --- check game over conditions ---
     if (enemies_left_sprites.length == 0) {

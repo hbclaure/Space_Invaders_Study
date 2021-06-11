@@ -35,9 +35,6 @@ var config = {
     type: Phaser.CANVAS, //Phaser.AUTO,
     width: 800,
     height: 600,
-    preload: preload,
-    create: create,
-    update: update,
     physics: {
         default: 'arcade',
         arcade: {

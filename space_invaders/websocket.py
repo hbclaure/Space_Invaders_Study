@@ -18,6 +18,7 @@ import base64
 from agents.uncooperative import Uncooperative
 from agents.cooperative_early import CooperativeEarly
 from agents.cooperative_late import CooperativeLate
+from agents.apology import Apology
 
 from tornado.options import define, options
 define("port",default = 9999, help="run on the given port", type=int)
@@ -30,7 +31,11 @@ DATABASE = os.path.join(WEBROOT, 'db/game_logs.db')
 agents = {
     1: CooperativeEarly,
     2: CooperativeLate,
-    3: Uncooperative
+    3: Uncooperative,
+    4: Apology,
+    5: Apology,
+    6: Apology, 
+    7: Apology
 }
 
 #machines = {

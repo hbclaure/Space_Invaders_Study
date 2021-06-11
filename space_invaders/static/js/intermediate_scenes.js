@@ -67,7 +67,7 @@ function socket_start_image() {
 function socket_start() {
     sockets.image.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
     sockets.game.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
-    save_image_loop(stage=0);
+    //save_image_loop(stage=0);
 }
 
 start_scene.update = function() {
@@ -86,7 +86,7 @@ start_scene.update = function() {
                 console.log("image open 2");
                 waitForSocketConnection(sockets.game, function(){
                     console.log("game open 2");
-                    save_image_loop();
+                    //save_image_loop();
                 })
             })
             //save_image_loop(); 
@@ -103,7 +103,7 @@ start_scene.update = function() {
                 console.log("image open 2");
                 waitForSocketConnection(sockets.game, function(){
                     console.log("game open 2");
-                    save_image_loop();
+                    //save_image_loop();
                 })
             })
             //save_image_loop(); 
@@ -160,7 +160,7 @@ gameover_scene.preload = function () {
 
 // display Game Over and final scores
 gameover_scene.create = function() {
-    save_image_loop(2);
+    //save_image_loop(2);
     player_score = player_ship.sprite.props.score;
     ai_score = ai_ship.sprite.props.score;
 

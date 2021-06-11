@@ -2,6 +2,7 @@ from agents.uncooperative import Uncooperative
 
 class CooperativeEarly(Uncooperative):
     def __init__(self):
+        super().__init__()
         self.min_x = 0
         
     def check_attack_left(self, state):
