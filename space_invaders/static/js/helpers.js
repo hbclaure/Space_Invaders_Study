@@ -2,6 +2,8 @@
 All the helper functions and global variables for space invaders
 **/
 
+var total_score = 0;
+
 // set image width; height will be matched accordingly
 var width = 500;
 var height = 0;
@@ -315,7 +317,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     var font_type = (image_id == 'ship') ? 'PressStart2P_Purple' : (image_id == 'avery') ? 'PressStart2P_Orange' : 'PressStart2P_Gray';
     // sprite.props.scoreText = this.add.bitmapText(x, 3, font_type, 'SCORE 0', 20);
     // sprite.props.lives = 3;
-    sprite.props.scoreText = this.add.bitmapText(x+22, 3, font_type, 'SCORE 0', 18);
+    //sprite.props.scoreText = this.add.bitmapText(x+22, 3, font_type, 'SCORE 0', 18);
     sprite.props.lives = 4;
     sprite.props.image_id = image_id;
     sprite.props.invincible = false;
@@ -341,7 +343,11 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
 
     
     sprite.lives = [] // add sprites to display lives
-    var life_x = x - 200;
+    // var life_x = x - 200;
+    var life_x = x - 200
+    if (x > 400) {
+        life_x = x - 22
+    }
     this.add.bitmapText(life_x, 3, font_type, 'LIVES', 20);
     for (i = 0; i < sprite.props.lives; i++) {
         var life = this.physics.add.sprite(life_x + 125 + 25 * i, 25, image_id).setOrigin(0.5, 1.0);

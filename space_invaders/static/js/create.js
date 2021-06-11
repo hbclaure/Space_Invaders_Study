@@ -63,7 +63,11 @@ function create ()
         // update the score     
         if (enemy.hit == false) {   
     	   player_ship.sprite.props.score += enemy.score;
-    	   player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score); 	
+    	//    player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score); 	
+
+           total_score += enemy.score;
+           score_text.setText("SCORE " + total_score);
+
            events.push({frame: frame_number, killer: 'PLAYER', killed: 'LEFT'});
         }
         enemy.hit = true;
@@ -82,7 +86,11 @@ function create ()
         // update the score
         if (enemy.hit == false) {
     	   ai_ship.sprite.props.score += enemy.score;
-    	   ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
+    	//    ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
+
+           total_score += enemy.score;
+           score_text.setText("SCORE " + total_score);
+
            events.push({frame: frame_number, killer: 'PLAYER', killed: 'RIGHT'});
         }
         enemy.hit = true;
@@ -103,7 +111,11 @@ function create ()
         // update the score
         if (enemy.hit == false) {
             player_ship.sprite.props.score += enemy.score;
-            player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
+            // player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
+
+            total_score += enemy.score;
+            score_text.setText("SCORE " + total_score);
+
             events.push({frame: frame_number, killer: 'AI', killed: 'LEFT'});
         }
         enemy.hit = true;
@@ -122,7 +134,11 @@ function create ()
         // update the score
         if (enemy.hit == false) {
             ai_ship.sprite.props.score += enemy.score;
-            ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
+            // ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
+
+            total_score += enemy.score;
+            score_text.setText("SCORE " + total_score);
+
             events.push({frame: frame_number, killer: 'AI', killed: 'RIGHT'});
         }
         enemy.hit = true;
@@ -453,4 +469,7 @@ function create ()
             enemy.hit = true;
         }
     });
+    var score_text = this.add.bitmapText(this.sys.canvas.width/2, 3, 'PressStart2P_Green', '', 18);
+    score_text.originX = 0.5;
+    score_text.setText('SCORE 0');
 }
