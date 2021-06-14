@@ -1,6 +1,8 @@
 from agents.uncooperative import Uncooperative
+from agents.cooperative_early import CooperativeEarly
+from agents.cooperative_late import CooperativeLate
 
-class Apology(Uncooperative):
+class Apology(CooperativeLate):
     def __init__(self):
         super().__init__()
         self.min_x = 0
