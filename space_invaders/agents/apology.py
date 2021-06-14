@@ -22,7 +22,7 @@ class Apology(CooperativeLate):
         
         if s['down_signal'] and self.strategy == self.zombie:
             self.signal_down_count += 1
-            if self.signal_down_count == 1:
+            if self.signal_down_count == 2:
                 self.strategy = self.active
         
         if s['down_signal']:
