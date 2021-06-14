@@ -339,8 +339,10 @@ function create ()
             this.custom_sounds.player_explosion.play();
             this.custom_sounds.enemy_explosion.play();
             // update the score
-            ship_sprite.props.score += enemy.score;
-            ship_sprite.props.scoreText.setText("SCORE " + ship_sprite.props.score);
+            // ship_sprite.props.score += enemy.score;
+            // ship_sprite.props.scoreText.setText("SCORE " + ship_sprite.props.score);
+            total_score += enemy.score;
+            score_text.setText("SCORE " + total_score);
             // kill the player and the enemy. The change in behavior takes place within the update function of the ship
             if (ship_sprite.props.lives > 1) {
                 ship_sprite.props.exploding = true;
@@ -372,8 +374,10 @@ function create ()
             this.custom_sounds.player_explosion.play();
             this.custom_sounds.enemy_explosion.play();
             // update the score
-            ai_ship.sprite.props.score += enemy.score;
-            ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
+            // ai_ship.sprite.props.score += enemy.score;
+            // ai_ship.sprite.props.scoreText.setText("SCORE " + ai_ship.sprite.props.score);
+            total_score += enemy.score;
+            score_text.setText("SCORE " + total_score);
             // kill the player and the enemy. The change in behavior takes place within the update function of the ship
             if (ship_sprite.props.lives > 1) {
                 ship_sprite.props.exploding = true;
@@ -408,8 +412,10 @@ function create ()
             this.custom_sounds.enemy_explosion.play();
         
             // update the score
-            player_ship.sprite.props.score += enemy.score;
-            player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
+            // player_ship.sprite.props.score += enemy.score;
+            // player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score);
+            total_score += enemy.score;
+            score_text.setText("SCORE " + total_score);
             // kill the player and the enemy. The change in behavior takes place within the update function of the ship
             if (ship_sprite.props.lives > 1) {
                 ship_sprite.props.exploding = true;
@@ -442,8 +448,10 @@ function create ()
             this.custom_sounds.enemy_explosion.play();
         
             // update the score
-            ship_sprite.props.score += enemy.score;
-            ship_sprite.props.scoreText.setText("SCORE " + ship_sprite.props.score);
+            // ship_sprite.props.score += enemy.score;
+            // ship_sprite.props.scoreText.setText("SCORE " + ship_sprite.props.score);
+            total_score += enemy.score;
+            score_text.setText("SCORE " + total_score);
             // kill the player and the enemy. The change in behavior takes place within the update function of the ship
             if (ship_sprite.props.lives > 1) {
                 ship_sprite.props.exploding = true;
