@@ -127,7 +127,7 @@ function loggame() {
     }, 'image/jpeg',0.1);
 }
 
-window.addEventListener('load', startup, false);
+// window.addEventListener('load', startup, false);
 
 
 // The different game modes
@@ -384,6 +384,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
             // do nothing if the ship has been killed!
             if (this.sprite.props.dead) {
                 this.sprite.setVisible(false);
+                this.sprite.props.emote.setVisible(false);
                 this.sprite.x = 0;
                 this.sprite.y = 0;
                 return;
