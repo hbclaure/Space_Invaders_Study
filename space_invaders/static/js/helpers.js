@@ -5,10 +5,15 @@ All the helper functions and global variables for space invaders
 var SHIP_BULLET_SPEED = 350
 
 var ai_messages = {
-    4: "I\’m sorry!\nPlease don\’t be mad!",
-    5: "I’m sorry!\nThanks for reminding me!",
-    6: "My bad, I should\nattack the enemies!",
-    7: "Oops,\nsorry!"
+    7: "Haha sorry! \n I'm so silly!",
+    5: "I’m sorry!\nThanks for the heads up!",
+    6: "Sorry, my mistake!",
+    8: "Sorry, \nit was the system's fault",
+    4: "Sorry"
+}
+
+var alternate_messages = {
+    7: "Silly me!"
 }
 var total_score = 0;
 
@@ -165,7 +170,7 @@ var game_num;                           //!< game number
 var display_vid;
 
 var max_player_frequency = 600;
-var max_ai_frequency = max_player_frequency * 0.6;
+var max_ai_frequency = max_player_frequency; //* 0.6;
 
 var frames_per_message = 200;
 
