@@ -3,6 +3,9 @@ All the helper functions and global variables for space invaders
 **/
 
 // set image width; height will be matched accordingly
+
+SHIP_BULLET_SPEED = 350
+
 var width = 500;
 var height = 0;
 
@@ -156,7 +159,7 @@ var player_id;                          //!< unique ID
 var game_num;                           //!< game number
 var display_vid;
 
-var max_player_frequency = 500;
+var max_player_frequency = 600;
 var max_ai_frequency = max_player_frequency * 0.6;
 
 
@@ -396,7 +399,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
             
                 this.sprite.props.last_shot_frame = frame_number;
                 this.sprite.props.last_shot_time = Date.now();
-                fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1);
+                fire_bullet(this.bullets_group, this.sprite.x, this.sprite.y - 50, -1, SHIP_BULLET_SPEED);
                 sound.play();
             }
         },
