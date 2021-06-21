@@ -63,21 +63,27 @@ function update ()
         player_ship.sprite.props.message.visible = false;
         ai_ship.sprite.props.message.visible = false;
 
-        player_ship.sprite.props.emote.setFillStyle(0xFFFFFF);
+        //player_ship.sprite.props.emote.setFillStyle(0xFFFFFF);
     }
 
     if (this.input.keyboard.checkDown(cursors.up, 5000) && frame_number >= last_msg_frame + frames_per_message) {
         console.log('up check pressed');
 
-        ai_ship.sprite.props.message.text = ':)';
+        player_ship.sprite.props.message.setText("good job");
+        player_ship.sprite.props.message.visible = true;
+
+        ai_ship.sprite.props.message.text = 'yay';
         ai_ship.sprite.props.message.visible = true;
 
-        player_ship.sprite.props.emote.setFillStyle(0x00FF00)
+        //player_ship.sprite.props.emote.setFillStyle(0x00FF00)
         last_msg_frame = frame_number;
     } else if (this.input.keyboard.checkDown(cursors.down, 5000) && frame_number >= last_msg_frame + frames_per_message) {
         console.log('down check pressed');
 
-        player_ship.sprite.props.emote.setFillStyle(0xFF0000)
+        player_ship.sprite.props.message.setText("bad job!");
+        player_ship.sprite.props.message.visible = true;
+
+        //player_ship.sprite.props.emote.setFillStyle(0xFF0000)
         ai_ship.sprite.props.message.text = ai_messages[mode];
         console.log(mode)
         ai_ship.sprite.props.message.visible = true;

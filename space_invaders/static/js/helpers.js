@@ -317,7 +317,7 @@ function fire_enemy_bullet(enemies, bullets) {
  * @param {String} bullet_image_id image id for the bullet
  * @returns object with ship image, corresponding bullets group, and update function for handling actions
  */
-function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bullet_image_id = "laser", min_x = 0) {
+function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bullet_image_id = "laser", min_x = 0, message_height = 15) {
             
     var canvas_width = this.sys.canvas.width;
     var canvas_height = this.sys.canvas.height;
@@ -343,10 +343,10 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props.exploding = false;
     sprite.explote_anim = image_id + '_exp';
 
-    sprite.props.emote = this.add.circle(x, y, 5);
-    sprite.props.emote.setFillStyle(0xFFFFFF, 1.0);
+    //sprite.props.emote = this.add.circle(x, y, 5);
+    //sprite.props.emote.setFillStyle(0xFFFFFF, 1.0);
 
-    sprite.props.message = this.add.bitmapText(x, y+15, font_type, 'hello', 14);
+    sprite.props.message = this.add.bitmapText(x, y+message_height, font_type, 'hello', 14);
     sprite.props.message.originX = 0.5;
     sprite.props.message.visible = false;
 
@@ -394,7 +394,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
             // do nothing if the ship has been killed!
             if (this.sprite.props.dead) {
                 this.sprite.setVisible(false);
-                this.sprite.props.emote.setVisible(false);
+                //this.sprite.props.emote.setVisible(false);
                 this.sprite.x = 0;
                 this.sprite.y = 0;
                 return;
@@ -429,7 +429,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
 
             this.sprite.props.message.x = this.sprite.x;
 
-            this.sprite.props.emote.x = this.sprite.x;
+            //this.sprite.props.emote.x = this.sprite.x;
         },
     };
 }
