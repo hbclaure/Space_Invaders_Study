@@ -14,6 +14,16 @@ import random
 import ssl
 from datetime import datetime
 import base64
+import sentry_sdk
+
+sentry_sdk.init(
+    "https://1d8e5b5288fa4616b900791c09abcfbb@o771330.ingest.sentry.io/5827220",
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0
+)
 
 from agents.uncooperative import Uncooperative
 from agents.cooperative_early import CooperativeEarly

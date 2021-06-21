@@ -10,6 +10,7 @@ tornado = "*"
 opencv-python = "*"
 newrelic = "*"
 uwsgi = "*"
+sentry-sdk = "*"
 
 [requires]
 python_version = "3.7"
