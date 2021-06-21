@@ -80,9 +80,9 @@ function save_image_loop(stage=1) {
       clearInterval(recording);
     }
     recording = setInterval(function(){
-        logpicture(stage);
+        logpicture(stage, frame_number);
         if (stage == 1) {
-            loggame();
+            loggame(frame_number);
         }
         if ((stage==2 || stage==0) && new Date().getTime() - startTime >= 10000) {
             clearInterval(recording);
@@ -92,7 +92,7 @@ function save_image_loop(stage=1) {
 }
 
 // log user video frame
-function logpicture(stage=1) {
+function logpicture(stage=1,current_frame_number) {
     // stage 0: start, 1: in-game, 2: end
     var context = canvas.getContext('2d');
     if (width && height) {
@@ -103,17 +103,19 @@ function logpicture(stage=1) {
         millis = nowTime - startTimeM;
         //sockets.image.send(JSON.stringify({'img':canvas.toDataURL('image/jpeg'),'frame_number':frame_number,'stage':stage,'millis':millis}))
         canvas.toBlob(function(blob) {
-            imgBlob = new Blob([frame_number,'z',stage,'y',millis,blob]);
+            imgBlob = new Blob([current_frame_number,'z',stage,'y',millis,blob]);
             sockets.image.send(imgBlob);
         },'image/jpeg');
     }
 }
 
 // record game frames
-function loggame() {
+function loggame(current_frame_number) {
     //sockets.game.send(JSON.stringify({'img':game.canvas.toDataURL('image/jpeg',0.1),'frame_number':frame_number}))
+    nowTime = new Date().getTime();
+    millis = nowTime - startTimeM;
     game.canvas.toBlob(function(blob) {
-        gameBlob = new Blob([frame_number,blob]);
+        gameBlob = new Blob([current_frame_number,'z',millis,blob]);
         sockets.game.send(gameBlob);
     }, 'image/jpeg',0.1);
 }
