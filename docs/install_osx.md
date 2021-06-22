@@ -13,5 +13,3 @@
    $ cd ../..
    ```
 6. You may now test the game by executing `pipenv run python space_invaders/websocket.py` and going to the link it provides in the terminal (you must be within the activated virual environment when you do this)
-
-TO DO: add link to terminal for game, currently localhost:8888

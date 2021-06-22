@@ -14,6 +14,16 @@ import random
 import ssl
 from datetime import datetime
 import base64
+import sentry_sdk
+
+sentry_sdk.init(
+    "https://1d8e5b5288fa4616b900791c09abcfbb@o771330.ingest.sentry.io/5827220",
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0
+)
 
 from agents.uncooperative import Uncooperative
 from agents.cooperative_early import CooperativeEarly
@@ -308,15 +318,18 @@ class GameHandler(tornado.websocket.WebSocketHandler):
             try:
                 #r_msg = json.loads(msg)
                 #if 'frame_number' in r_msg.keys():
+                first_z = str(msg).find("z")
                 first_backslash = str(msg).find("\\")
-                frame_number =str(msg)[2:first_backslash]
+                frame_number =str(msg)[2:first_z]
                 frame_number = int(frame_number)
+                millis = str(msg)[first_z+1:first_backslash]
+                millis = int(millis)
                 #frame_number = r_msg['frame_number']
                 #image = base64.b64decode(r_msg['img'].split('base64')[-1])
                 image = msg[first_backslash-2:]
                 if image:
                     folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
-                    filename = f"recorded_frames/{folder}/gamescreen/g_{frame_number:05d}.jpg"
+                    filename = f"recorded_frames/{folder}/gamescreen/g_{frame_number:05d}_m{millis}.jpg"
                     if not os.path.exists(os.path.dirname(filename)):
                         os.makedirs(os.path.dirname(filename))
                     with open(filename, "+wb") as f:
