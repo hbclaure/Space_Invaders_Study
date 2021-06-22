@@ -3,8 +3,10 @@
  */
 
 var last_msg_frame = -500;
-var up_signal = false;
-var down_signal = false;
+var signal_up = false;
+var signal_down = false;
+var tried_signal_down = false;
+var tried_signal_up = false;
 
 function update ()
 {
@@ -66,33 +68,44 @@ function update ()
         //player_ship.sprite.props.emote.setFillStyle(0xFFFFFF);
     }
 
-    if (this.input.keyboard.checkDown(cursors.up, 5000) && frame_number >= last_msg_frame + frames_per_message) {
-        console.log('up check pressed');
+    if (this.input.keyboard.checkDown(cursors.up, 0)) {
+        if(frame_number >= last_msg_frame + frames_per_message) {
+            console.log('up check pressed');
 
-        player_ship.sprite.props.message.setText("good job");
-        player_ship.sprite.props.message.visible = true;
+            player_ship.sprite.props.message.setText("Good job");
+            player_ship.sprite.props.message.visible = true;
 
-        ai_ship.sprite.props.message.text = 'yay';
-        ai_ship.sprite.props.message.visible = true;
+            ai_ship.sprite.props.message.text = 'yay';
+            ai_ship.sprite.props.message.visible = true;
 
-        //player_ship.sprite.props.emote.setFillStyle(0x00FF00)
-        last_msg_frame = frame_number;
-    } else if (this.input.keyboard.checkDown(cursors.down, 5000) && frame_number >= last_msg_frame + frames_per_message) {
-        console.log('down check pressed');
+            //player_ship.sprite.props.emote.setFillStyle(0x00FF00)
+            last_msg_frame = frame_number;
 
-        player_ship.sprite.props.message.setText("bad job!");
-        player_ship.sprite.props.message.visible = true;
+            signal_up = true;
+            tried_signal_up = true;
+        } else {
+            tried_signal_up = true;
+        }
+    } else if (this.input.keyboard.checkDown(cursors.down, 0)) {
+        if (frame_number >= last_msg_frame + frames_per_message) {
+            console.log('down check pressed');
 
-        //player_ship.sprite.props.emote.setFillStyle(0xFF0000)
-        ai_ship.sprite.props.message.text = ai_messages[mode];
-        console.log(mode)
-        ai_ship.sprite.props.message.visible = true;
-        ai_ship.sprite.props.message.align = 1;
-        last_msg_frame = frame_number;
+            player_ship.sprite.props.message.setText("Bad job");
+            player_ship.sprite.props.message.visible = true;
 
-        down_signal = true;
+            //player_ship.sprite.props.emote.setFillStyle(0xFF0000)
+            ai_ship.sprite.props.message.text = ai_messages[mode];
+            console.log(mode)
+            ai_ship.sprite.props.message.visible = true;
+            ai_ship.sprite.props.message.align = 1;
+            last_msg_frame = frame_number;
+
+            signal_down = true;
+            tried_signal_down = true;
+        } else {
+            tried_signal_down = true;
+        }
     }
-
 
     player_action = {left: player_left, right: player_right, shoot: player_shoots, tried_to_shoot: player_tried_to_shoot};
 
@@ -245,7 +258,11 @@ function update ()
         ai_received_action: ai_received_action,
 
         // for error signaling
-        down_signal: down_signal,
+        signal_down: signal_down,
+        signal_up: signal_up,
+        // if player pressed but it is during the delay
+        tried_signal_down: tried_signal_down,
+        tried_signal_up: tried_signal_up
     }
     
     // --- send state if server was ready
@@ -258,8 +275,10 @@ function update ()
     frames.push(log_frame);
     frame_number += 1;
 
-    down_signal = false;
-    up_signal = false;
+    signal_down = false;
+    signal_up = false;
+    tried_signal_down = false;
+    tried_signal_up = false;
 
     // --- check game over conditions ---
     if (enemies_left_sprites.length == 0) {
