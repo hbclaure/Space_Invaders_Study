@@ -14,16 +14,16 @@ import random
 import ssl
 from datetime import datetime
 import base64
-import sentry_sdk
+# import sentry_sdk
 
-sentry_sdk.init(
-    "https://1d8e5b5288fa4616b900791c09abcfbb@o771330.ingest.sentry.io/5827220",
+# sentry_sdk.init(
+#     "https://1d8e5b5288fa4616b900791c09abcfbb@o771330.ingest.sentry.io/5827220",
 
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    # We recommend adjusting this value in production.
-    traces_sample_rate=1.0
-)
+#     # Set traces_sample_rate to 1.0 to capture 100%
+#     # of transactions for performance monitoring.
+#     # We recommend adjusting this value in production.
+#     traces_sample_rate=1.0
+# )
 
 from agents.uncooperative import Uncooperative
 from agents.cooperative_early import CooperativeEarly
@@ -135,13 +135,15 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 current_event += 1
 
             try:
-                cur.execute('INSERT INTO Actions(frame_id, frame_sent, player_left, player_right, player_shoot, player_tried, ai_actual_left, ai_actual_right, ai_actual_shoot, ai_rec_left, ai_rec_right, ai_rec_shoot) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
+                cur.execute('INSERT INTO Actions(frame_id, frame_sent, player_left, player_right, player_shoot, player_tried, player_signal_down, player_signal_up, ai_actual_left, ai_actual_right, ai_actual_shoot, ai_rec_left, ai_rec_right, ai_rec_shoot) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                             (frame_id, frame['frame_sent'],
                              frame['player_action']['left'], frame['player_action']['right'], frame['player_action']['shoot'], frame['player_action']['tried_to_shoot'],
+                             frame['signal_down'], frame['signal_up'],
                              frame['ai_actual_action']['left'], frame['ai_actual_action']['right'], frame['ai_actual_action']['shoot'],
                              frame['ai_received_action']['left'], frame['ai_received_action']['right'], frame['ai_received_action']['shoot']))
             except Exception as e:
                 print("Action error: ", frame['frame_number'])
+                print(e)
                 
         con.commit()
         con.close()

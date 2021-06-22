@@ -49,6 +49,8 @@ CREATE TABLE IF NOT EXISTS "Actions" (
 	"player_right" INTEGER,
 	"player_shoot" INTEGER,
 	"player_tried" INTEGER,
+	"player_signal_down" INTEGER,
+	"player_signal_up" INTEGER,
 	"ai_actual_left" INTEGER,
 	"ai_actual_right" INTEGER,
 	"ai_actual_shoot" INTEGER,
