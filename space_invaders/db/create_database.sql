@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS "Enemies" (
 	FOREIGN KEY("frame_id") REFERENCES "Frames"("id")
 );
 CREATE TABLE IF NOT EXISTS "Actions" (
+	"game_id" INTEGER NOT NULL,
 	"frame_id" INTEGER NOT NULL,
 	"frame_sent" INTEGER,
 	"player_left" INTEGER,
@@ -51,6 +52,8 @@ CREATE TABLE IF NOT EXISTS "Actions" (
 	"player_tried" INTEGER,
 	"player_signal_down" INTEGER,
 	"player_signal_up" INTEGER,
+	"player_tried_down" INTEGER,
+	"player_tried_up" INTEGER,
 	"ai_actual_left" INTEGER,
 	"ai_actual_right" INTEGER,
 	"ai_actual_shoot" INTEGER,
@@ -58,6 +61,7 @@ CREATE TABLE IF NOT EXISTS "Actions" (
 	"ai_rec_right" INTEGER,
 	"ai_rec_shoot" INTEGER,
 
+	FOREIGN KEY("game_id") REFERENCES "Games"("id"),
 	FOREIGN KEY("frame_id") REFERENCES "Frames"("id")
 );
 COMMIT;

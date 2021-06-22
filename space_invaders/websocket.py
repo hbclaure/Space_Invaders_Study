@@ -135,10 +135,10 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 current_event += 1
 
             try:
-                cur.execute('INSERT INTO Actions(frame_id, frame_sent, player_left, player_right, player_shoot, player_tried, player_signal_down, player_signal_up, ai_actual_left, ai_actual_right, ai_actual_shoot, ai_rec_left, ai_rec_right, ai_rec_shoot) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-                            (frame_id, frame['frame_sent'],
+                cur.execute('INSERT INTO Actions(game_id, frame_id, frame_sent, player_left, player_right, player_shoot, player_tried, player_signal_down, player_signal_up, player_tried_down, player_tried_up, ai_actual_left, ai_actual_right, ai_actual_shoot, ai_rec_left, ai_rec_right, ai_rec_shoot) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                            (game_id, frame_id, frame['frame_sent'],
                              frame['player_action']['left'], frame['player_action']['right'], frame['player_action']['shoot'], frame['player_action']['tried_to_shoot'],
-                             frame['signal_down'], frame['signal_up'],
+                             frame['signal_down'], frame['signal_up'], frame['tried_signal_down'], frame['tried_signal_up'],
                              frame['ai_actual_action']['left'], frame['ai_actual_action']['right'], frame['ai_actual_action']['shoot'],
                              frame['ai_received_action']['left'], frame['ai_received_action']['right'], frame['ai_received_action']['shoot']))
             except Exception as e:
