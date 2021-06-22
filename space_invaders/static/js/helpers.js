@@ -5,6 +5,8 @@ All the helper functions and global variables for space invaders
 var SHIP_BULLET_SPEED = 350
 
 var ai_messages = {
+    1: "Sorry!",
+    2: "Sorry!",
     7: "Haha sorry! \n I'm so silly!",
     5: "I’m sorry!\nThanks for the heads up!",
     6: "Sorry, my mistake!",
