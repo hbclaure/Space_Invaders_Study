@@ -11,7 +11,7 @@ start_scene.preload = function() {
 
 start_scene.create = function() {
     var game_name = this.add.bitmapText(400, 175, 'PressStart2P_Orange', 'SPACE INVADERS', 50).setOrigin(0.5);
-    var instructions = this.add.bitmapText(400, 300, 'PressStart2P_White', 'Use arrow keys to move, \npress spacebar to fire \n \n press down arrow to indicate \n discontent with teammate', 25).setOrigin(0.5).setCenterAlign();
+    var instructions = this.add.bitmapText(400, 300, 'PressStart2P_White', 'Use arrow keys to move, \npress spacebar to fire \n \n press up/down arrow \nto signal content/discontent \nwith teammate', 25).setOrigin(0.5).setCenterAlign();
     var start = this.add.bitmapText(400, 400, 'PressStart2P_Green', 'Press spacebar to begin', 20).setOrigin(0.5);
 
     if (mode == PRACTICE) {
@@ -67,7 +67,8 @@ function socket_start_image() {
 function socket_start() {
     sockets.image.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
     sockets.game.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
-    //save_image_loop(stage=0);
+    console.log('starting to record');
+    save_image_loop(stage=0);
 }
 
 start_scene.update = function() {
@@ -80,13 +81,14 @@ start_scene.update = function() {
                 sockets.control.send(JSON.stringify(mode));
             });
             //sockets.control.send(JSON.stringify(mode))
-            this.scene.start('practice_scene');
+            // this.scene.start('practice_scene');
+            this.scene.start('tutorial_scene');
             //begin recording frames
             waitForSocketConnection(sockets.image, function(){
                 console.log("image open 2");
                 waitForSocketConnection(sockets.game, function(){
                     console.log("game open 2");
-                    //save_image_loop();
+                    save_image_loop();
                 })
             })
             //save_image_loop(); 
@@ -103,7 +105,7 @@ start_scene.update = function() {
                 console.log("image open 2");
                 waitForSocketConnection(sockets.game, function(){
                     console.log("game open 2");
-                    //save_image_loop();
+                    save_image_loop();
                 })
             })
             //save_image_loop(); 
@@ -160,7 +162,7 @@ gameover_scene.preload = function () {
 
 // display Game Over and final scores
 gameover_scene.create = function() {
-    //save_image_loop(2);
+    save_image_loop(2);
     player_score = player_ship.sprite.props.score;
     ai_score = ai_ship.sprite.props.score;
 
