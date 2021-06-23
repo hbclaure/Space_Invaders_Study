@@ -67,5 +67,6 @@ game.scene.add('gameover_scene', gameover_scene);
 game.scene.add('gameover_scene_practice', gameover_scene_practice);
 game.scene.add('game_scene', game_scene);
 game.scene.add('practice_scene', practice_scene);
+game.scene.add('tutorial_scene', tutorial_scene);
 
 game.scene.start('start_scene');
