@@ -44,6 +44,7 @@ function startup() {
     video = document.getElementById('video');
     canvas = document.getElementById('canvas');
     photo = document.getElementById('photo');
+    console.log('hi');
 
     if(display_vid=='on'){
         video.style.display='block'
@@ -140,7 +141,7 @@ function loggame(current_frame_number) {
     }, 'image/jpeg',0.1);
 }
 
-// window.addEventListener('load', startup, false);
+window.addEventListener('load', startup, false);
 
 
 // The different game modes
@@ -179,7 +180,7 @@ var display_vid;
 var max_player_frequency = 600;
 var max_ai_frequency = max_player_frequency; //* 0.6;
 
-var frames_per_message = 200;
+var frames_per_message = 150;
 
 
 /**
