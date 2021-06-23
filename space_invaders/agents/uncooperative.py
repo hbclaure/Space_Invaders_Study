@@ -17,6 +17,8 @@ class Uncooperative:
         self.AI_RELATIVE_SPEED = 0.6 # relatively how much shorter time between bullets is for ai_agent
         self.FREQUENCY_BOUND = 1000 # ai max time between shots
 
+        self.attack_left = False
+
     def update(self, state):
         return self.strategy(state)
 
@@ -46,7 +48,7 @@ class Uncooperative:
         num_left_enemies = len(enemies_left_positions)
         num_right_enemies = len(enemies_right_positions)
 
-        attack_left = self.check_attack_left(state)
+        self.attack_left = self.check_attack_left(state)
 
         left = False
         right = False
@@ -79,7 +81,7 @@ class Uncooperative:
         nearest_enemy = [0,0]
         nearest_x_diff = self.CANVAS
 
-        if attack_left:
+        if self.attack_left:
             enemies_to_search = enemies_left_positions
         else:
             enemies_to_search = enemies_right_positions
@@ -143,7 +145,7 @@ class Uncooperative:
                     right = True
 
         # if no more enemies to worry about, do nothing
-        if num_right_enemies==0 and not(attack_left):
+        if num_right_enemies==0 and not(self.attack_left):
             left = False
             right = False
 

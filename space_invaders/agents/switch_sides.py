@@ -1,33 +1,33 @@
-from agents.uncooperative import Uncooperative
-from agents.cooperative_early import CooperativeEarly
 from agents.cooperative_late import CooperativeLate
+from agents.uncooperative import Uncooperative
 
-class Apology(CooperativeLate):
+class Switch(Uncooperative):
     def __init__(self):
         super().__init__()
         self.min_x = 0
         self.signal_down_count = 0
         self.zombied = False
-        self.zombie_go_left = True
+    
+    def check_attack_left(self, state):
+        """ aka do nothing """
+        return self.attack_left
 
     def update(self, state):
+        """ If down signal, then switch from left to right or vice versa"""
+
         s = state
         enemies_left_positions = s['enemies_left_positions']
         enemies_right_positions = s['enemies_right_positions']
         num_left_enemies = len(enemies_left_positions)
         num_right_enemies = len(enemies_right_positions)
 
-        if num_right_enemies == 18 and self.zombied == False:
-            self.strategy = self.zombie
-            self.zombied = True
         
-        if s['signal_down'] and self.strategy == self.zombie:
+        if s['down_signal']:
             self.signal_down_count += 1
-            if self.signal_down_count == 1:
-                self.strategy = self.active
+            self.attack_left = not self.attack_left
         
-        if s['signal_down']:
-            print('DOWN_SIGNAL: ', s['signal_down'])
+        if s['down_signal']:
+            print('DOWN_SIGNAL: ', s['down_signal'])
         
         return self.strategy(state)
     
@@ -84,7 +84,7 @@ class Apology(CooperativeLate):
                     x_diff_prev = x_diff
 
         # find nearest enemy
-        nearest_enemy = [200,0]
+        nearest_enemy = [0,0]
         nearest_x_diff = self.CANVAS
 
         # check if ai_agent is in danger of being hit by bullet
@@ -100,14 +100,6 @@ class Apology(CooperativeLate):
                 left = True
             elif nearest_bullet[0] <= ship_x:
                 right = True
-
-
-        # For if we want AI ship going left when doing zombie mode
-        if 200 < ship_x and self.zombie_go_left:
-            if not(nearest_bullet[0] < ship_x and self.SHIP_Y - nearest_bullet[1] < 200 and ship_x - nearest_bullet[0] <= self.SECOND_HIT_RANGE):
-                left = True
-        if 200 >= ship_x:
-            self.zombie_go_left = False
 
         # if no more enemies to worry about, do nothing
         if num_right_enemies==0 and not(attack_left):
