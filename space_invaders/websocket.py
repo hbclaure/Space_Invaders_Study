@@ -68,7 +68,6 @@ class Application(tornado.web.Application):
 class ControlHandler(tornado.websocket.WebSocketHandler):
     mode = None
     current_agent = None
-    #logs = None
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -142,20 +141,25 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
 
         con.commit()
         con.close()
-        # self.write_message('saved')
 
     def on_message(self, msg):
         timestamp = datetime.utcnow()
 
         if not self.mode:
             try:
-                self.mode = int(json.loads(msg))
+                state = json.loads(msg)
+                self.player_id = state['player_id']
+                self.mode = state['mode']
                 print("Mode: ", self.mode)
+                self.display_vid = state['display_vid']
+                time = datetime.utcnow()
+                self.time_label = str(time.year)+"_" + str(time.month)+"_" + str(time.day)+"_" + str(time.hour)+"_" + str(time.minute)
+                self.game_num = state['game_num']
+                
                 self.current_agent = agents[self.mode]()
                 print("Current Agent: ", self.current_agent)
-                self.logs = []
             except Exception as e:
-                print(e)
+                print(f"{e} Mode or agent error")
                 sentry_sdk.capture_exception(e)
 
         else:
@@ -171,19 +175,22 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 # send action
                 self.write_message(json.dumps(action))
             else:
-                log = json.loads(msg)
-                self.frames = log['frames']
-                self.events = log['events']
-                self.player_id = log['player_id']
-                self.date = log['date']
-                print("events received")
+                # log = json.loads(msg)
+                # self.frames = log['frames']
+                # self.events = log['events']
+                # self.player_id = log['player_id']
+                # self.date = log['date']
+                print(f"events received: {self.player_id}")
 
                 try:
-                    self.log_data()
+                    path_to_json = f"game_logs/{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+                    with open(path_to_json,"w") as f:
+                        f.write(msg)
+                    #self.log_data()
                     self.write_message("saved")
                     print(f"Saved to database: {self.player_id}")
                 except Exception as e:
-                    print("Logging error")
+                    print(f"Logging error: {self.player_id}")
                     print(e)
                     sentry_sdk.capture_exception(e)
 
@@ -223,11 +230,16 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 while(os.path.exists(os.path.dirname(f"recorded_frames/P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(gn)+"_t"+str(self.time_label)+"/"))):
                     gn = int(gn)+100
                 self.game_num = str(gn)
+                sentry_sdk.set_context("user", {
+                    "id": self.player_id,
+                    "mode": self.mode,
+                    "time": time
+                })
                 
                 print(f"Player: {self.player_id}")
             except Exception as e:
                 print(e)
-                print("invalid")
+                print("invalid - no player_id")
                 sentry_sdk.capture_exception(e)
         else:
             try:
@@ -262,7 +274,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                         f.write(image)
             except Exception as e:
                 print(e)
-                print("error")
+                print(f"error saving images: {self.player_id}")
                 sentry_sdk.capture_exception(e)
 
     def start_path(self,millis):
@@ -316,7 +328,7 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                 print(f"Recording frames: {self.player_id}")
             except Exception as e:
                 print(e)
-                print("invalid")
+                print("invalid - no player_id")
                 sentry_sdk.capture_exception(e)
 
         else:
@@ -340,8 +352,8 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                     with open(filename, "+wb") as f:
                         f.write(image)
             except Exception as e:
-                print(e)
-                print("error")
+                print(f"{e} {self.player_id}")
+                print(f"error saving frames: {self.player_id}")
                 sentry_sdk.capture_exception(e)
 
 

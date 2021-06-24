@@ -4,5 +4,7 @@
 recorded_frames
 recorded_frames_*
 videos
+game_logs
+game_logs_*
 space_invaders/db/create_database_old.sql
 space_invaders/db/game_logs*.db
