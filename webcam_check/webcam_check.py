@@ -108,6 +108,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
             except Exception as e:
                 print(e)
                 print("error")
+                #sentry_sdk.capture_exception(e)
 
 
 def main():

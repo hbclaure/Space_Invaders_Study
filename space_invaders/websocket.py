@@ -137,7 +137,9 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                              frame['ai_received_action']['left'], frame['ai_received_action']['right'], frame['ai_received_action']['shoot']))
             except Exception as e:
                 print("Action error: ", frame['frame_number'])
-                
+                sentry_sdk.capture_exception(e)
+
+
         con.commit()
         con.close()
         # self.write_message('saved')
@@ -154,6 +156,8 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 self.logs = []
             except Exception as e:
                 print(e)
+                sentry_sdk.capture_exception(e)
+
         else:
             state = json.loads(msg)
 
@@ -181,6 +185,8 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 except Exception as e:
                     print("Logging error")
                     print(e)
+                    sentry_sdk.capture_exception(e)
+
 
 
 
@@ -222,6 +228,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
             except Exception as e:
                 print(e)
                 print("invalid")
+                sentry_sdk.capture_exception(e)
         else:
             try:
                 #r_msg = json.loads(msg)
@@ -256,6 +263,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
             except Exception as e:
                 print(e)
                 print("error")
+                sentry_sdk.capture_exception(e)
 
     def start_path(self,millis):
         self.start_frame_count += 1
@@ -309,6 +317,8 @@ class GameHandler(tornado.websocket.WebSocketHandler):
             except Exception as e:
                 print(e)
                 print("invalid")
+                sentry_sdk.capture_exception(e)
+
         else:
             try:
                 #r_msg = json.loads(msg)
@@ -332,6 +342,7 @@ class GameHandler(tornado.websocket.WebSocketHandler):
             except Exception as e:
                 print(e)
                 print("error")
+                sentry_sdk.capture_exception(e)
 
 
 def main():
