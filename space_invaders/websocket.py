@@ -129,15 +129,15 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                             (frame_id, self.events[current_event]['killer'], self.events[current_event]['killed']))
                 current_event += 1
 
-            try:
-                cur.execute('INSERT INTO Actions(frame_id, frame_sent, player_left, player_right, player_shoot, player_tried, ai_actual_left, ai_actual_right, ai_actual_shoot, ai_rec_left, ai_rec_right, ai_rec_shoot) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
-                            (frame_id, frame['frame_sent'],
-                             frame['player_action']['left'], frame['player_action']['right'], frame['player_action']['shoot'], frame['player_action']['tried_to_shoot'],
-                             frame['ai_actual_action']['left'], frame['ai_actual_action']['right'], frame['ai_actual_action']['shoot'],
-                             frame['ai_received_action']['left'], frame['ai_received_action']['right'], frame['ai_received_action']['shoot']))
-            except Exception as e:
-                print("Action error: ", frame['frame_number'])
-                sentry_sdk.capture_exception(e)
+            #try:
+            cur.execute('INSERT INTO Actions(frame_id, frame_sent, player_left, player_right, player_shoot, player_tried, ai_actual_left, ai_actual_right, ai_actual_shoot, ai_rec_left, ai_rec_right, ai_rec_shoot) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
+                        (frame_id, frame['frame_sent'],
+                            frame['player_action']['left'], frame['player_action']['right'], frame['player_action']['shoot'], frame['player_action']['tried_to_shoot'],
+                            frame['ai_actual_action']['left'], frame['ai_actual_action']['right'], frame['ai_actual_action']['shoot'],
+                            frame['ai_received_action']['left'], frame['ai_received_action']['right'], frame['ai_received_action']['shoot']))
+            # except Exception as e:
+            #     print("Action error: ", frame['frame_number'])
+            #     sentry_sdk.capture_exception(e)
 
 
         con.commit()
