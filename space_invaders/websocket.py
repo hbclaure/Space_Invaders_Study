@@ -251,23 +251,26 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 #image = base64.b64decode(r_msg['img'].split('base64')[-1])
                 first_z = str(msg).find("z")
                 first_y = str(msg).find("y")
+                first_w = str(msg).find("w")
                 first_backslash = str(msg).find("\\")
                 frame_number =str(msg)[2:first_z]
                 frame_number = int(frame_number)
                 stage = str(msg)[first_z+1:first_y]
                 stage = int(stage)
-                millis = str(msg)[first_y+1:first_backslash]
+                millis = str(msg)[first_y+1:first_w]
                 millis = int(millis)
+                current_millis = str(msg)[first_w+1:first_backslash]
+                current_millis = int(current_millis)
                 #frame_number = r_msg['frame_number']
                 #image = base64.b64decode(r_msg['img'].split('base64')[-1])
                 image = msg[first_backslash-2:]
                 if image:
                     if stage == 1:
-                        filename = self.in_game_path(frame_number,millis)
+                        filename = self.in_game_path(frame_number,millis,current_millis)
                     elif stage == 0:
-                        filename = self.start_path(millis)
+                        filename = self.start_path(millis,current_millis)
                     elif stage == 2:
-                        filename = self.end_path(millis)
+                        filename = self.end_path(millis,current_millis)
                     if not os.path.exists(os.path.dirname(filename)):
                         os.makedirs(os.path.dirname(filename))
                     with open(filename, "+wb") as f:
@@ -277,21 +280,21 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 print(f"error saving images: {self.player_id}")
                 sentry_sdk.capture_exception(e)
 
-    def start_path(self,millis):
+    def start_path(self,millis,current_millis):
         self.start_frame_count += 1
         folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
-        filename = f"recorded_frames/{folder}/webcam_start/start_{self.start_frame_count:05d}_m{millis}.jpg"
+        filename = f"recorded_frames/{folder}/webcam_start/start_{self.start_frame_count:05d}_m{millis}_cm{current_millis}.jpg"
         return filename
 
-    def in_game_path(self, frame_number,millis):
+    def in_game_path(self, frame_number,millis,current_millis):
         folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
-        filename = f"recorded_frames/{folder}/webcam/w_{frame_number:05d}_m{millis}.jpg"
+        filename = f"recorded_frames/{folder}/webcam/w_{frame_number:05d}_m{millis}_cm{current_millis}.jpg"
         return filename
 
-    def end_path(self,millis):
+    def end_path(self,millis,current_millis):
         self.end_frame_count += 1
         folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
-        filename = f"recorded_frames/{folder}/webcam_end/end_{self.end_frame_count:05d}_m{millis}.jpg"
+        filename = f"recorded_frames/{folder}/webcam_end/end_{self.end_frame_count:05d}_m{millis}_cm{current_millis}.jpg"
         return filename
 
 class GameHandler(tornado.websocket.WebSocketHandler):
@@ -336,17 +339,20 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                 #r_msg = json.loads(msg)
                 #if 'frame_number' in r_msg.keys():
                 first_z = str(msg).find("z")
+                first_w = str(msg).find("w")
                 first_backslash = str(msg).find("\\")
                 frame_number =str(msg)[2:first_z]
                 frame_number = int(frame_number)
-                millis = str(msg)[first_z+1:first_backslash]
+                millis = str(msg)[first_z+1:first_w]
                 millis = int(millis)
+                current_millis = str(msg)[first_w+1:first_backslash]
+                current_millis = int(current_millis)
                 #frame_number = r_msg['frame_number']
                 #image = base64.b64decode(r_msg['img'].split('base64')[-1])
                 image = msg[first_backslash-2:]
                 if image:
                     folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
-                    filename = f"recorded_frames/{folder}/gamescreen/g_{frame_number:05d}_m{millis}.jpg"
+                    filename = f"recorded_frames/{folder}/gamescreen/g_{frame_number:05d}_m{millis}_cm{current_millis}.jpg"
                     if not os.path.exists(os.path.dirname(filename)):
                         os.makedirs(os.path.dirname(filename))
                     with open(filename, "+wb") as f:
