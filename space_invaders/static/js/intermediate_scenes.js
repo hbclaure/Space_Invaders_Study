@@ -11,8 +11,8 @@ start_scene.preload = function() {
 
 start_scene.create = function() {
     var game_name = this.add.bitmapText(400, 175, 'PressStart2P_Orange', 'SPACE INVADERS', 50).setOrigin(0.5);
-    var instructions = this.add.bitmapText(400, 300, 'PressStart2P_White', 'Use arrow keys to move, \npress spacebar to fire \n \n press up/down arrow \nto signal content/discontent \nwith teammate', 25).setOrigin(0.5).setCenterAlign();
-    var start = this.add.bitmapText(400, 400, 'PressStart2P_Green', 'Press spacebar to begin', 20).setOrigin(0.5);
+    var instructions = this.add.bitmapText(400, 325, 'PressStart2P_White', 'left/right arrow keys to move, \nspacebar to fire \n \n up/down arrow keys \nto signal content/discontent \nwith teammate', 25).setOrigin(0.5).setCenterAlign();
+    var start = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Press spacebar to begin', 20).setOrigin(0.5);
 
     if (mode == PRACTICE) {
         start.setText('Press spacebar to begin practice round');
@@ -22,10 +22,12 @@ start_scene.create = function() {
     //sockets.image.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
     //sockets.game.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
     //save_image_loop(stage=0);
-    waitForSocketConnection(sockets.image, function(){
-        console.log("image open");
-        socket_start_image();
-    });
+
+    //UNCOMMENT FOR RECORDING
+    // waitForSocketConnection(sockets.image, function(){
+    //     console.log("image open");
+    //     socket_start_image();
+    // });
     // if(sockets.image.readyState == 1 && sockets.game.readyState==1){
     //     socket_start();
     // } else if(sockets.image.readyState == 0){
@@ -88,7 +90,7 @@ start_scene.update = function() {
                 console.log("image open 2");
                 waitForSocketConnection(sockets.game, function(){
                     console.log("game open 2");
-                    save_image_loop();
+                    // save_image_loop();
                 })
             })
             //save_image_loop(); 
@@ -105,7 +107,7 @@ start_scene.update = function() {
                 console.log("image open 2");
                 waitForSocketConnection(sockets.game, function(){
                     console.log("game open 2");
-                    save_image_loop();
+                    // save_image_loop();
                 })
             })
             //save_image_loop(); 
