@@ -184,9 +184,12 @@ gameover_scene.create = function() {
     var cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
     // log this game
     //sockets.log.onmessage = function(event) {
-    sockets.control.onmessage = function(event) {    
-        cc.destroy();
-        gameover_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
+    sockets.control.onmessage = function(event) {
+        // if message == "saved", then do this; otherwise do nothing
+        if(event.data=="saved"){
+            cc.destroy();
+            gameover_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
+        }  
     }
     sockets.control.send(JSON.stringify(game_log));
     //sockets.control.send(JSON.stringify({player_id: player_id, date: date, events: events}))
