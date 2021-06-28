@@ -27,10 +27,9 @@ function create ()
     this.custom_sounds.player_explosion = this.sound.add("audio_explosion", {volume: 0.1});
     this.custom_sounds.fire_ship = this.sound.add("audio_fire_ship", {volume: 0.05});
 
-    player_ship = this.create_ship("ship", 0, this.sys.canvas.width / 4, 540, 5, "laser", 0, 3);
-
     //setting the left wall for the AI depending on what kind of agent it is
-    ai_ship = this.create_ship("avery", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", 0, 25)
+    ai_ship = this.create_ship("avery", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", 0);
+    player_ship = this.create_ship("ship", 0, this.sys.canvas.width / 4, 540);
 
 
     // var minX = 0;

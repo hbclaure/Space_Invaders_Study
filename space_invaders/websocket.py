@@ -73,94 +73,31 @@ class Application(tornado.web.Application):
 class ControlHandler(tornado.websocket.WebSocketHandler):
     mode = None
     current_agent = None
-    #logs = None
 
     def check_origin(self, origin):
         '''Allow from all origins'''
         return True
-    
-    def log_data(self):
-        con = sqlite3.connect(DATABASE)
-        cur = con.cursor()
-
-        current_event = 0
-
-        cur.execute('INSERT INTO Games(player_id, date, mode) VALUES(?,?,?)',
-                                   (self.player_id, self.date, self.mode))
-
-        game_id = cur.lastrowid
-
-        for frame in self.frames:
-            # log the actual frame and collect the id
-            cur.execute('''INSERT INTO Frames(game_id, frame_number, timestamp, player_position, player_lives,
-                        player_score, ai_position, ai_lives, ai_score, frame_sent) VALUES(?,?,?,?,?,?,?,?,?,?)''',
-                            (game_id, frame['frame_number'], frame['timestamp'], frame['player_position'], frame['player_lives'],
-                            frame['player_score'], frame['ai_position'], frame['ai_lives'], frame['ai_score'], frame['frame_sent']))
-            frame_id = cur.lastrowid;
-
-            # log the player bullet if it exists
-            for bullet in frame['player_bullets_positions']:
-                cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'Player\',?,?,?)',
-                                (frame_id, bullet[0], bullet[1]))
-
-            # log the ai bullet if it exists
-            for bullet in frame['ai_bullets_positions']:
-                cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'AI\',?,?,?)',
-                                (frame_id, bullet[0], bullet[1]))
-
-            # log every enemy on the left
-            for enemy in frame['enemies_left_positions']:
-                cur.execute('INSERT INTO Enemies(side, frame_id, x, y) VALUES(\'Left\',?,?,?)',
-                            (frame_id, enemy[0], enemy[1]))
-
-            # log every enemy bullet on the left
-            for bullet in frame['bullets_left_positions']:
-                cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'Left\',?,?,?)',
-                                (frame_id, bullet[0], bullet[1]))
-
-            # log every enemy on the right
-            for enemy in frame['enemies_right_positions']:
-                cur.execute('INSERT INTO Enemies(side, frame_id, x, y) VALUES(\'Right\',?,?,?)',
-                            (frame_id, enemy[0], enemy[1]))
-
-            # log every enemy bullet on the right
-            for bullet in frame['bullets_right_positions']:
-                cur.execute('INSERT INTO Bullets(type, frame_id, x, y) VALUES(\'Right\',?,?,?)',
-                                (frame_id, bullet[0], bullet[1]))
-            
-            # log any events that occurred in this frame
-            while (current_event < len(self.events) and self.events[current_event]['frame'] == frame['frame_number']):
-                cur.execute('INSERT INTO Events(frame_id, killer, killed) VALUES(?,?,?)',
-                            (frame_id, self.events[current_event]['killer'], self.events[current_event]['killed']))
-                current_event += 1
-
-            try:
-                cur.execute('INSERT INTO Actions(game_id, frame_id, frame_sent, player_left, player_right, player_shoot, player_tried, player_signal_down, player_signal_up, player_tried_down, player_tried_up, ai_actual_left, ai_actual_right, ai_actual_shoot, ai_rec_left, ai_rec_right, ai_rec_shoot) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-                            (game_id, frame_id, frame['frame_sent'],
-                             frame['player_action']['left'], frame['player_action']['right'], frame['player_action']['shoot'], frame['player_action']['tried_to_shoot'],
-                             frame['signal_down'], frame['signal_up'], frame['tried_signal_down'], frame['tried_signal_up'],
-                             frame['ai_actual_action']['left'], frame['ai_actual_action']['right'], frame['ai_actual_action']['shoot'],
-                             frame['ai_received_action']['left'], frame['ai_received_action']['right'], frame['ai_received_action']['shoot']))
-            except Exception as e:
-                print("Action error: ", frame['frame_number'])
-                print(e)
-                
-        con.commit()
-        con.close()
-        # self.write_message('saved')
 
     def on_message(self, msg):
         timestamp = datetime.utcnow()
 
         if not self.mode:
             try:
-                self.mode = int(json.loads(msg))
+                state = json.loads(msg)
+                self.player_id = state['player_id']
+                self.mode = state['mode']
                 print("Mode: ", self.mode)
+                self.display_vid = state['display_vid']
+                time = datetime.utcnow()
+                self.time_label = str(time.year)+"_" + str(time.month)+"_" + str(time.day)+"_" + str(time.hour)+"_" + str(time.minute)
+                self.game_num = state['game_num']
+                
                 self.current_agent = agents[self.mode]()
                 print("Current Agent: ", self.current_agent)
-                self.logs = []
             except Exception as e:
-                print(e)
+                print(f"{e} Mode or agent error")
+                sentry_sdk.capture_exception(e)
+
         else:
             state = json.loads(msg)
 
@@ -174,20 +111,25 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 # send action
                 self.write_message(json.dumps(action))
             else:
-                log = json.loads(msg)
-                self.frames = log['frames']
-                self.events = log['events']
-                self.player_id = log['player_id']
-                self.date = log['date']
-                print("events received")
+                # log = json.loads(msg)
+                # self.frames = log['frames']
+                # self.events = log['events']
+                # self.player_id = log['player_id']
+                # self.date = log['date']
+                print(f"events received: {self.player_id}")
 
                 try:
-                    self.log_data()
+                    path_to_json = f"game_logs/{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+                    with open(path_to_json,"w") as f:
+                        f.write(msg)
+                    #self.log_data()
                     self.write_message("saved")
                     print(f"Saved to database: {self.player_id}")
                 except Exception as e:
-                    print("Logging error")
+                    print(f"Logging error: {self.player_id}")
                     print(e)
+                    sentry_sdk.capture_exception(e)
+
 
 
 
@@ -224,11 +166,17 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 while(os.path.exists(os.path.dirname(f"recorded_frames/P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(gn)+"_t"+str(self.time_label)+"/"))):
                     gn = int(gn)+100
                 self.game_num = str(gn)
+                sentry_sdk.set_context("user", {
+                    "id": self.player_id,
+                    "mode": self.mode,
+                    "time": time
+                })
                 
                 print(f"Player: {self.player_id}")
             except Exception as e:
                 print(e)
-                print("invalid")
+                print("invalid - no player_id")
+                sentry_sdk.capture_exception(e)
         else:
             try:
                 #r_msg = json.loads(msg)
@@ -239,46 +187,50 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 #image = base64.b64decode(r_msg['img'].split('base64')[-1])
                 first_z = str(msg).find("z")
                 first_y = str(msg).find("y")
+                first_w = str(msg).find("w")
                 first_backslash = str(msg).find("\\")
                 frame_number =str(msg)[2:first_z]
                 frame_number = int(frame_number)
                 stage = str(msg)[first_z+1:first_y]
                 stage = int(stage)
-                millis = str(msg)[first_y+1:first_backslash]
+                millis = str(msg)[first_y+1:first_w]
                 millis = int(millis)
+                current_millis = str(msg)[first_w+1:first_backslash]
+                current_millis = int(current_millis)
                 #frame_number = r_msg['frame_number']
                 #image = base64.b64decode(r_msg['img'].split('base64')[-1])
                 image = msg[first_backslash-2:]
                 if image:
                     if stage == 1:
-                        filename = self.in_game_path(frame_number,millis)
+                        filename = self.in_game_path(frame_number,millis,current_millis)
                     elif stage == 0:
-                        filename = self.start_path(millis)
+                        filename = self.start_path(millis,current_millis)
                     elif stage == 2:
-                        filename = self.end_path(millis)
+                        filename = self.end_path(millis,current_millis)
                     if not os.path.exists(os.path.dirname(filename)):
                         os.makedirs(os.path.dirname(filename))
                     with open(filename, "+wb") as f:
                         f.write(image)
             except Exception as e:
                 print(e)
-                print("error")
+                print(f"error saving images: {self.player_id}")
+                sentry_sdk.capture_exception(e)
 
-    def start_path(self,millis):
+    def start_path(self,millis,current_millis):
         self.start_frame_count += 1
         folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
-        filename = f"recorded_frames/{folder}/webcam_start/start_{self.start_frame_count:05d}_m{millis}.jpg"
+        filename = f"recorded_frames/{folder}/webcam_start/start_{self.start_frame_count:05d}_m{millis}_cm{current_millis}.jpg"
         return filename
 
-    def in_game_path(self, frame_number,millis):
+    def in_game_path(self, frame_number,millis,current_millis):
         folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
-        filename = f"recorded_frames/{folder}/webcam/w_{frame_number:05d}_m{millis}.jpg"
+        filename = f"recorded_frames/{folder}/webcam/w_{frame_number:05d}_m{millis}_cm{current_millis}.jpg"
         return filename
 
-    def end_path(self,millis):
+    def end_path(self,millis,current_millis):
         self.end_frame_count += 1
         folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
-        filename = f"recorded_frames/{folder}/webcam_end/end_{self.end_frame_count:05d}_m{millis}.jpg"
+        filename = f"recorded_frames/{folder}/webcam_end/end_{self.end_frame_count:05d}_m{millis}_cm{current_millis}.jpg"
         return filename
 
 class GameHandler(tornado.websocket.WebSocketHandler):
@@ -315,30 +267,36 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                 print(f"Recording frames: {self.player_id}")
             except Exception as e:
                 print(e)
-                print("invalid")
+                print("invalid - no player_id")
+                sentry_sdk.capture_exception(e)
+
         else:
             try:
                 #r_msg = json.loads(msg)
                 #if 'frame_number' in r_msg.keys():
                 first_z = str(msg).find("z")
+                first_w = str(msg).find("w")
                 first_backslash = str(msg).find("\\")
                 frame_number =str(msg)[2:first_z]
                 frame_number = int(frame_number)
-                millis = str(msg)[first_z+1:first_backslash]
+                millis = str(msg)[first_z+1:first_w]
                 millis = int(millis)
+                current_millis = str(msg)[first_w+1:first_backslash]
+                current_millis = int(current_millis)
                 #frame_number = r_msg['frame_number']
                 #image = base64.b64decode(r_msg['img'].split('base64')[-1])
                 image = msg[first_backslash-2:]
                 if image:
                     folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
-                    filename = f"recorded_frames/{folder}/gamescreen/g_{frame_number:05d}_m{millis}.jpg"
+                    filename = f"recorded_frames/{folder}/gamescreen/g_{frame_number:05d}_m{millis}_cm{current_millis}.jpg"
                     if not os.path.exists(os.path.dirname(filename)):
                         os.makedirs(os.path.dirname(filename))
                     with open(filename, "+wb") as f:
                         f.write(image)
             except Exception as e:
-                print(e)
-                print("error")
+                print(f"{e} {self.player_id}")
+                print(f"error saving frames: {self.player_id}")
+                sentry_sdk.capture_exception(e)
 
 
 def main():

@@ -80,7 +80,7 @@ start_scene.update = function() {
         if (mode == PRACTICE) {
             waitForSocketConnection(sockets.control, function(){
                 console.log("control open");
-                sockets.control.send(JSON.stringify(mode));
+                sockets.control.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
             });
             //sockets.control.send(JSON.stringify(mode))
             // this.scene.start('practice_scene');
@@ -97,7 +97,7 @@ start_scene.update = function() {
         else {
             waitForSocketConnection(sockets.control, function(){
                 console.log("control open");
-                sockets.control.send(JSON.stringify(mode));
+                sockets.control.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
             });
             //sockets.control.send(JSON.stringify(mode))
             this.scene.start('game_scene');
