@@ -24,17 +24,17 @@ start_scene.create = function() {
     //save_image_loop(stage=0);
 
     //UNCOMMENT FOR RECORDING
-    // waitForSocketConnection(sockets.image, function(){
-    //     console.log("image open");
-    //     socket_start_image();
-    // });
-    // if(sockets.image.readyState == 1 && sockets.game.readyState==1){
-    //     socket_start();
-    // } else if(sockets.image.readyState == 0){
-    //     sockets.image.onopen = () => socket_start_image();
-    // } else if(sockets.game.readyState == 0) {
-    //     sockets.game.onopen = () => socket_start();
-    // }
+    waitForSocketConnection(sockets.image, function(){
+        console.log("image open");
+        socket_start_image();
+    });
+    if(sockets.image.readyState == 1 && sockets.game.readyState==1){
+        socket_start();
+    } else if(sockets.image.readyState == 0){
+        sockets.image.onopen = () => socket_start_image();
+    } else if(sockets.game.readyState == 0) {
+        sockets.game.onopen = () => socket_start();
+    }
 }
 
 // Make the function wait until the connection is made...
@@ -90,10 +90,9 @@ start_scene.update = function() {
                 console.log("image open 2");
                 waitForSocketConnection(sockets.game, function(){
                     console.log("game open 2");
-                    // save_image_loop();
+                    save_image_loop();
                 })
             })
-            //save_image_loop(); 
         }
         else {
             waitForSocketConnection(sockets.control, function(){
@@ -107,10 +106,9 @@ start_scene.update = function() {
                 console.log("image open 2");
                 waitForSocketConnection(sockets.game, function(){
                     console.log("game open 2");
-                    // save_image_loop();
+                    save_image_loop();
                 })
             })
-            //save_image_loop(); 
         }
     }
 }
