@@ -142,7 +142,7 @@ function loggame(current_frame_number,current_millis) {
     }, 'image/jpeg',0.1);
 }
 
-// window.addEventListener('load', startup, false);
+window.addEventListener('load', startup, false);
 
 
 // The different game modes
