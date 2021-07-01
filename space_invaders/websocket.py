@@ -133,6 +133,8 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 action = self.current_agent.update(state)
                 
                 path_to_control = f"control_logs/ingame_{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+                if self.mode == 0:
+                    path_to_control = f"control_logs_practice/ingame_{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
                 if not os.path.exists(os.path.dirname(path_to_control)):
                     os.makedirs(os.path.dirname(path_to_control))
                 with open(path_to_control,"a") as f:
@@ -147,6 +149,9 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 print(f"events received: {self.player_id}")
 
                 try:
+                    # make game_logs directory if doesn't exist
+                    if not os.path.exists("game_logs"):
+                        os.makedirs("game_logs")
                     path_to_json = f"game_logs/{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
                     with open(path_to_json,"w") as f:
                         f.write(msg)
@@ -200,6 +205,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
         if not self.player_id:
             try:
                 state = json.loads(msg)
+                print(state)
                 self.player_id = state['player_id']
                 self.mode = state['mode']
                 self.display_vid = state['display_vid']
