@@ -28,9 +28,9 @@ function create_tutorial_scene() {
     instruction_num = 1
     instructions = {
         1: "Press left and right to move \n and space bar to shoot",
-        2: "Try pressing up to say\nthe orange teammate is doing\na good job",
-        3: "Try presisng down to say\nthe orange teammate is doing\na bad job",
-        4: "Feel free to proceed\nwhen you are ready"
+        2: "Try pressing the up key to say\nthe orange teammate is doing\na good job",
+        3: "Try presisng the down key to say\nthe orange teammate is doing\na bad job",
+        4: "When you are done\npracticing the controls,\nclick NEXT"
     }
 
     instruction_text = this.add.bitmapText(400, 175, 'PressStart2P_Orange', 'Try pressing up ', 20).setOrigin(0.5);
