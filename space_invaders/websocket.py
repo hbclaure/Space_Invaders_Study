@@ -143,6 +143,9 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
 
                 try:
                     path_to_json = f"game_logs/{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+                    if not os.path.exists(os.path.dirname(path_to_json)):
+                        os.makedirs(os.path.dirname(path_to_json))
+                    
                     with open(path_to_json,"w") as f:
                         f.write(msg)
                     self.logged = True
