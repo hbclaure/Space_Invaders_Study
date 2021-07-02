@@ -64,9 +64,8 @@ var game = new Phaser.Game(config);     //!< game object
 game.scene.add('start_scene', start_scene);
 game.scene.add('intermediate_scene', intermediate_scene);
 game.scene.add('gameover_scene', gameover_scene);
-game.scene.add('gameover_scene_practice', gameover_scene_practice);
 game.scene.add('game_scene', game_scene);
-game.scene.add('practice_scene', practice_scene);
 game.scene.add('tutorial_scene', tutorial_scene);
+game.scene.add('pratice_over_scene', practice_over_scene)
 
 game.scene.start('start_scene');

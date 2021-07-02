@@ -12,8 +12,14 @@ var tutorial_scene = {
 };
 
 function create_tutorial_scene() {
+    frames = [];
+    frame_number = 0;
+    last_frame = -1;
+    date = new Date();
+
     cursors = this.input.keyboard.createCursorKeys();
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    q_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
 
     this.custom_sounds = {};   // add sound object so that we can easily access the sounds in the scene  
     this.custom_sounds.enemy_explosion = this.sound.add("audio_explosion", {volume: 0.05});
@@ -30,7 +36,7 @@ function create_tutorial_scene() {
         1: "Press left and right to move \n and space bar to shoot",
         2: "Try pressing the up key to say\nthe orange teammate is doing\na good job",
         3: "Try presisng the down key to say\nthe orange teammate is doing\na bad job",
-        4: "When you are done\npracticing the controls,\nclick NEXT"
+        4: "When you are done\npracticing the controls,\nclick Q"
     }
 
     instruction_text = this.add.bitmapText(400, 175, 'PressStart2P_Orange', 'Try pressing up ', 20).setOrigin(0.5);
@@ -163,7 +169,7 @@ function update_tutorial_scene() {
 
     instruction_text.setText(instructions[instruction_num]);
 
-    // player_action = {left: player_left, right: player_right, shoot: player_shoots, tried_to_shoot: player_tried_to_shoot};
+    player_action = {left: player_left, right: player_right, shoot: player_shoots, tried_to_shoot: player_tried_to_shoot};
 
     // ai_received_action = {left: ai_commands.left, right: ai_commands.right, shoot: ai_commands.shoot};
     
@@ -279,47 +285,23 @@ function update_tutorial_scene() {
     //     }
     // }
 
-    // --- log state
-    // var log_frame = {
-    //     frame_number: frame_number,                          //!< Number of the frame
-    //     timestamp: Date.now(),
+    // log state
+    var log_frame = {
+        frame_number: frame_number,                          //!< Number of the frame
+        timestamp: Date.now(),
 
-    //     player_position: player_ship.sprite.x,               //!< Player's position
-    //     player_lives: player_ship.sprite.props.lives,        //!< Player's lives
-    //     player_score: player_ship.sprite.props.score,        //!< Player's score
-    //     player_bullets_positions: player_bullets_positions,   //!< Positions of all of player's bullets
+        player_position: player_ship.sprite.x,               //!< Player's position
 
-    //     ai_position: ai_ship.sprite.x,                       //!< AI Ship's position 
-    //     ai_lives: ai_ship.sprite.props.lives,                //!< AI Ship's lives
-    //     ai_score: ai_ship.sprite.props.score,                //!< AI Ship's score
-    //     ai_bullets_positions: ai_bullets_positions,              //!< Positions of all of AI player's bullets
+        player_action: player_action,
 
-    //     enemies_left_positions: enemies_left_positions,      //!< Left side enemies' positions
-    //     bullets_left_positions: bullets_left_positions,      //!< Positions of all left side enemies' bullets
-
-    //     enemies_right_positions: enemies_right_positions,    //!< Right side enemies' positions
-    //     bullets_right_positions: bullets_right_positions,    //!< Positions of all right side enemies' bullets
-
-    //     can_shoot: ai_shoots,
-
-    //     player_last_shot_time: player_ship.sprite.props.last_shot_time, // frame when player last shot
-    //     ai_last_shot_time: ai_ship.sprite.props.last_shot_time,         // frame when ai last shot
-    //     player_last_shot_frame: player_ship.sprite.props.last_shot_frame, // frame when player last shot
-    //     ai_last_shot_frame: ai_ship.sprite.props.last_shot_frame,         // frame when ai last shot
-    //     player_avg_frequency: average_frequency,
-
-    //     frame_sent: frame_sent,
-    //     player_action: player_action,
-    //     ai_actual_action: ai_actual_action,
-    //     ai_received_action: ai_received_action,
-
-    //     // for error signaling
-    //     signal_down: signal_down,
-    //     signal_up: signal_up,
-    //     // if player pressed but it is during the delay
-    //     tried_signal_down: tried_signal_down,
-    //     tried_signal_up: tried_signal_up
-    // }
+        // for error signaling
+        signal_down: signal_down,
+        signal_up: signal_up,
+        // if player pressed but it is during the delay
+        tried_signal_down: tried_signal_down,
+        tried_signal_up: tried_signal_up
+    }
+    frames.push(log_frame);
     
     // --- send state if server was ready
     // if (frame_sent){
@@ -343,5 +325,63 @@ function update_tutorial_scene() {
     // if (enemies_right_sprites.length == 0 && (mode == 3|| enemies_left_sprites.length == 0)) {
     //     ai_over = true;
     // }
+
+    if (instruction_num == 4 && this.input.keyboard.checkDown(q_key, 500)) {
+        game_log = {player_id: player_id, date: date, frames: frames};
+        this.scene.start('practice_over_scene');
+    }    
 }
 
+// --- Game Over Screen ---
+var practice_over_scene = new Phaser.Scene('practice_over_scene');
+
+// load fonts
+practice_over_scene.preload = function () {
+    this.load.setBaseURL(static_url + '/');
+    this.load.bitmapFont('PressStart2P_Orange', 'assets/fonts/PressStart2P_Orange/font.png', 'assets/fonts/PressStart2P_Orange/font.fnt');
+    this.load.bitmapFont('PressStart2P_White', 'assets/fonts/PressStart2P_White/font.png', 'assets/fonts/PressStart2P_White/font.fnt');
+    this.load.bitmapFont('PressStart2P_Green', 'assets/fonts/PressStart2P_Green/font.png', 'assets/fonts/PressStart2P_Green/font.fnt');
+    this.load.bitmapFont('PressStart2P_Purple', 'assets/fonts/PressStart2P_Purple/font.png', 'assets/fonts/PressStart2P_Purple/font.fnt');
+    this.load.bitmapFont('PressStart2P_Gray', 'assets/fonts/PressStart2P_Gray/font.png', 'assets/fonts/PressStart2P_Gray/font.fnt');
+}
+
+// display Game Over and final scores
+practice_over_scene.create = function() {
+    save_image_loop(2);
+    player_score = player_ship.sprite.props.score;
+    ai_score = ai_ship.sprite.props.score;
+
+    // 4 digit random number
+    var completion_code_num = Math.floor(Math.random() * 899) + 100;
+    if(mode ==1){
+        var completion_code = completion_code_num.toString()+'e'
+    } else if(mode==2){
+        var completion_code = completion_code_num.toString()+'l'
+    } else if(mode==3){
+        var completion_code = completion_code_num.toString()+'u'
+    } else{
+        var completion_code = completion_code_num.toString()+'o'
+    }
+
+    var gameover_text = this.add.bitmapText(400, 125, 'PressStart2P_Orange', 'GAME ENDED', 50).setOrigin(0.5);
+    // var player_text = this.add.bitmapText(400, 250, 'PressStart2P_Purple', 'Player Final Score: ' + player_score, 20).setOrigin(0.5).setCenterAlign();
+    // var font_type = (mode == UNCOOPERATIVE) ? 'PressStart2P_Orange' : 'PressStart2P_Gray';
+    // var ai_text = this.add.bitmapText(400, 350, font_type, 'AI Final Score: ' + ai_score, 20).setOrigin(0.5).setCenterAlign();
+    var font_type = 'PressStart2P_Green';
+    var final_score_text = this.add.bitmapText(400, 300, font_type, 'Final Score: ' + total_score, 30).setOrigin(0.5).setCenterAlign();
+    var cc_text = this.add.bitmapText(400, 450, 'PressStart2P_White', 'Completion Code:', 20).setOrigin(0.5).setCenterAlign();
+    var cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
+    // log this game
+    //sockets.log.onmessage = function(event) {
+    sockets.control.onmessage = function(event) {
+        // if message == "saved", then do this; otherwise do nothing
+        console.log('message received');
+        if(event.data=="saved"){
+            cc.destroy();
+            gameover_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
+        }  
+    }
+    sockets.control.send(JSON.stringify(game_log));
+    console.log(completion_code);
+    //sockets.control.send(JSON.stringify({player_id: player_id, date: date, events: events}))
+}

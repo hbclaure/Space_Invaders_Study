@@ -41,6 +41,7 @@ DATABASE = os.path.join(WEBROOT, 'db/game_logs.db')
 SSL_ROOT = "/home/si_app/ssl"
 
 agents = {
+    0: CooperativeEarly,
     1: CooperativeEarly,
     2: CooperativeLate,
     3: Uncooperative,
@@ -108,7 +109,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
             json.dump(msg,f,default=str)
 
     def on_message(self, msg):
-        if not self.mode:
+        if not self.mode and self.mode != 0:
             try:
                 state = json.loads(msg)
                 self.player_id = state['player_id']
@@ -133,8 +134,6 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 action = self.current_agent.update(state)
                 
                 path_to_control = f"control_logs/ingame_{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
-                if self.mode == 0:
-                    path_to_control = f"control_logs_practice/ingame_{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
                 if not os.path.exists(os.path.dirname(path_to_control)):
                     os.makedirs(os.path.dirname(path_to_control))
                 with open(path_to_control,"a") as f:
@@ -153,6 +152,11 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                     if not os.path.exists("game_logs"):
                         os.makedirs("game_logs")
                     path_to_json = f"game_logs/{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+                    # for practice mode
+                    if self.mode == 0:
+                        if not os.path.exists("practice_game_logs"):
+                            os.makedirs("practice_game_logs")
+                        path_to_json = f"practice_game_logs/{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
                     with open(path_to_json,"w") as f:
                         f.write(msg)
                     self.logged = True
@@ -205,7 +209,6 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
         if not self.player_id:
             try:
                 state = json.loads(msg)
-                print(state)
                 self.player_id = state['player_id']
                 self.mode = state['mode']
                 self.display_vid = state['display_vid']
@@ -294,6 +297,7 @@ class GameHandler(tornado.websocket.WebSocketHandler):
         self.time_label = None
         self.display_vid = None
         self.open_time = None
+        self.dirname = "recorded_frames"
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -345,7 +349,7 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                 image = msg[first_backslash-2:]
                 if image:
                     folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
-                    filename = f"recorded_frames/{folder}/gamescreen/g_{frame_number:05d}_m{millis}_cm{current_millis}.jpg"
+                    filename = f"{self.dirname}/{folder}/gamescreen/g_{frame_number:05d}_m{millis}_cm{current_millis}.jpg"
                     if not os.path.exists(os.path.dirname(filename)):
                         os.makedirs(os.path.dirname(filename))
                     with open(filename, "+wb") as f:

@@ -176,7 +176,6 @@ gameover_scene.create = function() {
     // var font_type = (mode == UNCOOPERATIVE) ? 'PressStart2P_Orange' : 'PressStart2P_Gray';
     // var ai_text = this.add.bitmapText(400, 350, font_type, 'AI Final Score: ' + ai_score, 20).setOrigin(0.5).setCenterAlign();
     var font_type = 'PressStart2P_Green';
-    var final_score_text = this.add.bitmapText(400, 300, font_type, 'Final Score: ' + total_score, 30).setOrigin(0.5).setCenterAlign();
     var cc_text = this.add.bitmapText(400, 450, 'PressStart2P_White', 'Completion Code:', 20).setOrigin(0.5).setCenterAlign();
     var cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
     // log this game
@@ -187,37 +186,6 @@ gameover_scene.create = function() {
             cc.destroy();
             gameover_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
         }  
-    }
-    sockets.control.send(JSON.stringify(game_log));
-    //sockets.control.send(JSON.stringify({player_id: player_id, date: date, events: events}))
-}
-
-// --- Game Over Screen ---
-var gameover_scene_practice = new Phaser.Scene('gameover_scene_practice');
-
-// load fonts
-gameover_scene_practice.preload = function () {
-    this.load.setBaseURL(static_url + '/');
-    this.load.bitmapFont('PressStart2P_Orange', 'assets/fonts/PressStart2P_Orange/font.png', 'assets/fonts/PressStart2P_Orange/font.fnt');
-    this.load.bitmapFont('PressStart2P_White', 'assets/fonts/PressStart2P_White/font.png', 'assets/fonts/PressStart2P_White/font.fnt');
-    this.load.bitmapFont('PressStart2P_Green', 'assets/fonts/PressStart2P_Green/font.png', 'assets/fonts/PressStart2P_Green/font.fnt');
-    this.load.bitmapFont('PressStart2P_Purple', 'assets/fonts/PressStart2P_Purple/font.png', 'assets/fonts/PressStart2P_Purple/font.fnt');
-}
-
-// display Game Over and final scores
-gameover_scene_practice.create = function() {
-    // 4 digit random number
-    var completion_code = Math.floor(Math.random() * 8999) + 1000;
-
-    var gameover_text = this.add.bitmapText(400, 125, 'PressStart2P_Orange', 'GAME ENDED', 50).setOrigin(0.5);
-    var player_text = this.add.bitmapText(400, 250, 'PressStart2P_Purple', 'Player Score: ' + player_ship.sprite.props.score, 20).setOrigin(0.5).setCenterAlign();;
-    var cc_text = this.add.bitmapText(400, 450, 'PressStart2P_White', 'Completion Code:', 20).setOrigin(0.5).setCenterAlign();
-    var cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
-    // log this game
-    //sockets.log.onmessage = function(event) {
-    sockets.control.onmessage = function(event) {    
-        cc.destroy();
-        gameover_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
     }
     sockets.control.send(JSON.stringify(game_log));
     //sockets.control.send(JSON.stringify({player_id: player_id, date: date, events: events}))
