@@ -360,7 +360,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
 
     var obj_width = sprite.displayWidth;     
 
-    var bullets = this.create_bullets_pool(3, bullet_image_id);
+    var bullets = this.create_bullets_pool(8, bullet_image_id);
     var sound = this.custom_sounds.fire_ship;
 
     return {
