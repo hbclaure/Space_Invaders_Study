@@ -13,6 +13,7 @@ var practice_scene = {
 
 function create_practice_scene() {
     frames = [];
+    events = [];
     frame_number = 0;
     last_frame = -1;
     date = new Date();
@@ -30,15 +31,15 @@ function create_practice_scene() {
 
     ai_ship = this.create_ship("avery", 0, this.sys.canvas.width / 4 + 400, 540);
     player_ship = this.create_ship("ship", 0, this.sys.canvas.width / 4, 540);
-    // enemies_left = this.create_enemies(6, 30, 0, "a");
-    // enemy = this.create_enemies(1, this.sys.canvas.width/2, 0, "a", 0, 0, "enemylaser", 0, 800, [1,0,0]);
 
     instruction_num = 1
     instructions = {
         1: "Press left and right to move \n and space bar to shoot",
         2: "Try pressing the up key to say\nthe orange teammate is doing\na good job",
         3: "Try presisng the down key to say\nthe orange teammate is doing\na bad job",
-        4: "When you are done\npracticing the controls,\nclick Q"
+        4: "Press P to practice with a few enemies",
+        5: "",
+        6: "When you are done\npracticing the controls,\nclick Q",
     }
 
     instruction_text = this.add.bitmapText(400, 175, 'PressStart2P_Orange', 'Try pressing up ', 20).setOrigin(0.5);
@@ -305,77 +306,11 @@ function update_practice_scene() {
         }
     }
 
-    // ai bullets
-    // var ai_bullets = ai_ship.bullets_group.getChildren();
-    // var ai_bullets_positions = []; // for logging purposes
-    // for (var i = 0; i < ai_bullets.length; i++) {
-    //     var current_bullet = ai_bullets[i];
-        
-    //     if (current_bullet.active) {
-    //         ai_bullets_positions.push([current_bullet.x, current_bullet.y]);
-
-    //     }
-    // }
-
-    // enemies
-    // var enemies_right_sprites = enemies_right.enemies_group.getChildren();
-    // var enemies_left_sprites = enemies_left.enemies_group.getChildren();
-
-    // // right side bullets
-    // var enemies_right_bullets = enemies_right.bullets_group.getChildren();
-    // var bullets_right_positions = []; // for logging purposes
-    // for (var i = 0; i < enemies_right_bullets.length; i++) {
-    //     var current_bullet = enemies_right_bullets[i];
-        
-    //     if (current_bullet.active) {
-    //         bullets_right_positions.push([current_bullet.x, current_bullet.y]);
-
-    //     }
-    // }
-    
-    // left side bullets
-    // var enemies_left_bullets = enemies_left.bullets_group.getChildren();
-    // var bullets_left_positions = []; // for logging purposes
-    // for (var i = 0; i < enemies_left_bullets.length; i++) {
-    //     var current_bullet = enemies_left_bullets[i];
-        
-    //     if (current_bullet.active) {
-    //         bullets_left_positions.push([current_bullet.x, current_bullet.y]);
-
-    //     }
-    // }
-
-    // ai-side enemies
-    // var enemies_right_positions = [];
-    // for (var i=0; i < enemies_right_sprites.length; i++) {
-    //     var current_enemy = enemies_right_sprites[i];
-
-    //     enemies_right_positions.push([current_enemy.x, current_enemy.y]);
-    //     // end game if enemies reach bottom
-    //     if (current_enemy.y > 540) {
-    //         ai_over = true;
-    //         player_over = true;
-    //     }
-
-    // }
-
-    // player-side enemies
-    // var enemies_left_positions = [];
-    // for (var i=0; i < enemies_left_sprites.length; i++) {
-    //     var current_enemy = enemies_left_sprites[i];
-
-    //     enemies_left_positions.push([current_enemy.x, current_enemy.y]);
-    //     // end game if enemies reach bottom
-    //     if (current_enemy.y > 540) {
-    //         player_over = true;
-    //         ai_over = true;
-    //     }
-    // }
-
     // log state
     var log_frame = {
         frame_number: frame_number,                          //!< Number of the frame
         timestamp: Date.now(),
+        frame_sent: frame_sent,
 
         player_position: player_ship.sprite.x,               //!< Player's position
 
@@ -389,6 +324,11 @@ function update_practice_scene() {
         tried_signal_up: tried_signal_up
     }
     frames.push(log_frame);
+
+    if (frame_sent){
+        sockets.control.send(JSON.stringify(log_frame));
+        ai_ready = false;
+    }
     
     // --- send state if server was ready
     // if (frame_sent){
@@ -405,15 +345,7 @@ function update_practice_scene() {
     tried_signal_down = false;
     tried_signal_up = false;
 
-    // --- check game over conditions ---
-    // if (enemies_left_sprites.length == 0) {
-    //     player_over = true;
-    // }
-    // if (enemies_right_sprites.length == 0 && (mode == 3|| enemies_left_sprites.length == 0)) {
-    //     ai_over = true;
-    // }
-
-    if (instruction_num == 4 && this.input.keyboard.checkDown(q_key, 500)) {
+    if (instruction_num == 6 && this.input.keyboard.checkDown(q_key, 500)) {
         game_log = {player_id: player_id, date: date, frames: frames};
         this.scene.start('practice_over_scene');
     }    
@@ -435,8 +367,6 @@ practice_over_scene.preload = function () {
 // display Game Over and final scores
 practice_over_scene.create = function() {
     save_image_loop(2);
-    player_score = player_ship.sprite.props.score;
-    ai_score = ai_ship.sprite.props.score;
 
     // 4 digit random number
     var completion_code_num = Math.floor(Math.random() * 899) + 100;

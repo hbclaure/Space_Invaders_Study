@@ -37,7 +37,6 @@ define("port",default = 8668, help="run on the given port", type=int)
 define("machine",default='anna',help="run on machine",type=str)
 
 WEBROOT = os.path.dirname(os.path.realpath(__file__))
-DATABASE = os.path.join(WEBROOT, 'db/game_logs.db')
 SSL_ROOT = "/home/si_app/ssl"
 
 agents = {
@@ -131,19 +130,23 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
             self.control_msgs +=1
 
             if "frame_number" in state.keys():
-                action = self.current_agent.update(state)
-                
-                path_to_control = f"control_logs/ingame_{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
-                if not os.path.exists(os.path.dirname(path_to_control)):
-                    os.makedirs(os.path.dirname(path_to_control))
-                with open(path_to_control,"a") as f:
-                    f.write(msg)
-                    f.write("\n")
-                    json.dump(action,f)
-                    f.write("\n")
+                if self.mode == 0:
+                    action = {'left': False, 'right': False, 'shoot': False}
+                    self.write_message(json.dumps(action))
+                else:
+                    action = self.current_agent.update(state)
+                    
+                    path_to_control = f"control_logs/ingame_{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+                    if not os.path.exists(os.path.dirname(path_to_control)):
+                        os.makedirs(os.path.dirname(path_to_control))
+                    with open(path_to_control,"a") as f:
+                        f.write(msg)
+                        f.write("\n")
+                        json.dump(action,f)
+                        f.write("\n")
 
-                # send action
-                self.write_message(json.dumps(action))
+                    # send action
+                    self.write_message(json.dumps(action))
             else:
                 print(f"events received: {self.player_id}")
 
