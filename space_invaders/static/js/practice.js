@@ -387,7 +387,7 @@ practice_over_scene.create = function() {
     // var font_type = (mode == UNCOOPERATIVE) ? 'PressStart2P_Orange' : 'PressStart2P_Gray';
     // var ai_text = this.add.bitmapText(400, 350, font_type, 'AI Final Score: ' + ai_score, 20).setOrigin(0.5).setCenterAlign();
     var font_type = 'PressStart2P_Green';
-    var final_score_text = this.add.bitmapText(400, 300, font_type, 'Final Score: ' + total_score, 30).setOrigin(0.5).setCenterAlign();
+    // var final_score_text = this.add.bitmapText(400, 300, font_type, 'Final Score: ' + total_score, 30).setOrigin(0.5).setCenterAlign();
     var cc_text = this.add.bitmapText(400, 450, 'PressStart2P_White', 'Completion Code:', 20).setOrigin(0.5).setCenterAlign();
     var cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
     // log this game
