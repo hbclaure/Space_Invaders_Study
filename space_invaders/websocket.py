@@ -152,11 +152,9 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                     if not os.path.exists("game_logs"):
                         os.makedirs("game_logs")
                     path_to_json = f"game_logs/{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
-                    # for practice mode
-                    if self.mode == 0:
-                        if not os.path.exists("practice_game_logs"):
-                            os.makedirs("practice_game_logs")
-                        path_to_json = f"practice_game_logs/{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+                    if not os.path.exists(os.path.dirname(path_to_json)):
+                        os.makedirs(os.path.dirname(path_to_json))
+                    
                     with open(path_to_json,"w") as f:
                         f.write(msg)
                     self.logged = True
