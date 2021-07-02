@@ -1,8 +1,8 @@
 // --- Practice session so players can learn controls
-var tutorial_scene = {
+var practice_scene = {
     preload: preload,
-    create: create_tutorial_scene,
-    update: update_tutorial_scene,
+    create: create_practice_scene,
+    update: update_practice_scene,
     extend: {
         fire_bullet: fire_bullet,
         create_bullets_pool: create_bullets_pool,
@@ -11,7 +11,7 @@ var tutorial_scene = {
     }
 };
 
-function create_tutorial_scene() {
+function create_practice_scene() {
     frames = [];
     frame_number = 0;
     last_frame = -1;
@@ -29,6 +29,7 @@ function create_tutorial_scene() {
 
     ai_ship = this.create_ship("avery", 0, this.sys.canvas.width / 4 + 400, 540);
     player_ship = this.create_ship("ship", 0, this.sys.canvas.width / 4, 540);
+    // enemies_left = this.create_enemies(6, 30, 0, "a");
     // enemy = this.create_enemies(1, this.sys.canvas.width/2, 0, "a", 0, 0, "enemylaser", 0, 800, [1,0,0]);
 
     instruction_num = 1
@@ -48,7 +49,7 @@ function create_tutorial_scene() {
 }
 
 
-function update_tutorial_scene() {
+function update_practice_scene() {
     // --- player shooting logic ---
     var player_tried_to_shoot = false;
     var player_shoots = false;

@@ -77,7 +77,7 @@ start_scene.update = function() {
             });
             //sockets.control.send(JSON.stringify(mode))
             // this.scene.start('practice_scene');
-            this.scene.start('tutorial_scene');
+            this.scene.start('practice_scene');
             //begin recording frames
             waitForSocketConnection(sockets.image, function(){
                 console.log("image open 2");
