@@ -379,8 +379,9 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
             // invincible sprite: don't let move, decrement timer, make clear
             if (this.sprite.props.invincible) {
                 this.sprite.alpha = 0.35
-                this.sprite.props.invincibility_timer -= 1;
-                if (this.sprite.props.invincibility_timer == 0) {
+                //this.sprite.props.invincibility_timer -= 1;
+                //if (this.sprite.props.invincibility_timer == 0) {
+                if (frame_number >= this.sprite.props.invincibility_timer + 50) {
                     this.sprite.props.invincible = false;
                     this.sprite.alpha = 1;
                 }
