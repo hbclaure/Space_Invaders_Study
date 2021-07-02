@@ -60,7 +60,7 @@ var display_vid;
 var max_player_frequency = 600;
 var max_ai_frequency = max_player_frequency; //* 0.6;
 
-var frames_per_message = 150;
+var frames_per_message = 100;
 
 
 /**
