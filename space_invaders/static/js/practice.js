@@ -20,6 +20,7 @@ function create_practice_scene() {
     cursors = this.input.keyboard.createCursorKeys();
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     q_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+    p_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
 
     this.custom_sounds = {};   // add sound object so that we can easily access the sounds in the scene  
     this.custom_sounds.enemy_explosion = this.sound.add("audio_explosion", {volume: 0.05});
@@ -46,6 +47,9 @@ function create_practice_scene() {
     left_pressed = false;
     right_pressed = false;
     space_pressed = false;
+
+    up_ready = false;
+    down_ready = false;
 }
 
 
@@ -156,15 +160,113 @@ function update_practice_scene() {
 
     // update instructions
 
-    if(instruction_num == 1 && space_pressed && left_pressed && right_pressed) {
+    if (instruction_num == 1 && space_pressed && left_pressed && right_pressed) {
         instruction_num += 1;
-    }
-
-    if(instruction_num == 2 && signal_up) {
+    } else if (instruction_num == 2 && signal_up) {
+        up_ready = true;
+    } else if (instruction_num == 2 && up_ready && frame_number >= last_msg_frame + frames_per_message) {
         instruction_num += 1;
-    }
+    } else if (instruction_num == 3 && signal_down) {
+        down_ready = true;
+    } else if (instruction_num == 3 && down_ready && frame_number >= last_msg_frame + frames_per_message) {
+        instruction_num += 1;
+    } else if (instruction_num == 4 && this.input.keyboard.checkDown(p_key, 500)) {
+        enemies_practice = this.create_enemies(3, this.sys.canvas.width / 2, 0, "p", 5, 10, "enemylaser", min_x = 205, max_x = 595, [1, 1, 1]);
+            // --> COLLIDERS <--
+        // --> enemies hit by player_ship bullets 
+        this.physics.add.collider(enemies_practice.enemies_group, player_ship.bullets_group, (enemy, bullet) => {
+            // destroy the enemy
+            this.custom_sounds.enemy_explosion.play();
+            enemy.play(enemy.explote_anim, true);
+            enemy.on('animationcomplete', () => {
+                enemy.destroy();
+            });
+            // hide the bullet 
+            bullet.body.x = this.sys.canvas.width;
+            bullet.body.y = this.sys.canvas.height;
+            bullet.setActive(false);
+            // update the score     
+            if (enemy.hit == false) {   
+            // player_ship.sprite.props.score += enemy.score;
+            // player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score); 	
+            events.push({frame: frame_number, killer: 'PLAYER', killed: 'LEFT'});
+            }
+            enemy.hit = true;
+        });
 
-    if(instruction_num == 3 && signal_down) {
+        // --> enemies bullets hit ships bullets
+        this.physics.add.collider(enemies_practice.bullets_group, player_ship.bullets_group, (enemy_bullet, ship_bullet) => {
+            // hide both bullets 
+            enemy_bullet.body.x = this.sys.canvas.width;
+            enemy_bullet.body.y = this.sys.canvas.height;
+            ship_bullet.body.x = this.sys.canvas.width;
+            ship_bullet.body.y = this.sys.canvas.height;
+            enemy_bullet.setActive(false);
+            ship_bullet.setActive(false);
+        });
+
+        // --> enemies bullets hit player_ship
+        this.physics.add.collider(player_ship.sprite, enemies_practice.bullets_group, (ship_sprite, bullet) => {
+            // hide the bullet 
+            bullet.body.x = this.sys.canvas.width;
+            bullet.body.y = this.sys.canvas.height;
+            bullet.setActive(false);
+
+            if (ship_sprite.props.invincible) { }
+            // kill the player. The change in behavior takes place within the update function of the ship
+            else if (ship_sprite.props.lives >= 1) {
+                events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER'});
+                this.custom_sounds.player_explosion.play();
+                ship_sprite.props.exploding = true;
+                ship_sprite.props.lives -= 1;
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                ship_sprite.play(ship_sprite.explote_anim, true);
+                ship_sprite.on('animationcomplete', () => {
+                    ship_sprite.x = this.sys.canvas.width / 4;
+                    ship_sprite.setTexture(ship_sprite.props.image_id);
+                    ship_sprite.props.exploding = false;
+                    // give the player 50 frames of invincibility
+                    ship_sprite.props.invincible = true;
+                    ship_sprite.props.invincibility_timer = 50;
+                });
+            }
+            else {
+                events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER'});
+                this.custom_sounds.player_explosion.play();
+                ship_sprite.props.dead = true;
+                ship_sprite.props.lives -= 1;
+                gameover = true;
+            }
+        });
+
+        // --> enemies hit player_ship
+        this.physics.add.collider(player_ship.sprite, enemies_practice.enemies_group, (ship_sprite, enemy) => {
+            // play sounds
+            this.custom_sounds.player_explosion.play();
+            this.custom_sounds.enemy_explosion.play();
+            // update the score
+            // ship_sprite.props.score += enemy.score;
+            // ship_sprite.props.scoreText.setText("SCORE " + ship_sprite.props.score);
+            // kill the player and the enemy. The change in behavior takes place within the update function of the ship
+            if (ship_sprite.props.lives >= 1) {
+                ship_sprite.props.exploding = true;
+                ship_sprite.props.lives -= 1;
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                ship_sprite.play(ship_sprite.explote_anim, true);
+                enemy.play(enemy.explote_anim, true);
+                ship_sprite.on('animationcomplete', () => {
+                    ship_sprite.x = this.sys.canvas.width / 4;
+                    ship_sprite.setTexture(ship_sprite.props.image_id);
+                    ship_sprite.props.exploding = false;
+                    enemy.destroy();
+                });
+            }
+            else {
+                ship_sprite.props.dead = true;
+                ship_sprite.props.lives -= 1;
+                gameover = true;
+            }
+        });
         instruction_num += 1;
     }
 
@@ -174,37 +276,21 @@ function update_practice_scene() {
 
     // ai_received_action = {left: ai_commands.left, right: ai_commands.right, shoot: ai_commands.shoot};
     
-    // if (ai_ready == false) {
-    //     //console.log("waiting: ", frame_number);
-    //     //this.scene.pause();
-    //     //game_paused = true;
-    //     //console.log("PAUSE");
-    //     ai_actual_action = {left: false, right: false, shoot: false};
-    //     if (frame_number == 0){
-    //         frame_sent = true;
-    //     } else{
-    //         frame_sent = false;
-    //     }
-        
-    // } else if (ai_ready) {
-    //     //console.log("** Updating player")
-    //     // update player
-    player_ship.update(player_left, player_right, player_shoots);
-        
-    //     // update ai agent, enforce rules of the game
-    //     var shoot = ai_commands.shoot && ai_shoots;
-    //     var left = ai_commands.left && !ai_commands.right //&& !ai_shoots;
-    //     var right = ai_commands.right && !ai_commands.left //&& !ai_shoots;
-    //     //console.log("**Updating ai")
-    //     ai_ship.update(left, right, shoot);
-    //     ai_actual_action = {left: left, right: right, shoot: shoot};
-
-    //     // update the enemies
-    //     enemies_left.update();
-    //     enemies_right.update();
-        
-    //     frame_sent = true;
-    // }
+    if (ai_ready == false) {
+        if (frame_number == 0){
+            frame_sent = true;
+        } else{
+            frame_sent = false;
+        }
+    } else if (ai_ready) {
+        //console.log("** Updating player")
+        // update player
+        player_ship.update(player_left, player_right, player_shoots);
+        if (instruction_num == 5) {
+            enemies_practice.update();
+        }
+        frame_sent = true;
+    }
 
     // ------ get state information
     // player bullets
