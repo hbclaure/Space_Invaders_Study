@@ -269,7 +269,9 @@ function update_practice_scene() {
             }
         });
         instruction_num += 1;
-    }
+    } else if (instruction_num == 5 && enemies_practice.enemies_group.getChildren().length == 0) {
+        instruction_num += 1;
+    } 
 
     instruction_text.setText(instructions[instruction_num]);
 
