@@ -397,7 +397,7 @@ practice_over_scene.create = function() {
         console.log('message received');
         if(event.data=="saved"){
             cc.destroy();
-            gameover_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
+            practice_over_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
         }  
     }
     sockets.control.send(JSON.stringify(game_log));
