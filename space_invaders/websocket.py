@@ -136,19 +136,19 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 if self.mode == 0:
                     # for practice mode, send empty action (do nothing)
                     action = {'left': False, 'right': False, 'shoot': False}
-                    self.write_message(json.dumps(action))
                 else:
                     action = self.current_agent.update(state)
-                    path_to_control = f"{self.dirname}/control_logs/ingame_{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
-                    if not os.path.exists(os.path.dirname(path_to_control)):
-                        os.makedirs(os.path.dirname(path_to_control))
-                    with open(path_to_control,"a") as f:
-                        f.write(msg)
-                        f.write("\n")
-                        json.dump(action,f)
-                        f.write("\n")
-                    # send action
-                    self.write_message(json.dumps(action))
+                    
+                path_to_control = f"{self.dirname}/control_logs/ingame_{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+                if not os.path.exists(os.path.dirname(path_to_control)):
+                    os.makedirs(os.path.dirname(path_to_control))
+                with open(path_to_control,"a") as f:
+                    f.write(msg)
+                    f.write("\n")
+                    json.dump(action,f)
+                    f.write("\n")
+                # send action
+                self.write_message(json.dumps(action))
             else:
                 print(f"events received: {self.player_id}")
 
