@@ -62,6 +62,8 @@ var max_ai_frequency = max_player_frequency; //* 0.6;
 
 var frames_per_message = 100;
 
+var enemy_shoot_timer_level = 6;
+
 
 /**
 Function to find the game id and game mode (which are passed as GET parameters)
@@ -433,7 +435,7 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
             }
 
             // change timer depending on how many valid columns are left
-            if (this.enemies_group.num_valid_columns <= 0.6 * this.enemies_group.num_columns &&
+            if (this.enemies_group.num_valid_columns <= 0.6 * enemy_shoot_timer_level &&
                 this.enemies_group.timer_changes == 0) {
                 this.enemies_group.fire_timer.reset({ delay: Phaser.Math.Between(1000, 1500), loop: true, 
                                               callback: () => { 
@@ -441,7 +443,7 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
                                               } });
                 this.enemies_group.timer_changes += 1;
             }
-            else if (this.enemies_group.num_valid_columns <= 0.2 * this.enemies_group.num_columns &&
+            else if (this.enemies_group.num_valid_columns <= 0.2 * enemy_shoot_timer_level &&
                 this.enemies_group.timer_changes == 1) {
                 this.enemies_group.fire_timer.reset({ delay: Phaser.Math.Between(1500, 2000), loop: true, 
                                               callback: () => { 
