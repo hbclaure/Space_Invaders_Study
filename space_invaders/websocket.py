@@ -153,15 +153,29 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 print(f"events received: {self.player_id}")
 
                 try:
-                    path_to_json = f"{self.dirname}/game_logs/{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
-                    if not os.path.exists(os.path.dirname(path_to_json)):
-                        os.makedirs(os.path.dirname(path_to_json))
-                    
-                    with open(path_to_json,"w") as f:
-                        f.write(msg)
-                    self.logged = True
-                    self.write_message("saved")
-                    print(f"Saved to database: {self.player_id}")
+                    if self.mode == 0:
+                        p_stage = state['practice_stage']
+                        path_to_json = f"{self.dirname}/game_logs/{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}_stage{p_stage}.json"
+                        if not os.path.exists(os.path.dirname(path_to_json)):
+                            os.makedirs(os.path.dirname(path_to_json))
+                        
+                        with open(path_to_json,"w") as f:
+                            f.write(msg)
+                        print(f"STAGE: {p_stage}")
+                        print(f"Saved stage {p_stage}/6 of practice")
+                        if p_stage == 6:
+                            self.logged = True
+                            self.write_message("saved")
+                    else:
+                        path_to_json = f"{self.dirname}/game_logs/{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+                        if not os.path.exists(os.path.dirname(path_to_json)):
+                            os.makedirs(os.path.dirname(path_to_json))
+                        
+                        with open(path_to_json,"w") as f:
+                            f.write(msg)
+                        self.logged = True
+                        self.write_message("saved")
+                        print(f"Saved to database: {self.player_id}")
                 except Exception as e:
                     print(f"Logging error: {self.player_id}")
                     print(e)

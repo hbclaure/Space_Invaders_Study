@@ -163,15 +163,19 @@ function update_practice_scene() {
 
     if (instruction_num == 1 && space_pressed && left_pressed && right_pressed) {
         instruction_num += 1;
+        sockets.control.send(JSON.stringify(game_log));
     } else if (instruction_num == 2 && signal_up) {
         up_ready = true;
     } else if (instruction_num == 2 && up_ready && frame_number >= last_msg_frame + frames_per_message) {
         instruction_num += 1;
+        sockets.control.send(JSON.stringify(game_log));
     } else if (instruction_num == 3 && signal_down) {
         down_ready = true;
     } else if (instruction_num == 3 && down_ready && frame_number >= last_msg_frame + frames_per_message) {
         instruction_num += 1;
+        sockets.control.send(JSON.stringify(game_log));
     } else if (instruction_num == 4 && this.input.keyboard.checkDown(p_key, 500)) {
+        sockets.control.send(JSON.stringify(game_log));
         enemies_practice = this.create_enemies(3, this.sys.canvas.width / 2, 0, "p", 5, 10, "enemylaser", min_x = 205, max_x = 595, [1, 1, 1]);
             // --> COLLIDERS <--
         // --> enemies hit by player_ship bullets 
@@ -270,6 +274,7 @@ function update_practice_scene() {
         });
         instruction_num += 1;
     } else if (instruction_num == 5 && enemies_practice.enemies_group.getChildren().length == 0) {
+        sockets.control.send(JSON.stringify(game_log));
         instruction_num += 1;
     } 
 
@@ -347,8 +352,9 @@ function update_practice_scene() {
     tried_signal_down = false;
     tried_signal_up = false;
 
+    game_log = {player_id: player_id, date: date, practice_stage: instruction_num, frames: frames};
+    
     if (instruction_num == 6 && this.input.keyboard.checkDown(q_key, 500)) {
-        game_log = {player_id: player_id, date: date, frames: frames};
         this.scene.start('practice_over_scene');
     }    
 }
