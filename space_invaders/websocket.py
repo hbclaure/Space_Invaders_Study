@@ -113,8 +113,9 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 time = datetime.utcnow()
                 self.time_label = str(time.year)+"_" + str(time.month)+"_" + str(time.day)+"_" + str(time.hour)+"_" + str(time.minute)
                 gn = state['game_num']
-                while(os.path.exists(os.path.dirname(f"game_data/control_logs/ingame_{self.player_id}_v{self.display_vid}_m{self.mode}_g{str(gn)}_t{self.time_label}.json"))):
+                while(os.path.exists(f"game_data/control_logs/ingame_{self.player_id}_v{self.display_vid}_m{self.mode}_g{str(gn)}_t{self.time_label}.json")):
                     gn = int(gn)+100
+                    print("increment Control")
                 self.game_num = str(gn)
                 
                 self.current_agent = agents[self.mode]()
@@ -209,6 +210,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 gn = state['game_num']
                 while(os.path.exists(os.path.dirname(f"game_data/recorded_frames/P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(gn)+"_t"+str(self.time_label)+"/"))):
                     gn = int(gn)+100
+                    print("increment Image")
                 self.game_num = str(gn)
                 sentry_sdk.set_context("user", {
                     "id": self.player_id,
@@ -319,6 +321,7 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                 gn = state['game_num']
                 while(os.path.exists(os.path.dirname(f"game_data/recorded_frames/P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(gn)+"_t"+str(self.time_label)+"/"))):
                     gn = int(gn)+100
+                    print("increment game")
                 self.game_num = str(gn)
                 print(f"Recording frames: {self.player_id}")
             except Exception as e:
