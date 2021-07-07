@@ -120,8 +120,13 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 self.display_vid = state['display_vid']
                 time = datetime.utcnow()
                 self.time_label = str(time.year)+"_" + str(time.month)+"_" + str(time.day)+"_" + str(time.hour)+"_" + str(time.minute)
-                self.game_num = state['game_num']
-                
+                self.game_num = (state['game_num'])
+                gn = int(self.game_num)
+                while(os.path.exists(f"{self.dirname}/control_logs/ingame_{self.player_id}_v{self.display_vid}_m{self.mode}_g{str(gn)}_t{self.time_label}.json")):
+                    gn += 100
+                self.game_num = str(gn)
+                print(f"game_num: {self.game_num}")
+                  
                 self.current_agent = agents[self.mode]()
                 print("Current Agent: ", self.current_agent)
             except Exception as e:
