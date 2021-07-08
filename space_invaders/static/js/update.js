@@ -7,6 +7,7 @@ var signal_up = false;
 var signal_down = false;
 var tried_signal_down = false;
 var tried_signal_up = false;
+var feedback_enabled = true;
 
 function update ()
 {
@@ -68,7 +69,11 @@ function update ()
         //player_ship.sprite.props.emote.setFillStyle(0xFFFFFF);
     }
 
-    if (this.input.keyboard.checkDown(cursors.up, 0) && !player_over && !ai_over) {
+    if (player_ship.sprite.props.dead | ai_ship.sprite.props.dead) {
+        feedback_enabled = false;
+    }
+
+    if (this.input.keyboard.checkDown(cursors.up, 0) && feedback_enabled) {
         if(frame_number >= last_msg_frame + frames_per_message) {
             console.log('up check pressed');
 
@@ -86,7 +91,7 @@ function update ()
         } else {
             tried_signal_up = true;
         }
-    } else if (this.input.keyboard.checkDown(cursors.down, 0) && !player_over && !ai_over) {
+    } else if (this.input.keyboard.checkDown(cursors.down, 0) && feedback_enabled) {
         if (frame_number >= last_msg_frame + frames_per_message) {
             console.log('down check pressed');
 
