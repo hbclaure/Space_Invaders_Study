@@ -211,11 +211,11 @@ function create ()
             ship_sprite.props.exploding = true;
             ship_sprite.play(ship_sprite.explote_anim, true);
             ship_sprite.on('animationcomplete', () => {
-                ship_sprite.setTexture(ship_sprite.props.image_id);
-                ship_sprite.props.exploding = false;
                 ship_sprite.props.lives -= 1;
                 ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
                 ship_sprite.props.dead = true;
+                ship_sprite.setTexture(ship_sprite.props.image_id);
+                ship_sprite.props.exploding = false;
             });
             player_over = true;
         }
@@ -249,11 +249,11 @@ function create ()
             ship_sprite.props.exploding = true;
             ship_sprite.play(ship_sprite.explote_anim, true);
             ship_sprite.on('animationcomplete', () => {
-                ship_sprite.setTexture(ship_sprite.props.image_id);
-                ship_sprite.props.exploding = false;
                 ship_sprite.props.lives -= 1;
                 ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
                 ship_sprite.props.dead = true;
+                ship_sprite.setTexture(ship_sprite.props.image_id);
+                ship_sprite.props.exploding = false;
             });
             player_over = true;
         }
