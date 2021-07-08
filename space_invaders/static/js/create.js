@@ -43,7 +43,7 @@ function create ()
 
     //creating the enemies on the left and right
     var enemy_rows = 5;
-    enemies_left = this.create_enemies(6, 30, 0, "a");
+    enemies_left = this.create_enemies(6, 30, 0, "a", 5, 10, "enemylaser", min_x = 0, max_x = 390);
     enemies_right = this.create_enemies(6, 430, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 800);
 
     // --> COLLIDERS <--
