@@ -208,15 +208,9 @@ function create ()
         else {
             events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER', type: 'SHOT'});
             this.custom_sounds.player_explosion.play();
-            ship_sprite.props.exploding = true;
-            ship_sprite.play(ship_sprite.explote_anim, true);
-            ship_sprite.on('animationcomplete', () => {
-                ship_sprite.props.dead = true;
-                ship_sprite.props.lives -= 1;
-                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
-                ship_sprite.setTexture(ship_sprite.props.image_id);
-                ship_sprite.props.exploding = false;
-            });
+            ship_sprite.props.dead = true;
+            ship_sprite.props.lives -= 1;
+            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
             player_over = true;
         }
     });
@@ -246,15 +240,9 @@ function create ()
         else {
             events.push({frame: frame_number, killer: 'RIGHT', killed: 'PLAYER', type: 'SHOT'});
             this.custom_sounds.player_explosion.play();
-            ship_sprite.props.exploding = true;
-            ship_sprite.play(ship_sprite.explote_anim, true);
-            ship_sprite.on('animationcomplete', () => {
-                ship_sprite.props.dead = true;
-                ship_sprite.props.lives -= 1;
-                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
-                ship_sprite.setTexture(ship_sprite.props.image_id);
-                ship_sprite.props.exploding = false;
-            });
+            ship_sprite.props.dead = true;
+            ship_sprite.props.lives -= 1;
+            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
             player_over = true;
         }
     });
