@@ -95,7 +95,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
     def on_close(self):
         #log player id, timestamp
         close_time = datetime.utcnow()
-        path_to_socket = f"game_data/socket_logs/{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}/control_{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+        path_to_socket = f"game_data/socket_logs/P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}/control_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
         msg = {'player_id': self.player_id, 'mode': self.mode, 'game_num': self.game_num, 'display_vid': self.display_vid, 'open_time': self.open_time, 'close_time': close_time, 'logged': self.logged, 'control_msgs': self.control_msgs, 'code':self.close_code, 'reason':self.close_reason}
         if not os.path.exists(os.path.dirname(path_to_socket)):
             os.makedirs(os.path.dirname(path_to_socket))
@@ -111,9 +111,9 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 print("Mode: ", self.mode)
                 self.display_vid = state['display_vid']
                 time = datetime.utcnow()
-                self.time_label = str(time.year)+"_" + str(time.month)+"_" + str(time.day)+"_" + str(time.hour)+"_" + str(time.minute)
+                self.time_label = f"{str(time.year)}_{str(time.month)}_{str(time.day)}_{str(time.hour)}_{str(time.minute)}"
                 gn = state['game_num']
-                while(os.path.exists(f"game_data/control_logs/ingame_{self.player_id}_v{self.display_vid}_m{self.mode}_g{str(gn)}_t{self.time_label}.json")):
+                while(os.path.exists(f"game_data/control_logs/ingame_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{str(gn)}_t{self.time_label}.json")):
                     gn = int(gn)+100
                     print("increment Control")
                 self.game_num = str(gn)
@@ -131,7 +131,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
             if "frame_number" in state.keys():
                 action = self.current_agent.update(state)
                 
-                path_to_control = f"game_data/control_logs/ingame_{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+                path_to_control = f"game_data/control_logs/ingame_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
                 if not os.path.exists(os.path.dirname(path_to_control)):
                     os.makedirs(os.path.dirname(path_to_control))
                 with open(path_to_control,"a") as f:
@@ -146,7 +146,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 print(f"events received: {self.player_id}")
 
                 try:
-                    path_to_json = f"game_data/game_logs/{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+                    path_to_json = f"game_data/game_logs/P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
                     if not os.path.exists(os.path.dirname(path_to_json)):
                         os.makedirs(os.path.dirname(path_to_json))
                     
@@ -191,7 +191,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
     def on_close(self):
         #log player id, timestamp
         close_time = datetime.utcnow()
-        path_to_socket = f"game_data/socket_logs/{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}/image_{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+        path_to_socket = f"game_data/socket_logs/P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}/image_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
         msg = {'player_id': self.player_id, 'mode': self.mode, 'game_num': self.game_num, 'display_vid': self.display_vid, 'open_time': self.open_time, 'close_time': close_time, 'stage': self.stage, 'code':self.close_code, 'reason':self.close_reason}
         if not os.path.exists(os.path.dirname(path_to_socket)):
             os.makedirs(os.path.dirname(path_to_socket))
@@ -206,9 +206,9 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 self.mode = state['mode']
                 self.display_vid = state['display_vid']
                 time = datetime.utcnow()
-                self.time_label = str(time.year)+"_" + str(time.month)+"_" + str(time.day)+"_" + str(time.hour)+"_" + str(time.minute)
+                self.time_label = f"{str(time.year)}_{str(time.month)}_{str(time.day)}_{str(time.hour)}_{str(time.minute)}"
                 gn = state['game_num']
-                while(os.path.exists(os.path.dirname(f"game_data/recorded_frames/P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(gn)+"_t"+str(self.time_label)+"/"))):
+                while(os.path.exists(os.path.dirname(f"game_data/recorded_frames/P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(gn)}_t{str(self.time_label)}/"))):
                     gn = int(gn)+100
                     print("increment Image")
                 self.game_num = str(gn)
@@ -262,18 +262,18 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
 
     def start_path(self,millis,current_millis):
         self.start_frame_count += 1
-        folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
+        folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
         filename = f"game_data/recorded_frames/{folder}/webcam_start/start_{self.start_frame_count:05d}_m{millis}_cm{current_millis}.jpg"
         return filename
 
     def in_game_path(self, frame_number,millis,current_millis):
-        folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
+        folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
         filename = f"game_data/recorded_frames/{folder}/webcam/w_{frame_number:05d}_m{millis}_cm{current_millis}.jpg"
         return filename
 
     def end_path(self,millis,current_millis):
         self.end_frame_count += 1
-        folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
+        folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
         filename = f"game_data/recorded_frames/{folder}/webcam_end/end_{self.end_frame_count:05d}_m{millis}_cm{current_millis}.jpg"
         return filename
 
@@ -302,7 +302,7 @@ class GameHandler(tornado.websocket.WebSocketHandler):
     def on_close(self):
         #log player id, timestamp
         close_time = datetime.utcnow()
-        path_to_socket = f"game_data/socket_logs/{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}/game_{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+        path_to_socket = f"game_data/socket_logs/P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}/game_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
         msg = {'player_id': self.player_id, 'mode': self.mode, 'game_num': self.game_num, 'display_vid': self.display_vid, 'open_time': self.open_time, 'close_time': close_time, 'code':self.close_code, 'reason':self.close_reason}
         if not os.path.exists(os.path.dirname(path_to_socket)):
             os.makedirs(os.path.dirname(path_to_socket))
@@ -317,9 +317,9 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                 self.mode = state['mode']
                 self.display_vid = state['display_vid']
                 time = datetime.utcnow()
-                self.time_label = str(time.year)+"_" + str(time.month)+"_" + str(time.day)+"_" + str(time.hour)+"_" + str(time.minute)
+                self.time_label = f"{str(time.year)}_{str(time.month)}_{str(time.day)}_{str(time.hour)}_{str(time.minute)}"
                 gn = state['game_num']
-                while(os.path.exists(os.path.dirname(f"game_data/recorded_frames/P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(gn)+"_t"+str(self.time_label)+"/"))):
+                while(os.path.exists(os.path.dirname(f"game_data/recorded_frames/P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(gn)}_t{str(self.time_label)}/"))):
                     gn = int(gn)+100
                     print("increment game")
                 self.game_num = str(gn)
@@ -342,7 +342,7 @@ class GameHandler(tornado.websocket.WebSocketHandler):
                 current_millis = int(current_millis)
                 image = msg[first_backslash-2:]
                 if image:
-                    folder = "P"+str(self.player_id)+"_v"+str(self.display_vid)+"_m"+str(self.mode)+"_g"+str(self.game_num)+"_t"+str(self.time_label)
+                    folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
                     filename = f"game_data/recorded_frames/{folder}/gamescreen/g_{frame_number:05d}_m{millis}_cm{current_millis}.jpg"
                     if not os.path.exists(os.path.dirname(filename)):
                         os.makedirs(os.path.dirname(filename))
