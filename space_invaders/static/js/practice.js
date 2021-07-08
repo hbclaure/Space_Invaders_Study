@@ -116,7 +116,7 @@ function update_practice_scene() {
     // reset emote/message after certain amount of time/frames
     if (frame_number >= last_msg_frame + frames_per_message) {
         player_ship.sprite.props.message.visible = false;
-        // ai_ship.sprite.props.message.visible = false;
+        ai_ship.sprite.props.message.visible = false;
 
         //player_ship.sprite.props.emote.setFillStyle(0xFFFFFF);
     }
@@ -128,8 +128,8 @@ function update_practice_scene() {
             player_ship.sprite.props.message.setText("Good job");
             player_ship.sprite.props.message.visible = true;
 
-            // ai_ship.sprite.props.message.text = 'yay';
-            // ai_ship.sprite.props.message.visible = true;
+            ai_ship.sprite.props.message.text = 'Yay';
+            ai_ship.sprite.props.message.visible = true;
 
             //player_ship.sprite.props.emote.setFillStyle(0x00FF00)
             last_msg_frame = frame_number;
@@ -147,9 +147,9 @@ function update_practice_scene() {
             player_ship.sprite.props.message.visible = true;
 
             //player_ship.sprite.props.emote.setFillStyle(0xFF0000)
-            // ai_ship.sprite.props.message.text = ai_messages[mode];
-            // ai_ship.sprite.props.message.visible = true;
-            // ai_ship.sprite.props.message.align = 1;
+            ai_ship.sprite.props.message.text = "Sorry!"
+            ai_ship.sprite.props.message.visible = true;
+            ai_ship.sprite.props.message.align = 1;
             last_msg_frame = frame_number;
 
             signal_down = true;
@@ -194,7 +194,7 @@ function update_practice_scene() {
             if (enemy.hit == false) {   
             // player_ship.sprite.props.score += enemy.score;
             // player_ship.sprite.props.scoreText.setText("SCORE " + player_ship.sprite.props.score); 	
-            events.push({frame: frame_number, killer: 'PLAYER', killed: 'LEFT'});
+            events.push({frame: frame_number, killer: 'PLAYER', killed: 'LEFT', type: 'SHOT'});
             }
             enemy.hit = true;
         });
@@ -219,8 +219,8 @@ function update_practice_scene() {
 
             if (ship_sprite.props.invincible) { }
             // kill the player. The change in behavior takes place within the update function of the ship
-            else if (ship_sprite.props.lives >= 1) {
-                events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER'});
+            else if (ship_sprite.props.lives > 1) {
+                events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER', type: 'SHOT'});
                 this.custom_sounds.player_explosion.play();
                 ship_sprite.props.exploding = true;
                 ship_sprite.props.lives -= 1;
@@ -236,7 +236,7 @@ function update_practice_scene() {
                 });
             }
             else {
-                events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER'});
+                events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER', type: 'SHOT'});
                 this.custom_sounds.player_explosion.play();
                 ship_sprite.props.dead = true;
                 ship_sprite.props.lives -= 1;
@@ -253,7 +253,7 @@ function update_practice_scene() {
             // ship_sprite.props.score += enemy.score;
             // ship_sprite.props.scoreText.setText("SCORE " + ship_sprite.props.score);
             // kill the player and the enemy. The change in behavior takes place within the update function of the ship
-            if (ship_sprite.props.lives >= 1) {
+            if (ship_sprite.props.lives > 1) {
                 ship_sprite.props.exploding = true;
                 ship_sprite.props.lives -= 1;
                 ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
