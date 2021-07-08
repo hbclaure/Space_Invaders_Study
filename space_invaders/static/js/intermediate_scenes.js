@@ -11,7 +11,7 @@ start_scene.preload = function() {
 
 start_scene.create = function() {
     var game_name = this.add.bitmapText(400, 175, 'PressStart2P_Orange', 'SPACE INVADERS', 50).setOrigin(0.5);
-    var instructions = this.add.bitmapText(400, 300, 'PressStart2P_White', 'left/right arrow keys to move, \nspacebar to fire \n \n up/down arrow keys \nto signal content/discontent \nwith teammate', 25).setOrigin(0.5).setCenterAlign();
+    var instructions = this.add.bitmapText(400, 300, 'PressStart2P_White', 'left/right arrow keys to move, \nspacebar to fire \n \n up/down arrow keys to give\npositive/negative feedback \nto teammate', 23).setOrigin(0.5).setCenterAlign();
     var start = this.add.bitmapText(400, 400, 'PressStart2P_Green', 'Press spacebar to begin', 20).setOrigin(0.5);
 
     if (mode == PRACTICE) {
