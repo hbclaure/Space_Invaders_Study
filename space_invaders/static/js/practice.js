@@ -51,6 +51,8 @@ function create_practice_scene() {
 
     up_ready = false;
     down_ready = false;
+
+    gameover = false;
 }
 
 
@@ -121,7 +123,7 @@ function update_practice_scene() {
         //player_ship.sprite.props.emote.setFillStyle(0xFFFFFF);
     }
 
-    if (this.input.keyboard.checkDown(cursors.up, 0)) {
+    if (this.input.keyboard.checkDown(cursors.up, 0) && !gameover) {
         if(frame_number >= last_msg_frame + frames_per_message) {
             console.log('up check pressed');
 
@@ -139,7 +141,7 @@ function update_practice_scene() {
         } else {
             tried_signal_up = true;
         }
-    } else if (this.input.keyboard.checkDown(cursors.down, 0)) {
+    } else if (this.input.keyboard.checkDown(cursors.down, 0) && !gameover) {
         if (frame_number >= last_msg_frame + frames_per_message) {
             console.log('down check pressed');
 
@@ -271,9 +273,11 @@ function update_practice_scene() {
                 ship_sprite.props.lives -= 1;
                 gameover = true;
             }
+            events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER', type: 'HIT'});
+            events.push({frame: frame_number, killer: 'PLAYER', killed: 'LEFT', type: 'HIT'});
         });
         instruction_num += 1;
-    } else if (instruction_num == 5 && enemies_practice.enemies_group.getChildren().length == 0) {
+    } else if (instruction_num == 5 && (enemies_practice.enemies_group.getChildren().length == 0 | gameover)) {
         sockets.control.send(JSON.stringify(game_log));
         instruction_num += 1;
     } 
