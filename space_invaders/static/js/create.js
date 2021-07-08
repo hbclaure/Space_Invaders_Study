@@ -230,7 +230,7 @@ function create ()
         else if (ship_sprite.props.lives > 1) {
             // give the player 50 frames of invincibility
             ship_sprite.props.invincible = true;
-            ship_sprite.props.invincibility_timer = 50;
+            ship_sprite.props.invincibility_timer = frame_number;
             events.push({frame: frame_number, killer: 'RIGHT', killed: 'PLAYER', type: 'SHOT'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
@@ -270,7 +270,7 @@ function create ()
         else if (ship_sprite.props.lives > 1) {
             // give the player 50 frames of invincibility
             ship_sprite.props.invincible = true;
-            ship_sprite.props.invincibility_timer = 50;
+            ship_sprite.props.invincibility_timer = frame_number;
             events.push({frame: frame_number, killer: 'RIGHT', killed: 'AI', type: 'SHOT'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
@@ -309,7 +309,7 @@ function create ()
         else if (ship_sprite.props.lives > 1) {
             // give the player 50 frames of invincibility
             ship_sprite.props.invincible = true;
-            ship_sprite.props.invincibility_timer = 50;
+            ship_sprite.props.invincibility_timer = frame_number;
             events.push({frame: frame_number, killer: 'LEFT', killed: 'AI', type: 'SHOT'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
