@@ -43,7 +43,7 @@ function create ()
 
     //creating the enemies on the left and right
     var enemy_rows = 5;
-    enemies_left = this.create_enemies(6, 30, 0, "a");
+    enemies_left = this.create_enemies(6, 30, 0, "a", 5, 10, "enemylaser", min_x = 0, max_x = 390);
     enemies_right = this.create_enemies(6, 430, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 800);
 
     // --> COLLIDERS <--
@@ -66,8 +66,7 @@ function create ()
 
            total_score += enemy.score;
            score_text.setText("SCORE " + total_score);
-
-           events.push({frame: frame_number, killer: 'PLAYER', killed: 'LEFT'});
+           events.push({frame: frame_number, killer: 'PLAYER', killed: 'LEFT', type: 'SHOT'});
         }
         enemy.hit = true;
     });
@@ -89,8 +88,7 @@ function create ()
 
            total_score += enemy.score;
            score_text.setText("SCORE " + total_score);
-
-           events.push({frame: frame_number, killer: 'PLAYER', killed: 'RIGHT'});
+           events.push({frame: frame_number, killer: 'PLAYER', killed: 'RIGHT', type: 'SHOT'});
         }
         enemy.hit = true;
     });
@@ -114,8 +112,7 @@ function create ()
 
             total_score += enemy.score;
             score_text.setText("SCORE " + total_score);
-
-            events.push({frame: frame_number, killer: 'AI', killed: 'LEFT'});
+            events.push({frame: frame_number, killer: 'AI', killed: 'LEFT', type: 'SHOT'});
         }
         enemy.hit = true;
     });
@@ -137,8 +134,7 @@ function create ()
 
             total_score += enemy.score;
             score_text.setText("SCORE " + total_score);
-
-            events.push({frame: frame_number, killer: 'AI', killed: 'RIGHT'});
+            events.push({frame: frame_number, killer: 'AI', killed: 'RIGHT', type: 'SHOT'});
         }
         enemy.hit = true;
     });
@@ -195,9 +191,9 @@ function create ()
         else if (ship_sprite.props.lives > 1) {
             // give the player 50 frames of invincibility
             ship_sprite.props.invincible = true;
-            //ship_sprite.props.invincibility_timer = 50;
+            // ship_sprite.props.invincibility_timer = 50;
             ship_sprite.props.invincibility_timer = frame_number;
-            events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER'});
+            events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER', type: 'SHOT'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
@@ -210,11 +206,17 @@ function create ()
             });
         }
         else {
-            events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER'});
+            events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER', type: 'SHOT'});
             this.custom_sounds.player_explosion.play();
-            ship_sprite.props.dead = true;
-            ship_sprite.props.lives -= 1;
-            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+            ship_sprite.props.exploding = true;
+            ship_sprite.play(ship_sprite.explote_anim, true);
+            ship_sprite.on('animationcomplete', () => {
+                ship_sprite.setTexture(ship_sprite.props.image_id);
+                ship_sprite.props.exploding = false;
+                ship_sprite.props.lives -= 1;
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                ship_sprite.props.dead = true;
+            });
             player_over = true;
         }
     });
@@ -229,7 +231,7 @@ function create ()
             // give the player 50 frames of invincibility
             ship_sprite.props.invincible = true;
             ship_sprite.props.invincibility_timer = 50;
-            events.push({frame: frame_number, killer: 'RIGHT', killed: 'PLAYER'});
+            events.push({frame: frame_number, killer: 'RIGHT', killed: 'PLAYER', type: 'SHOT'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
@@ -242,11 +244,17 @@ function create ()
             });
         }
         else {
-            events.push({frame: frame_number, killer: 'RIGHT', killed: 'PLAYER'});
+            events.push({frame: frame_number, killer: 'RIGHT', killed: 'PLAYER', type: 'SHOT'});
             this.custom_sounds.player_explosion.play();
-            ship_sprite.props.dead = true;
-            ship_sprite.props.lives -= 1;
-            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+            ship_sprite.props.exploding = true;
+            ship_sprite.play(ship_sprite.explote_anim, true);
+            ship_sprite.on('animationcomplete', () => {
+                ship_sprite.setTexture(ship_sprite.props.image_id);
+                ship_sprite.props.exploding = false;
+                ship_sprite.props.lives -= 1;
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                ship_sprite.props.dead = true;
+            });
             player_over = true;
         }
     });
@@ -263,7 +271,7 @@ function create ()
             // give the player 50 frames of invincibility
             ship_sprite.props.invincible = true;
             ship_sprite.props.invincibility_timer = 50;
-            events.push({frame: frame_number, killer: 'RIGHT', killed: 'AI'});
+            events.push({frame: frame_number, killer: 'RIGHT', killed: 'AI', type: 'SHOT'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
@@ -276,7 +284,7 @@ function create ()
             });
         }
         else {
-            events.push({frame: frame_number, killer: 'RIGHT', killed: 'AI'});
+            events.push({frame: frame_number, killer: 'RIGHT', killed: 'AI', type: 'SHOT'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.play(ship_sprite.explote_anim, true);
@@ -302,7 +310,7 @@ function create ()
             // give the player 50 frames of invincibility
             ship_sprite.props.invincible = true;
             ship_sprite.props.invincibility_timer = 50;
-            events.push({frame: frame_number, killer: 'LEFT', killed: 'AI'});
+            events.push({frame: frame_number, killer: 'LEFT', killed: 'AI', type: 'SHOT'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.props.lives -= 1;
@@ -315,7 +323,7 @@ function create ()
             });
         }
         else {
-            events.push({frame: frame_number, killer: 'LEFT', killed: 'AI'});
+            events.push({frame: frame_number, killer: 'LEFT', killed: 'AI', type: 'SHOT'});
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.exploding = true;
             ship_sprite.play(ship_sprite.explote_anim, true);
@@ -348,16 +356,6 @@ function create ()
                 ship_sprite.props.exploding = true;
                 ship_sprite.props.lives -= 1;
                 ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
-                ship_sprite.play(ship_sprite.explote_anim, true);
-                enemy.play(enemy.explote_anim, true);
-                ship_sprite.on('animationcomplete', () => {
-                    ship_sprite.x = this.sys.canvas.width / 2;
-                    ship_sprite.setTexture(ship_sprite.props.image_id);
-                    ship_sprite.props.exploding = false;
-                });
-                enemy.on('animationcomplete', () => {
-                    enemy.destroy();
-                });
             }
             else {
                 ship_sprite.props.dead = true;
@@ -365,7 +363,19 @@ function create ()
                 ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
                 player_over = true;
             }
+            ship_sprite.play(ship_sprite.explote_anim, true);
+            enemy.play(enemy.explote_anim, true);
+            ship_sprite.on('animationcomplete', () => {
+                ship_sprite.x = this.sys.canvas.width / 2;
+                ship_sprite.setTexture(ship_sprite.props.image_id);
+                ship_sprite.props.exploding = false;
+            });
+            enemy.on('animationcomplete', () => {
+                enemy.destroy();
+            });
             enemy.hit = true;
+            events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER', type: 'COLLISION'});
+            events.push({frame: frame_number, killer: 'PLAYER', killed: 'LEFT', type: 'COLLISION'});
         }
     });
     this.physics.add.collider(player_ship.sprite, enemies_right.enemies_group, (ship_sprite, enemy) => {
@@ -383,16 +393,6 @@ function create ()
                 ship_sprite.props.exploding = true;
                 ship_sprite.props.lives -= 1;
                 ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
-                ship_sprite.play(ship_sprite.explote_anim, true);
-                enemy.play(enemy.explote_anim, true);
-                ship_sprite.on('animationcomplete', () => {
-                    ship_sprite.x = this.sys.canvas.width / 2;
-                    ship_sprite.setTexture(ship_sprite.props.image_id);
-                    ship_sprite.props.exploding = false;
-                });
-                enemy.on('animationcomplete', () => {
-                    enemy.destroy();
-                });
             }
             else {
                 ship_sprite.props.dead = true;
@@ -400,7 +400,19 @@ function create ()
                 ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
                 player_over = true;
             }
+            ship_sprite.play(ship_sprite.explote_anim, true);
+            enemy.play(enemy.explote_anim, true);
+            ship_sprite.on('animationcomplete', () => {
+                ship_sprite.x = this.sys.canvas.width / 2;
+                ship_sprite.setTexture(ship_sprite.props.image_id);
+                ship_sprite.props.exploding = false;
+            });
+            enemy.on('animationcomplete', () => {
+                enemy.destroy();
+            });
             enemy.hit = true;
+            events.push({frame: frame_number, killer: 'RIGHT', killed: 'PLAYER', type: 'COLLISION'});
+            events.push({frame: frame_number, killer: 'PLAYER', killed: 'RIGHT', type: 'COLLISION'});
         }
     });
 
@@ -439,6 +451,8 @@ function create ()
                 enemy.destroy();
             });
             enemy.hit = true;
+            events.push({frame: frame_number, killer: 'LEFT', killed: 'AI', type: 'COLLISION'});
+            events.push({frame: frame_number, killer: 'AI', killed: 'LEFT', type: 'COLLISION'});
         }
     });
     this.physics.add.collider(ai_ship.sprite, enemies_right.enemies_group, (ship_sprite, enemy) => {
@@ -475,6 +489,8 @@ function create ()
                 enemy.destroy();
             });
             enemy.hit = true;
+            events.push({frame: frame_number, killer: 'RIGHT', killed: 'AI', type: 'COLLISION'});
+            events.push({frame: frame_number, killer: 'AI', killed: 'RIGHT', type: 'COLLISION'});
         }
     });
     var score_text = this.add.bitmapText(this.sys.canvas.width/2, 3, 'PressStart2P_Green', '', 18);
