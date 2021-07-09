@@ -222,6 +222,8 @@ function update_practice_scene() {
             if (ship_sprite.props.invincible) { }
             // kill the player. The change in behavior takes place within the update function of the ship
             else if (ship_sprite.props.lives > 1) {
+                ship_sprite.props.invincible = true;
+                ship_sprite.props.invincibility_timer = frame_number;
                 events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER', type: 'SHOT'});
                 this.custom_sounds.player_explosion.play();
                 ship_sprite.props.exploding = true;
@@ -232,9 +234,6 @@ function update_practice_scene() {
                     ship_sprite.x = this.sys.canvas.width / 4;
                     ship_sprite.setTexture(ship_sprite.props.image_id);
                     ship_sprite.props.exploding = false;
-                    // give the player 50 frames of invincibility
-                    ship_sprite.props.invincible = true;
-                    ship_sprite.props.invincibility_timer = 50;
                 });
             }
             else {
@@ -242,6 +241,7 @@ function update_practice_scene() {
                 this.custom_sounds.player_explosion.play();
                 ship_sprite.props.dead = true;
                 ship_sprite.props.lives -= 1;
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
                 gameover = true;
             }
         });
@@ -271,6 +271,7 @@ function update_practice_scene() {
             else {
                 ship_sprite.props.dead = true;
                 ship_sprite.props.lives -= 1;
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
                 gameover = true;
             }
             events.push({frame: frame_number, killer: 'LEFT', killed: 'PLAYER', type: 'HIT'});
