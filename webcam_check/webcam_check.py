@@ -19,7 +19,7 @@ import numpy as np
 
 
 from tornado.options import define, options
-define("port",default = 8778,help="run on the given port", type=int)
+define("port",default = 8777,help="run on the given port", type=int)
 define("machine",default='anna',help="run on machine",type=str)
 
 WEBROOT = os.path.dirname(os.path.realpath(__file__))
