@@ -1,0 +1,15 @@
+[Unit]
+Description=Error recovery si
+After=network.target
+
+[Service]
+User=si_app
+Group=www-data
+WorkingDirectory=/home/si_app/error_recovery_si/
+Environment="PATH=/home/si_app/.local/share/virtualenvs/error_recovery_si-0OesCr4o"
+Environment=NEW_RELIC_CONFIG_FILE=newrelic.ini
+ExecStart=/home/si_app/.local/share/virtualenvs/error_recovery_si-0OesCr4o/bin/newrelic-admin run-program /home/si_app/.local/share/virtualenvs/error_recovery_si-0OesCr4o/bin/python space_invaders/websocket.py
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
