@@ -37,7 +37,7 @@ function create_practice_scene() {
         1: "Press left and right to move \n and space bar to shoot",
         2: "Try pressing the up key to say\nthe orange teammate is doing\na good job",
         3: "Try presisng the down key to say\nthe orange teammate is doing\na bad job",
-        4: "When you are ready,\nPress P to practice with a few enemies.\n\nThe tutorial will end afterwards.",
+        4: "When you are ready,\npress P to practice with a few enemies.\n\nThe tutorial will end afterwards.",
         5: "",
         6: "When you are done\npracticing the controls,\nclick Q",
     }
