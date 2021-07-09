@@ -37,7 +37,7 @@ function create_practice_scene() {
         1: "Press left and right to move \n and space bar to shoot",
         2: "Try pressing the up key to say\nthe orange teammate is doing\na good job",
         3: "Try presisng the down key to say\nthe orange teammate is doing\na bad job",
-        4: "Press P to practice with a few enemies",
+        4: "When you are ready,\nPress P to practice with a few enemies.\n\nThe tutorial will end afterwards.",
         5: "",
         6: "When you are done\npracticing the controls,\nclick Q",
     }
@@ -161,6 +161,21 @@ function update_practice_scene() {
         }
     }
 
+    if (instruction_num == 5) {
+        var enemies_practice_sprites = enemies_practice.enemies_group.getChildren();
+        for (var i=0; i < enemies_practice_sprites.length; i++) {
+            var current_enemy = enemies_practice_sprites[i];
+            console.log(current_enemy);
+            // end game if enemies reach bottom
+            if (current_enemy.y > 540) {
+                gameover = true;
+            }
+        }
+        if (enemies_practice.enemies_group.getChildren().length == 0) {
+            gameover = true;
+        }
+    }
+
     // update instructions
 
     if (instruction_num == 1 && space_pressed && left_pressed && right_pressed) {
@@ -278,9 +293,8 @@ function update_practice_scene() {
             events.push({frame: frame_number, killer: 'PLAYER', killed: 'LEFT', type: 'HIT'});
         });
         instruction_num += 1;
-    } else if (instruction_num == 5 && (enemies_practice.enemies_group.getChildren().length == 0 | gameover)) {
-        sockets.control.send(JSON.stringify(game_log));
-        instruction_num += 1;
+    } else if (instruction_num == 5 && gameover) {
+        this.scene.start('practice_over_scene');
     } 
 
     instruction_text.setText(instructions[instruction_num]);
@@ -359,9 +373,9 @@ function update_practice_scene() {
 
     game_log = {player_id: player_id, date: date, practice_stage: instruction_num, frames: frames};
     
-    if (instruction_num == 6 && this.input.keyboard.checkDown(q_key, 500)) {
-        this.scene.start('practice_over_scene');
-    }    
+    // if (instruction_num == 6 && this.input.keyboard.checkDown(q_key, 500)) {
+    //     this.scene.start('practice_over_scene');
+    // }    
 }
 
 // --- Game Over Screen ---
@@ -393,7 +407,7 @@ practice_over_scene.create = function() {
         var completion_code = completion_code_num.toString()+'o'
     }
 
-    var gameover_text = this.add.bitmapText(400, 125, 'PressStart2P_Orange', 'GAME ENDED', 50).setOrigin(0.5);
+    var gameover_text = this.add.bitmapText(400, 125, 'PressStart2P_Orange', 'Tutorial Ended', 50).setOrigin(0.5);
     // var player_text = this.add.bitmapText(400, 250, 'PressStart2P_Purple', 'Player Final Score: ' + player_score, 20).setOrigin(0.5).setCenterAlign();
     // var font_type = (mode == UNCOOPERATIVE) ? 'PressStart2P_Orange' : 'PressStart2P_Gray';
     // var ai_text = this.add.bitmapText(400, 350, font_type, 'AI Final Score: ' + ai_score, 20).setOrigin(0.5).setCenterAlign();
