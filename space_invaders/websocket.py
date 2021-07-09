@@ -167,8 +167,8 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                         with open(path_to_json,"w") as f:
                             f.write(msg)
                         print(f"STAGE: {p_stage}")
-                        print(f"Saved stage {p_stage}/6 of practice")
-                        if p_stage == 6:
+                        print(f"Saved stage {p_stage}/5 of practice")
+                        if p_stage == 5:
                             self.logged = True
                             self.write_message("saved")
                     else:
