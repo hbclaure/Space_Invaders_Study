@@ -392,16 +392,16 @@ def main():
     port = options.port
     machine = options.machine
     proto = 'http'
-    ssl_options = {}
-    if os.path.exists(SSL_ROOT):
-        crt = machines[machine][0]
-        key = machines[machine][1]
-        ssl_options['certfile'] = os.path.join(SSL_ROOT, crt)
-        ssl_options['keyfile'] = os.path.join(SSL_ROOT, key)
-        proto = 'https'
-        app.listen(port, '0.0.0.0', ssl_options=ssl_options)
-    else:
-        app.listen(port, '127.0.0.1')
+    # ssl_options = {}
+    # if os.path.exists(SSL_ROOT):
+    #     crt = machines[machine][0]
+    #     key = machines[machine][1]
+    #     ssl_options['certfile'] = os.path.join(SSL_ROOT, crt)
+    #     ssl_options['keyfile'] = os.path.join(SSL_ROOT, key)
+    #     proto = 'https'
+    #     app.listen(port, '0.0.0.0', ssl_options=ssl_options)
+    # else:
+    app.listen(port, '127.0.0.1')
     print(f"Listening on {proto}://127.0.0.1:%i" % port)
     tornado.ioloop.IOLoop.current().start()
 
