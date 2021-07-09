@@ -15,7 +15,7 @@ start_scene.create = function() {
     var start = this.add.bitmapText(400, 400, 'PressStart2P_Green', 'Press spacebar to begin', 20).setOrigin(0.5);
 
     if (mode == PRACTICE) {
-        start.setText('Press spacebar to begin practice round');
+        start.setText('Press spacebar to begin tutorial');
     }
 
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
