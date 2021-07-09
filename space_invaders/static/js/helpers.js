@@ -207,7 +207,7 @@ function fire_enemy_bullet(enemies, bullets) {
  * @param {String} bullet_image_id image id for the bullet
  * @returns object with ship image, corresponding bullets group, and update function for handling actions
  */
-function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bullet_image_id = "laser", min_x = 0, message_height = 15) {
+function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bullet_image_id = "laser", min_x = 0, message_height = 10) {
             
     var canvas_width = this.sys.canvas.width;
     var canvas_height = this.sys.canvas.height;
