@@ -295,7 +295,7 @@ function update ()
 
     // switch to game over screen
     if (player_over && ai_over) {
-        game_log = {player_id: player_id, date: date, events: events, frames: frames};
+        game_log = {player_id: player_id, date: date, mode: mode, events: events, frames: frames};
         // clearInterval(recording);
         //sockets.control.send(JSON.stringify({player_id: player_id, date: date, events: events}))
         this.scene.start('gameover_scene');
