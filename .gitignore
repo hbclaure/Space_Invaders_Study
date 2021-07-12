@@ -12,3 +12,4 @@ control_logs
 control_logs*
 space_invaders/db/create_database_old.sql
 space_invaders/db/game_logs*.db
+*.ipynb_checkpoints
