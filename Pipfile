@@ -13,6 +13,7 @@ uwsgi = "*"
 sentry-sdk = "*"
 pandas = "*"
 jupyterlab = "*"
+jupyter = "*"
 
 [requires]
 python_version = "3.7"
