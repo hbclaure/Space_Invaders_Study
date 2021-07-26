@@ -14,6 +14,7 @@ sentry-sdk = "*"
 pandas = "*"
 jupyterlab = "*"
 jupyter = "*"
+sklearn = "*"
 
 [requires]
 python_version = "3.7"
