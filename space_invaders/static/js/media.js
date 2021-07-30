@@ -36,20 +36,21 @@ function startup() {
         webcam_off_error();
     });
     
-    video.addEventListener('canplay', function(ev){
+    video.addEventListener('playing', function(ev){
         if (!streaming) {
 
             // maintain aspect ratio
             height = video.videoHeight / (video.videoWidth/width);
             ratio = video.videoWidth/width
-            
-            console.log('image logged')
 
             video.setAttribute('width', width/2);
             video.setAttribute('height', height/2);
             canvas.setAttribute('width', width);
             canvas.setAttribute('height', height);
             streaming = true;
+
+            console.log("Webcam ready, starting in a second");
+            setTimeout(() => { game.scene.start('start_scene'); }, 300);
         }
     }, false);
     //save_image_loop()
@@ -86,7 +87,7 @@ function save_image_loop(stage=1) {
 // log user video frame
 function logpicture(stage=1,current_frame_number,current_millis) {
     // stage 0: start, 1: in-game, 2: end
-    if(width && height){
+    if (width && height){
         var context = canvas.getContext('2d');
         canvas.width = width;
         canvas.height = height;
