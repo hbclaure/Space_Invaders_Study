@@ -72,14 +72,26 @@ function save_image_loop(stage=1) {
     if (recording) {
       clearInterval(recording);
     }
-    recording = setInterval(function(){
+    // recording = setInterval(function(){
+    //     nowTime = new Date().getTime();
+    //     var millis_to_pass = nowTime - startTimeM;
+    //     logpicture(stage, frame_number, millis_to_pass);
+    //     // loggame(stage, frame_number, millis_to_pass);
+    //     if ((stage==2 || stage==0) && new Date().getTime() - startTime >= 10000) {
+    //         clearInterval(recording);
+    //         console.log('stopped recording');
+    //     }
+    // }, 66);
+    recording = setTimeout(function record(){
         nowTime = new Date().getTime();
         var millis_to_pass = nowTime - startTimeM;
         logpicture(stage, frame_number, millis_to_pass);
         // loggame(stage, frame_number, millis_to_pass);
         if ((stage==2 || stage==0) && new Date().getTime() - startTime >= 10000) {
-            clearInterval(recording);
+            // clearInterval(recording);
             console.log('stopped recording');
+        } else {
+            recording = setTimeout(record, 66);
         }
     }, 66);
 }
