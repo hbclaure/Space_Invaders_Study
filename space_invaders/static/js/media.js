@@ -36,7 +36,7 @@ function startup() {
         webcam_off_error();
     });
     
-    video.addEventListener('playing', function(ev){
+    video.addEventListener('canplay', function(ev){
         if (!streaming) {
 
             // maintain aspect ratio
@@ -52,6 +52,10 @@ function startup() {
             console.log("Webcam ready, starting in a second");
             setTimeout(() => { game.scene.start('start_scene'); }, 300);
         }
+    }, false);
+
+    video.addEventListener('ended', function(ev){
+        console.log('ERROR');
     }, false);
     //save_image_loop()
 }
