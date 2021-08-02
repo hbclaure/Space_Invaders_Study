@@ -49,13 +49,26 @@ function startup() {
             canvas.setAttribute('height', height);
             streaming = true;
 
+            let time = new Date()
             console.log("Webcam ready, starting in a second");
+            // sockets.image.send('EVENT: webcam started (canplay)', time.toTimeString(), time.getTime() - startTimeM)
+
             setTimeout(() => { game.scene.start('start_scene'); }, 300);
         }
     }, false);
 
     video.addEventListener('ended', function(ev){
-        console.log('ERROR');
+        let time = new Date()
+        console.log('EVENT: webcam ended', time.toTimeString(), time.getTime() - startTimeM);
+        sockets.image.send('EVENT: webcam ended', time.toTimeString(), time.getTime() - startTimeM)
+        sockets.game.send('EVENT: webcam ended', time.toTimeString(), time.getTime() - startTimeM)
+    }, false);
+
+    video.addEventListener('suspend', function(ev){
+        let time = new Date();
+        console.log('EVENT: webcam suspended', time.toTimeString(), time.getTime() - startTimeM);
+        sockets.image.send('EVENT: webcam suspended', time.toTimeString(), time.getTime() - startTimeM)
+        sockets.game.send('EVENT: webcam suspended', time.toTimeString(), time.getTime() - startTimeM)
     }, false);
     //save_image_loop()
 }

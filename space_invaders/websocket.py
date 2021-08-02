@@ -265,41 +265,45 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 sentry_sdk.capture_exception(e)
         else:
             try:
-                first_z = str(msg).find("z")
-                first_y = str(msg).find("y")
-                first_w = str(msg).find("w")
-                first_backslash = str(msg).find("\\")
-                frame_number =str(msg)[2:first_z]
-                frame_number = int(frame_number)
-                stage = str(msg)[first_z+1:first_y]
-                stage = int(stage)
-                millis = str(msg)[first_y+1:first_w]
-                millis = int(millis)
-                current_millis = str(msg)[first_w+1:first_backslash]
-                current_millis = int(current_millis)
-                image = msg[first_backslash-2:]
-                if image:
-                    if stage == 1:
-                        if not(1 in self.stage):
-                            self.stage.append(1)
-                        filename = self.in_game_path(frame_number,millis,current_millis)
-                    elif stage == 0:
-                        if not(0 in self.stage):
-                            self.stage.append(0)
-                        filename = self.start_path(millis,current_millis)
-                    elif stage == 2:
-                        if not(2 in self.stage):
-                            self.stage.append(2)
-                        filename = self.end_path(millis,current_millis)
-                    # if not os.path.exists(os.path.dirname(filename)):
-                    #     os.makedirs(os.path.dirname(filename))
-                    with open(filename, "+wb") as f:
-                        f.write(image)
+                if str(msg)[0:5] == 'EVENT':
                     with open(self.logging_path(), "+a") as f:
-                        f.write(f'Image Saved: s{self.stage[-1]}, f{frame_number}, m{millis}\n')
+                        f.write(msg + '\n')
                 else:
-                    with open(self.logging_path(), "+a") as f:
-                        f.write("NO_IMAGE_FOUND: " + str(msg) + '\n')
+                    first_z = str(msg).find("z")
+                    first_y = str(msg).find("y")
+                    first_w = str(msg).find("w")
+                    first_backslash = str(msg).find("\\")
+                    frame_number =str(msg)[2:first_z]
+                    frame_number = int(frame_number)
+                    stage = str(msg)[first_z+1:first_y]
+                    stage = int(stage)
+                    millis = str(msg)[first_y+1:first_w]
+                    millis = int(millis)
+                    current_millis = str(msg)[first_w+1:first_backslash]
+                    current_millis = int(current_millis)
+                    image = msg[first_backslash-2:]
+                    if image:
+                        if stage == 1:
+                            if not(1 in self.stage):
+                                self.stage.append(1)
+                            filename = self.in_game_path(frame_number,millis,current_millis)
+                        elif stage == 0:
+                            if not(0 in self.stage):
+                                self.stage.append(0)
+                            filename = self.start_path(millis,current_millis)
+                        elif stage == 2:
+                            if not(2 in self.stage):
+                                self.stage.append(2)
+                            filename = self.end_path(millis,current_millis)
+                        # if not os.path.exists(os.path.dirname(filename)):
+                        #     os.makedirs(os.path.dirname(filename))
+                        with open(filename, "+wb") as f:
+                            f.write(image)
+                        with open(self.logging_path(), "+a") as f:
+                            f.write(f'Image Saved: s{self.stage[-1]}, f{frame_number}, m{millis}\n')
+                    else:
+                        with open(self.logging_path(), "+a") as f:
+                            f.write("NO_IMAGE_FOUND: " + str(msg) + '\n')
             except Exception as e:
                 print(e)
                 print(f"error saving images: {self.player_id}")

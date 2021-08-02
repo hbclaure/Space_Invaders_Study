@@ -8,6 +8,7 @@ game_logs
 game_logs*
 webcam_logs/*
 game_data/*
+practice_game_data/*
 socket_logs
 socket_logs*
 control_logs
