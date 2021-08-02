@@ -49,7 +49,6 @@ function startup() {
             canvas.setAttribute('height', height);
             streaming = true;
 
-            let time = new Date()
             console.log("Webcam ready, starting in a second");
             // sockets.image.send('EVENT: webcam started (canplay)', time.toTimeString(), time.getTime() - startTimeM)
 
@@ -86,20 +85,7 @@ function webcam_off_error(){
 var startTime;
 function save_image_loop(stage=1) {
     startTime = new Date().getTime();
-    if (recording) {
-      clearInterval(recording);
-    }
-    // recording = setInterval(function(){
-    //     nowTime = new Date().getTime();
-    //     var millis_to_pass = nowTime - startTimeM;
-    //     logpicture(stage, frame_number, millis_to_pass);
-    //     // loggame(stage, frame_number, millis_to_pass);
-    //     if ((stage==2 || stage==0) && new Date().getTime() - startTime >= 10000) {
-    //         clearInterval(recording);
-    //         console.log('stopped recording');
-    //     }
-    // }, 66);
-    recording = setTimeout(function record(){
+    recording = setTimeout(function record(id=recording){
         nowTime = new Date().getTime();
         let millis_to_pass = nowTime - startTimeM;
         logpicture(stage, frame_number, millis_to_pass);
@@ -107,8 +93,11 @@ function save_image_loop(stage=1) {
         if ((stage==2 || stage==0) && new Date().getTime() - startTime >= 10000) {
             // clearInterval(recording);
             console.log('stopped recording');
+        } else if (id != recording) {
+            console.log('new stage. stopped recording', id)
         } else {
-            recording = setTimeout(record, 66);
+            console.log(recording)
+            setTimeout(record, 66, id);
         }
     }, 66);
 }
@@ -139,15 +128,15 @@ function logpicture(stage=1,current_frame_number,current_millis) {
 }
 
 // record game frames
-function loggame(stage=1, current_frame_number,current_millis) {
-    //sockets.game.send(JSON.stringify({'img':game.canvas.toDataURL('image/jpeg',0.1),'frame_number':frame_number}))
-    nowTime = new Date().getTime();
-    let millis_g = nowTime - startTimeM;
-    game.canvas.toBlob(function(blob) {
-        gameBlob = new Blob([current_frame_number,'z',stage,'y',millis_g,'w',current_millis,blob]);
-        sockets.game.send(gameBlob);
-    }, 'image/jpeg',0.1);
-}
+// function loggame(stage=1, current_frame_number,current_millis) {
+//     //sockets.game.send(JSON.stringify({'img':game.canvas.toDataURL('image/jpeg',0.1),'frame_number':frame_number}))
+//     nowTime = new Date().getTime();
+//     let millis_g = nowTime - startTimeM;
+//     game.canvas.toBlob(function(blob) {
+//         gameBlob = new Blob([current_frame_number,'z',stage,'y',millis_g,'w',current_millis,blob]);
+//         sockets.game.send(gameBlob);
+//     }, 'image/jpeg',0.1);
+// }
 
 
 window.addEventListener('load', startup, false);
