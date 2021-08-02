@@ -240,9 +240,9 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 time = datetime.utcnow()
                 self.time_label = f"{str(time.year)}_{str(time.month)}_{str(time.day)}_{str(time.hour)}_{str(time.minute)}"
                 gn = state['game_num']
-                while(os.path.exists(os.path.dirname(f"{self.dirname}/recorded_frames/P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(gn)}_t{str(self.time_label)}/"))):
+                while(os.path.exists(os.path.dirname(f"{self.dirname}/recorded_frames/P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(gn)}_t{str(self.time_label)}/{self.type}_start/"))):
                     gn = int(gn)+100
-                    print("increment webcam")
+                    print(f"increment {self.type}")
                 self.game_num = str(gn)
                 self.folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
 
@@ -296,7 +296,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                     with open(filename, "+wb") as f:
                         f.write(image)
                     with open(self.logging_path(), "+a") as f:
-                        f.write(f'Image Saved: s{self.stage[-1]}, f{frame_number}\n, m{milis}')
+                        f.write(f'Image Saved: s{self.stage[-1]}, f{frame_number}, m{millis}\n')
                 else:
                     with open(self.logging_path(), "+a") as f:
                         f.write("NO_IMAGE_FOUND: " + str(msg) + '\n')
