@@ -296,7 +296,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                     with open(filename, "+wb") as f:
                         f.write(image)
                     with open(self.logging_path(), "+a") as f:
-                        f.write(f'Image Saved: s{self.stage[-1]}, f{frame_number}\n, m{self.milis}')
+                        f.write(f'Image Saved: s{self.stage[-1]}, f{frame_number}\n, m{milis}')
                 else:
                     with open(self.logging_path(), "+a") as f:
                         f.write("NO_IMAGE_FOUND: " + str(msg) + '\n')

@@ -7,7 +7,7 @@ videos
 game_logs
 game_logs*
 webcam_logs/*
-gamescreen_logs/*
+game_data/*
 socket_logs
 socket_logs*
 control_logs
