@@ -209,6 +209,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
         self.stage = []    
         self.dirname = "game_data"
         self.type="webcam"
+        self.folder = None
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -220,7 +221,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
     def on_close(self):
         #log player id, timestamp
         close_time = datetime.utcnow()
-        path_to_socket = f"{self.dirname}/socket_logs/P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}/image_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+        path_to_socket = f"{self.dirname}/socket_logs/{self.folder}/image_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
         msg = {'player_id': self.player_id, 'mode': self.mode, 'game_num': self.game_num, 'display_vid': self.display_vid, 'open_time': self.open_time, 'close_time': close_time, 'stage': self.stage, 'code':self.close_code, 'reason':self.close_reason}
         if not os.path.exists(os.path.dirname(path_to_socket)):
             os.makedirs(os.path.dirname(path_to_socket))
@@ -243,6 +244,14 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                     gn = int(gn)+100
                     print("increment webcam")
                 self.game_num = str(gn)
+                self.folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
+
+                # make directories
+                folders = [f'{self.dirname}/recorded_frames/', self.logging_path(), self.start_path(0,0), self.in_game_path(0,0,0), self.end_path(0,0)]
+                for folder in folders:
+                    if not os.path.exists(os.path.dirname(folder)):
+                            os.makedirs(os.path.dirname(folder))
+
                 sentry_sdk.set_context("user", {
                     "id": self.player_id,
                     "mode": self.mode,
@@ -282,38 +291,43 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                         if not(2 in self.stage):
                             self.stage.append(2)
                         filename = self.end_path(millis,current_millis)
-                    if not os.path.exists(os.path.dirname(filename)):
-                        os.makedirs(os.path.dirname(filename))
+                    # if not os.path.exists(os.path.dirname(filename)):
+                    #     os.makedirs(os.path.dirname(filename))
                     with open(filename, "+wb") as f:
                         f.write(image)
-                    # with open('image_logging.txt', "+a") as f:
-                    #     f.write(f'{filename}, {datetime.now()}\n')
+                    with open(self.logging_path(), "+a") as f:
+                        f.write(f'Image Saved: s{self.stage[-1]}, f{frame_number}\n, m{self.milis}')
                 else:
-                    with open('image_logging.txt', "+a") as f:
+                    with open(self.logging_path(), "+a") as f:
                         f.write("NO_IMAGE_FOUND: " + str(msg) + '\n')
             except Exception as e:
                 print(e)
                 print(f"error saving images: {self.player_id}")
-                with open('image_logging.txt', "+a") as f:
-                    f.write(f"error saving images: {self.player_id} at {datetime.now()}\n, {e}")
+                if not os.path.exists(os.path.dirname(self.logging_path())):
+                            os.makedirs(os.path.dirname(self.logging_path()))
+                with open(self.logging_path(), "+a") as f:
+                    f.write(f"error saving images: {self.player_id} at {datetime.now()}\n, {e}\n")
                 sentry_sdk.capture_exception(e)
 
     def start_path(self,millis,current_millis):
         self.start_frame_count += 1
-        folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
-        filename = f"{self.dirname}/recorded_frames/{folder}/{self.type}_start/start_{self.start_frame_count:05d}_m{millis}_cm{current_millis}.jpg"
+        # folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
+        filename = f"{self.dirname}/recorded_frames/{self.folder}/{self.type}_start/start_{self.start_frame_count:05d}_m{millis}_cm{current_millis}.jpg"
         return filename
 
     def in_game_path(self, frame_number,millis,current_millis):
-        folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
-        filename = f"{self.dirname}/recorded_frames/{folder}/{self.type}/w_{frame_number:05d}_m{millis}_cm{current_millis}.jpg"
+        # folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
+        filename = f"{self.dirname}/recorded_frames/{self.folder}/{self.type}/w_{frame_number:05d}_m{millis}_cm{current_millis}.jpg"
         return filename
 
     def end_path(self,millis,current_millis):
         self.end_frame_count += 1
-        folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
-        filename = f"{self.dirname}/recorded_frames/{folder}/{self.type}_end/end_{self.end_frame_count:05d}_m{millis}_cm{current_millis}.jpg"
+        # folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
+        filename = f"{self.dirname}/recorded_frames/{self.folder}/{self.type}_end/end_{self.end_frame_count:05d}_m{millis}_cm{current_millis}.jpg"
         return filename
+    
+    def logging_path(self):
+        return f"{self.dirname}/{self.type}_log/{self.folder}.log"
 
 class GameHandler(ImageHandler):
     def __init__(self, *args, **kwargs: Any):

@@ -6,6 +6,8 @@ recorded_frames_*
 videos
 game_logs
 game_logs*
+webcam_logs/*
+gamescreen_logs/*
 socket_logs
 socket_logs*
 control_logs
