@@ -84,7 +84,7 @@ function save_image_loop(stage=1) {
     // }, 66);
     recording = setTimeout(function record(){
         nowTime = new Date().getTime();
-        var millis_to_pass = nowTime - startTimeM;
+        let millis_to_pass = nowTime - startTimeM;
         logpicture(stage, frame_number, millis_to_pass);
         // loggame(stage, frame_number, millis_to_pass);
         if ((stage==2 || stage==0) && new Date().getTime() - startTime >= 10000) {
@@ -100,19 +100,19 @@ function save_image_loop(stage=1) {
 function logpicture(stage=1,current_frame_number,current_millis) {
     // stage 0: start, 1: in-game, 2: end
     if (width && height){
-        var context = canvas.getContext('2d');
+        let context = canvas.getContext('2d');
         canvas.width = width;
         canvas.height = height;
         context.drawImage(video, 0, 0, width, height);
         nowTime = new Date().getTime();
 
-        var millis_g = nowTime - startTimeM;
+        let millis_g = nowTime - startTimeM;
         game.canvas.toBlob(function(blob) {
             gameBlob = new Blob([current_frame_number,'z',stage,'y',millis_g,'w',current_millis,blob]);
             sockets.game.send(gameBlob);
         }, 'image/jpeg',0.1);
 
-        var millis_p = nowTime - startTimeM;
+        let millis_p = nowTime - startTimeM;
         //sockets.image.send(JSON.stringify({'img':canvas.toDataURL('image/jpeg'),'frame_number':frame_number,'stage':stage,'millis':millis}))
         canvas.toBlob(function(blob) {
             imgBlob = new Blob([current_frame_number,'z',stage,'y',millis_p,'w',current_millis,blob]);
@@ -125,7 +125,7 @@ function logpicture(stage=1,current_frame_number,current_millis) {
 function loggame(stage=1, current_frame_number,current_millis) {
     //sockets.game.send(JSON.stringify({'img':game.canvas.toDataURL('image/jpeg',0.1),'frame_number':frame_number}))
     nowTime = new Date().getTime();
-    var millis_g = nowTime - startTimeM;
+    let millis_g = nowTime - startTimeM;
     game.canvas.toBlob(function(blob) {
         gameBlob = new Blob([current_frame_number,'z',stage,'y',millis_g,'w',current_millis,blob]);
         sockets.game.send(gameBlob);
