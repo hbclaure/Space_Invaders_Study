@@ -222,7 +222,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
     def on_close(self):
         #log player id, timestamp
         close_time = datetime.utcnow()
-        path_to_socket = f"{self.dirname}/socket_logs/{self.folder}/{self.type}_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+        path_to_socket = f"{self.dirname}/socket_logs/{self.folder}/{self.type}_{self.folder}.json"
         msg = {'player_id': self.player_id, 'mode': self.mode, 'game_num': self.game_num, 'display_vid': self.display_vid, 'open_time': self.open_time, 'close_time': close_time, 'stage': self.stage, 'code':self.close_code, 'reason':self.close_reason}
         if not os.path.exists(os.path.dirname(path_to_socket)):
             os.makedirs(os.path.dirname(path_to_socket))
