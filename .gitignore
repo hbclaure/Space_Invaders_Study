@@ -21,3 +21,4 @@ collected_data
 .vscode/settings.json
 notebooks/stich.ipynb
 space_invaders/db/initial_game_logs.db
+space_invaders/sent_check.py

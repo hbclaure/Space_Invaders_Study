@@ -177,11 +177,12 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                         if not os.path.exists(os.path.dirname(path_to_json)):
                             os.makedirs(os.path.dirname(path_to_json))
                         
+                        print(f"Starting to save: {self.player_id}")
                         with open(path_to_json,"w") as f:
                             f.write(msg)
                         self.logged = True
                         self.write_message("saved")
-                        print(f"Saved to database: {self.player_id}")
+                        print(f"Gamelog Saved: {self.player_id}")
                 except Exception as e:
                     print(f"Logging error: {self.player_id}")
                     print(e)
