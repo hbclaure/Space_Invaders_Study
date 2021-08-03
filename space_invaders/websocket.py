@@ -251,6 +251,9 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 for folder in folders:
                     if not os.path.exists(os.path.dirname(folder)):
                             os.makedirs(os.path.dirname(folder))
+                
+                with open(self.logging_path(), "+a") as f:
+                    f.write(f'Log file created\n')
 
                 sentry_sdk.set_context("user", {
                     "id": self.player_id,
