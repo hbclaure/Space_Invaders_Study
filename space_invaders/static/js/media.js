@@ -96,7 +96,7 @@ function save_image_loop(stage=1) {
         } else if (id != recording) {
             console.log('new stage. stopped recording', id)
         } else {
-            console.log(recording)
+            // console.log(recording)
             setTimeout(record, 66, id);
         }
     }, 66);
