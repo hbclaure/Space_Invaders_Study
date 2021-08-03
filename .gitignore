@@ -6,6 +6,9 @@ recorded_frames_*
 videos
 game_logs
 game_logs*
+webcam_logs/*
+game_data/*
+practice_game_data/*
 socket_logs
 socket_logs*
 control_logs
@@ -16,7 +19,8 @@ space_invaders/db/create_database_old.sql
 space_invaders/db/game_logs*.db
 analysis
 *.ipynb_checkpoints
-data
+collected_data
 .vscode/settings.json
 notebooks/stich.ipynb
 space_invaders/db/initial_game_logs.db
+space_invaders/sent_check.py
