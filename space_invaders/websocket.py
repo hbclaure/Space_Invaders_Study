@@ -17,6 +17,7 @@ from datetime import datetime
 import base64
 import sentry_sdk
 from typing import Any
+from datetime import datetime
 
 sentry_sdk.init(
     "https://1d8e5b5288fa4616b900791c09abcfbb@o771330.ingest.sentry.io/5827220",
@@ -207,6 +208,8 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
         self.open_time = None
         self.stage = []    
         self.dirname = "game_data"
+        self.type="webcam"
+        self.folder = None
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -218,7 +221,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
     def on_close(self):
         #log player id, timestamp
         close_time = datetime.utcnow()
-        path_to_socket = f"{self.dirname}/socket_logs/P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}/image_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+        path_to_socket = f"{self.dirname}/socket_logs/{self.folder}/{self.type}_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
         msg = {'player_id': self.player_id, 'mode': self.mode, 'game_num': self.game_num, 'display_vid': self.display_vid, 'open_time': self.open_time, 'close_time': close_time, 'stage': self.stage, 'code':self.close_code, 'reason':self.close_reason}
         if not os.path.exists(os.path.dirname(path_to_socket)):
             os.makedirs(os.path.dirname(path_to_socket))
@@ -237,10 +240,18 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 time = datetime.utcnow()
                 self.time_label = f"{str(time.year)}_{str(time.month)}_{str(time.day)}_{str(time.hour)}_{str(time.minute)}"
                 gn = state['game_num']
-                while(os.path.exists(os.path.dirname(f"{self.dirname}/recorded_frames/P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(gn)}_t{str(self.time_label)}/"))):
+                while(os.path.exists(os.path.dirname(f"{self.dirname}/recorded_frames/P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(gn)}_t{str(self.time_label)}/{self.type}_start/"))):
                     gn = int(gn)+100
-                    print("increment Image")
+                    print(f"increment {self.type}")
                 self.game_num = str(gn)
+                self.folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
+
+                # make directories
+                folders = [f'{self.dirname}/recorded_frames/', self.logging_path(), self.start_path(0,0), self.in_game_path(0,0,0), self.end_path(0,0)]
+                for folder in folders:
+                    if not os.path.exists(os.path.dirname(folder)):
+                            os.makedirs(os.path.dirname(folder))
+
                 sentry_sdk.set_context("user", {
                     "id": self.player_id,
                     "mode": self.mode,
@@ -254,136 +265,157 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 sentry_sdk.capture_exception(e)
         else:
             try:
-                first_z = str(msg).find("z")
-                first_y = str(msg).find("y")
-                first_w = str(msg).find("w")
-                first_backslash = str(msg).find("\\")
-                frame_number =str(msg)[2:first_z]
-                frame_number = int(frame_number)
-                stage = str(msg)[first_z+1:first_y]
-                stage = int(stage)
-                millis = str(msg)[first_y+1:first_w]
-                millis = int(millis)
-                current_millis = str(msg)[first_w+1:first_backslash]
-                current_millis = int(current_millis)
-                image = msg[first_backslash-2:]
-                if image:
-                    if stage == 1:
-                        if not(1 in self.stage):
-                            self.stage.append(1)
-                        filename = self.in_game_path(frame_number,millis,current_millis)
-                    elif stage == 0:
-                        if not(0 in self.stage):
-                            self.stage.append(0)
-                        filename = self.start_path(millis,current_millis)
-                    elif stage == 2:
-                        if not(2 in self.stage):
-                            self.stage.append(2)
-                        filename = self.end_path(millis,current_millis)
-                    if not os.path.exists(os.path.dirname(filename)):
-                        os.makedirs(os.path.dirname(filename))
-                    with open(filename, "+wb") as f:
-                        f.write(image)
+                if str(msg)[0:5] == 'EVENT':
+                    with open(self.logging_path(), "+a") as f:
+                        f.write(msg + '\n')
+                else:
+                    first_z = str(msg).find("z")
+                    first_y = str(msg).find("y")
+                    first_w = str(msg).find("w")
+                    first_backslash = str(msg).find("\\")
+                    frame_number =str(msg)[2:first_z]
+                    frame_number = int(frame_number)
+                    stage = str(msg)[first_z+1:first_y]
+                    stage = int(stage)
+                    millis = str(msg)[first_y+1:first_w]
+                    millis = int(millis)
+                    current_millis = str(msg)[first_w+1:first_backslash]
+                    current_millis = int(current_millis)
+                    image = msg[first_backslash-2:]
+                    if image:
+                        if stage == 1:
+                            if not(1 in self.stage):
+                                self.stage.append(1)
+                            filename = self.in_game_path(frame_number,millis,current_millis)
+                        elif stage == 0:
+                            if not(0 in self.stage):
+                                self.stage.append(0)
+                            filename = self.start_path(millis,current_millis)
+                        elif stage == 2:
+                            if not(2 in self.stage):
+                                self.stage.append(2)
+                            filename = self.end_path(millis,current_millis)
+                        # if not os.path.exists(os.path.dirname(filename)):
+                        #     os.makedirs(os.path.dirname(filename))
+                        with open(filename, "+wb") as f:
+                            f.write(image)
+                        with open(self.logging_path(), "+a") as f:
+                            f.write(f'Image Saved: s{self.stage[-1]}, f{frame_number}, m{millis}\n')
+                    else:
+                        with open(self.logging_path(), "+a") as f:
+                            f.write("NO_IMAGE_FOUND: " + str(msg) + '\n')
             except Exception as e:
                 print(e)
                 print(f"error saving images: {self.player_id}")
+                if not os.path.exists(os.path.dirname(self.logging_path())):
+                            os.makedirs(os.path.dirname(self.logging_path()))
+                with open(self.logging_path(), "+a") as f:
+                    f.write(f"error saving images: {self.player_id} at {datetime.now()}\n, {e}\n")
                 sentry_sdk.capture_exception(e)
 
     def start_path(self,millis,current_millis):
         self.start_frame_count += 1
-        folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
-        filename = f"{self.dirname}/recorded_frames/{folder}/webcam_start/start_{self.start_frame_count:05d}_m{millis}_cm{current_millis}.jpg"
+        # folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
+        filename = f"{self.dirname}/recorded_frames/{self.folder}/{self.type}_start/start_{self.start_frame_count:05d}_m{millis}_cm{current_millis}.jpg"
         return filename
 
     def in_game_path(self, frame_number,millis,current_millis):
-        folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
-        filename = f"{self.dirname}/recorded_frames/{folder}/webcam/w_{frame_number:05d}_m{millis}_cm{current_millis}.jpg"
+        # folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
+        filename = f"{self.dirname}/recorded_frames/{self.folder}/{self.type}/w_{frame_number:05d}_m{millis}_cm{current_millis}.jpg"
         return filename
 
     def end_path(self,millis,current_millis):
         self.end_frame_count += 1
-        folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
-        filename = f"{self.dirname}/recorded_frames/{folder}/webcam_end/end_{self.end_frame_count:05d}_m{millis}_cm{current_millis}.jpg"
+        # folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
+        filename = f"{self.dirname}/recorded_frames/{self.folder}/{self.type}_end/end_{self.end_frame_count:05d}_m{millis}_cm{current_millis}.jpg"
         return filename
-
-class GameHandler(tornado.websocket.WebSocketHandler):
-    def __init__(
-        self,
-        application: tornado.web.Application,
-        request: tornado.httputil.HTTPServerRequest,
-        **kwargs: Any
-    ) -> None:
-        super().__init__(application, request, **kwargs)
-        self.player_id = None
-        self.mode = None
-        self.game_num = None
-        self.time_label = None
-        self.display_vid = None
-        self.open_time = None
-        self.dirname = "game_data"
-
-    def check_origin(self, origin):
-        '''Allow from all origins'''
-        return True
     
-    def open(self):
-        self.open_time = datetime.utcnow()
+    def logging_path(self):
+        return f"{self.dirname}/{self.type}_log/{self.folder}.log"
 
-    def on_close(self):
-        #log player id, timestamp
-        close_time = datetime.utcnow()
-        path_to_socket = f"{self.dirname}/socket_logs/P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}/game_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
-        msg = {'player_id': self.player_id, 'mode': self.mode, 'game_num': self.game_num, 'display_vid': self.display_vid, 'open_time': self.open_time, 'close_time': close_time, 'code':self.close_code, 'reason':self.close_reason}
-        if not os.path.exists(os.path.dirname(path_to_socket)):
-            os.makedirs(os.path.dirname(path_to_socket))
-        with open(path_to_socket,"w") as f:
-            json.dump(msg,f,default=str)
+class GameHandler(ImageHandler):
+    def __init__(self, *args, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        self.type = "gamescreen"
 
-    def on_message(self, msg):
-        if not self.player_id:
-            try:
-                state = json.loads(msg)
-                self.player_id = state['player_id']
-                self.mode = state['mode']
-                if self.mode == 0:
-                    self.dirname = "practice_game_data"
-                self.display_vid = state['display_vid']
-                time = datetime.utcnow()
-                self.time_label = f"{str(time.year)}_{str(time.month)}_{str(time.day)}_{str(time.hour)}_{str(time.minute)}"
-                gn = state['game_num']
-                while(os.path.exists(os.path.dirname(f"{self.dirname}/recorded_frames/P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(gn)}_t{str(self.time_label)}/"))):
-                    gn = int(gn)+100
-                    print("increment game")
-                self.game_num = str(gn)
-                print(f"Recording frames: {self.player_id}")
-            except Exception as e:
-                print(e)
-                print("invalid - no player_id")
-                sentry_sdk.capture_exception(e)
+# class GameHandler(tornado.websocket.WebSocketHandler):
+#     def __init__(
+#         self,
+#         application: tornado.web.Application,
+#         request: tornado.httputil.HTTPServerRequest,
+#         **kwargs: Any
+#     ) -> None:
+#         super().__init__(application, request, **kwargs)
+#         self.player_id = None
+#         self.mode = None
+#         self.game_num = None
+#         self.time_label = None
+#         self.display_vid = None
+#         self.open_time = None
+#         self.dirname = "game_data"
 
-        else:
-            try:
-                first_z = str(msg).find("z")
-                first_w = str(msg).find("w")
-                first_backslash = str(msg).find("\\")
-                frame_number =str(msg)[2:first_z]
-                frame_number = int(frame_number)
-                millis = str(msg)[first_z+1:first_w]
-                millis = int(millis)
-                current_millis = str(msg)[first_w+1:first_backslash]
-                current_millis = int(current_millis)
-                image = msg[first_backslash-2:]
-                if image:
-                    folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
-                    filename = f"{self.dirname}/recorded_frames/{folder}/gamescreen/g_{frame_number:05d}_m{millis}_cm{current_millis}.jpg"
-                    if not os.path.exists(os.path.dirname(filename)):
-                        os.makedirs(os.path.dirname(filename))
-                    with open(filename, "+wb") as f:
-                        f.write(image)
-            except Exception as e:
-                print(f"{e} {self.player_id}")
-                print(f"error saving frames: {self.player_id}")
-                sentry_sdk.capture_exception(e)
+#     def check_origin(self, origin):
+#         '''Allow from all origins'''
+#         return True
+    
+#     def open(self):
+#         self.open_time = datetime.utcnow()
+
+#     def on_close(self):
+#         #log player id, timestamp
+#         close_time = datetime.utcnow()
+#         path_to_socket = f"{self.dirname}/socket_logs/P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}/game_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+#         msg = {'player_id': self.player_id, 'mode': self.mode, 'game_num': self.game_num, 'display_vid': self.display_vid, 'open_time': self.open_time, 'close_time': close_time, 'code':self.close_code, 'reason':self.close_reason}
+#         if not os.path.exists(os.path.dirname(path_to_socket)):
+#             os.makedirs(os.path.dirname(path_to_socket))
+#         with open(path_to_socket,"w") as f:
+#             json.dump(msg,f,default=str)
+
+#     def on_message(self, msg):
+#         if not self.player_id:
+#             try:
+#                 state = json.loads(msg)
+#                 self.player_id = state['player_id']
+#                 self.mode = state['mode']
+#                 if self.mode == 0:
+#                     self.dirname = "practice_game_data"
+#                 self.display_vid = state['display_vid']
+#                 time = datetime.utcnow()
+#                 self.time_label = f"{str(time.year)}_{str(time.month)}_{str(time.day)}_{str(time.hour)}_{str(time.minute)}"
+#                 gn = state['game_num']
+#                 while(os.path.exists(os.path.dirname(f"{self.dirname}/recorded_frames/P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(gn)}_t{str(self.time_label)}/"))):
+#                     gn = int(gn)+100
+#                     print("increment game")
+#                 self.game_num = str(gn)
+#                 print(f"Recording frames: {self.player_id}")
+#             except Exception as e:
+#                 print(e)
+#                 print("invalid - no player_id")
+#                 sentry_sdk.capture_exception(e)
+
+#         else:
+#             try:
+#                 first_z = str(msg).find("z")
+#                 first_w = str(msg).find("w")
+#                 first_backslash = str(msg).find("\\")
+#                 frame_number =str(msg)[2:first_z]
+#                 frame_number = int(frame_number)
+#                 millis = str(msg)[first_z+1:first_w]
+#                 millis = int(millis)
+#                 current_millis = str(msg)[first_w+1:first_backslash]
+#                 current_millis = int(current_millis)
+#                 image = msg[first_backslash-2:]
+#                 if image:
+#                     folder = f"P{str(self.player_id)}_v{str(self.display_vid)}_m{str(self.mode)}_g{str(self.game_num)}_t{str(self.time_label)}"
+#                     filename = f"{self.dirname}/recorded_frames/{folder}/gamescreen/g_{frame_number:05d}_m{millis}_cm{current_millis}.jpg"
+#                     if not os.path.exists(os.path.dirname(filename)):
+#                         os.makedirs(os.path.dirname(filename))
+#                     with open(filename, "+wb") as f:
+#                         f.write(image)
+#             except Exception as e:
+#                 print(f"{e} {self.player_id}")
+#                 print(f"error saving frames: {self.player_id}")
+#                 sentry_sdk.capture_exception(e)
 
 
 def main():

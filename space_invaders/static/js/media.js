@@ -43,17 +43,31 @@ function startup() {
             height = video.videoHeight / (video.videoWidth/width);
             ratio = video.videoWidth/width
 
-            ratio_data = {
-                ratio: ratio,
-            };
-            console.log('image logged')
-
             video.setAttribute('width', width/2);
             video.setAttribute('height', height/2);
             canvas.setAttribute('width', width);
             canvas.setAttribute('height', height);
             streaming = true;
+
+            console.log("Webcam ready, starting in a second");
+            // sockets.image.send('EVENT: webcam started (canplay)', time.toTimeString(), time.getTime() - startTimeM)
+
+            setTimeout(() => { game.scene.start('start_scene'); }, 300);
         }
+    }, false);
+
+    video.addEventListener('ended', function(ev){
+        let time = new Date()
+        console.log('EVENT: webcam ended', time.toTimeString(), time.getTime() - startTimeM);
+        sockets.image.send('EVENT: webcam ended', time.toTimeString(), time.getTime() - startTimeM)
+        sockets.game.send('EVENT: webcam ended', time.toTimeString(), time.getTime() - startTimeM)
+    }, false);
+
+    video.addEventListener('suspend', function(ev){
+        let time = new Date();
+        console.log('EVENT: webcam suspended', time.toTimeString(), time.getTime() - startTimeM);
+        sockets.image.send('EVENT: webcam suspended', time.toTimeString(), time.getTime() - startTimeM)
+        sockets.game.send('EVENT: webcam suspended', time.toTimeString(), time.getTime() - startTimeM)
     }, false);
     //save_image_loop()
 }
@@ -71,19 +85,19 @@ function webcam_off_error(){
 var startTime;
 function save_image_loop(stage=1) {
     startTime = new Date().getTime();
-    if (recording) {
-      clearInterval(recording);
-    }
-    recording = setInterval(function(){
+    recording = setTimeout(function record(id=recording){
         nowTime = new Date().getTime();
-        var millis_to_pass = nowTime - startTimeM;
+        let millis_to_pass = nowTime - startTimeM;
         logpicture(stage, frame_number, millis_to_pass);
-        if (stage == 1) {
-            loggame(frame_number, millis_to_pass);
-        }
+        // loggame(stage, frame_number, millis_to_pass);
         if ((stage==2 || stage==0) && new Date().getTime() - startTime >= 10000) {
-            clearInterval(recording);
+            // clearInterval(recording);
             console.log('stopped recording');
+        } else if (id != recording) {
+            console.log('new stage. stopped recording', id)
+        } else {
+            console.log(recording)
+            setTimeout(record, 66, id);
         }
     }, 66);
 }
@@ -91,13 +105,20 @@ function save_image_loop(stage=1) {
 // log user video frame
 function logpicture(stage=1,current_frame_number,current_millis) {
     // stage 0: start, 1: in-game, 2: end
-    var context = canvas.getContext('2d');
-    if (width && height) {
+    if (width && height){
+        let context = canvas.getContext('2d');
         canvas.width = width;
         canvas.height = height;
         context.drawImage(video, 0, 0, width, height);
         nowTime = new Date().getTime();
-        var millis_p = nowTime - startTimeM;
+
+        let millis_g = nowTime - startTimeM;
+        game.canvas.toBlob(function(blob) {
+            gameBlob = new Blob([current_frame_number,'z',stage,'y',millis_g,'w',current_millis,blob]);
+            sockets.game.send(gameBlob);
+        }, 'image/jpeg',0.1);
+
+        let millis_p = nowTime - startTimeM;
         //sockets.image.send(JSON.stringify({'img':canvas.toDataURL('image/jpeg'),'frame_number':frame_number,'stage':stage,'millis':millis}))
         canvas.toBlob(function(blob) {
             imgBlob = new Blob([current_frame_number,'z',stage,'y',millis_p,'w',current_millis,blob]);
@@ -107,14 +128,15 @@ function logpicture(stage=1,current_frame_number,current_millis) {
 }
 
 // record game frames
-function loggame(current_frame_number,current_millis) {
-    //sockets.game.send(JSON.stringify({'img':game.canvas.toDataURL('image/jpeg',0.1),'frame_number':frame_number}))
-    nowTime = new Date().getTime();
-    var millis_g = nowTime - startTimeM;
-    game.canvas.toBlob(function(blob) {
-        gameBlob = new Blob([current_frame_number,'z',millis_g,'w',current_millis,blob]);
-        sockets.game.send(gameBlob);
-    }, 'image/jpeg',0.1);
-}
+// function loggame(stage=1, current_frame_number,current_millis) {
+//     //sockets.game.send(JSON.stringify({'img':game.canvas.toDataURL('image/jpeg',0.1),'frame_number':frame_number}))
+//     nowTime = new Date().getTime();
+//     let millis_g = nowTime - startTimeM;
+//     game.canvas.toBlob(function(blob) {
+//         gameBlob = new Blob([current_frame_number,'z',stage,'y',millis_g,'w',current_millis,blob]);
+//         sockets.game.send(gameBlob);
+//     }, 'image/jpeg',0.1);
+// }
+
 
 window.addEventListener('load', startup, false);
