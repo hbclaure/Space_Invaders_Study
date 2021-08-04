@@ -75,7 +75,7 @@ function update ()
 
     if (this.input.keyboard.checkDown(cursors.up, 0) && feedback_enabled) {
         if(frame_number >= last_msg_frame + frames_per_message) {
-            console.log('up check pressed');
+            // console.log('up check pressed');
 
             player_ship.sprite.props.message.setText("Good job");
             player_ship.sprite.props.message.visible = true;
@@ -93,14 +93,14 @@ function update ()
         }
     } else if (this.input.keyboard.checkDown(cursors.down, 0) && feedback_enabled) {
         if (frame_number >= last_msg_frame + frames_per_message) {
-            console.log('down check pressed');
+            // console.log('down check pressed');
 
             player_ship.sprite.props.message.setText("Bad job");
             player_ship.sprite.props.message.visible = true;
 
             //player_ship.sprite.props.emote.setFillStyle(0xFF0000)
             ai_ship.sprite.props.message.text = "Sorry!";
-            console.log(mode)
+            // console.log(mode)
             ai_ship.sprite.props.message.visible = true;
             ai_ship.sprite.props.message.align = 1;
             last_msg_frame = frame_number;
