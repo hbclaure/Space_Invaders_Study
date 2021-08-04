@@ -317,7 +317,7 @@ class ImageHandler(tornado.websocket.WebSocketHandler):
                 if not os.path.exists(os.path.dirname(self.logging_path())):
                             os.makedirs(os.path.dirname(self.logging_path()))
                 with open(self.logging_path(), "+a") as f:
-                    f.write(f"error saving images: {self.player_id} at {datetime.now()}\n, {e}\n")
+                    f.write(f"error saving images: {self.player_id} at {datetime.utcnow()}\n, {e}\n")
                 sentry_sdk.capture_exception(e)
 
     def start_path(self,millis,current_millis):
