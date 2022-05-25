@@ -1,1 +1,0 @@
-# error_recovery_si_nao

@@ -1,0 +1,7 @@
+node_modules
+__pycache__
+db/game_logs.db
+logs
+recorded_frames
+game_frames
+venv
