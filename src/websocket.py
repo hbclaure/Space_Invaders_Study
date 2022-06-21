@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+# original imports
 import logging
 import tornado.escape
 import tornado.ioloop
@@ -16,6 +19,11 @@ from datetime import datetime
 import sentry_sdk
 from typing import Any
 
+# ros imports
+import rospy
+from std_msgs.msg import String
+
+# sentry info
 sentry_sdk.init(
     "https://1d8e5b5288fa4616b900791c09abcfbb@o771330.ingest.sentry.io/5827220",
 
@@ -25,10 +33,10 @@ sentry_sdk.init(
     traces_sample_rate=1.0
 )
 
-from agents.uncooperative import Uncooperative
-from agents.cooperative_early import CooperativeEarly
-from agents.cooperative_late import CooperativeLate
-from agents.apology import Apology
+from game_files.agents.uncooperative import Uncooperative
+from game_files.agents.cooperative_early import CooperativeEarly
+from game_files.agents.cooperative_late import CooperativeLate
+from game_files.agents.apology import Apology
 
 from tornado.options import define, options
 define("port",default = 8668, help="run on the given port", type=int)
@@ -54,11 +62,19 @@ machines = {
 }
 
 class Application(tornado.web.Application):
+    '''
+    ROS node
+    '''
     def __init__(self):
+        # Initialize the node
+        print("initializing websocket node")
+        rospy.init_node('websocket')
+
+
         settings = dict(
             cookie_secret="a0ds8fhasldkgakl1joasdig0asdhgalkj30asgjdgla;ksd;glah",
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
-            static_path=os.path.join(os.path.dirname(__file__), "static"),
+            static_path=os.path.join(os.path.dirname(__file__), "game_files/static"),
             xsrf_cookies=True,
         )
         handlers = [
@@ -88,6 +104,9 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
         self.logged = False
         self.control_msgs = 0
         self.dirname = "game_data"
+
+        # Publisher
+        self.game_state_pub = rospy.Publisher('space_invaders/game/game_state',String,queue_size=5)
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -133,6 +152,9 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
 
         else:
             state = json.loads(msg)
+            # publish game state
+            state_string = json.dumps(state)
+            self.game_state_pub.publish(state_string)
             self.control_msgs +=1
 
             if "frame_number" in state.keys():
@@ -357,9 +379,24 @@ def main():
     #     proto = 'https'
     #     app.listen(port, '0.0.0.0', ssl_options=ssl_options)
     # else:
-    app.listen(port, '127.0.0.1')
-    print(f"Listening on {proto}://127.0.0.1:%i" % port)
-    tornado.ioloop.IOLoop.current().start()
+    
+    try:
+        app.listen(port, '127.0.0.1')
+        print(f"Listening on {proto}://127.0.0.1:%i" % port)
+        while not rospy.is_shutdown():
+            print("starting loop")   
+            tornado.ioloop.IOLoop.current().start()
+    except KeyboardInterrupt:
+        print("key")
+        pass
+    except rospy.ROSInterruptException:
+        print("ros")
+        pass
+    finally:
+        tornado.ioloop.IOLoop.current().stop()
+        tornado.ioloop.IOLoop.current().close(True)
+    
 
 if __name__ == "__main__":
     main()
+
