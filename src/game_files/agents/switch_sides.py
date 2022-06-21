@@ -1,5 +1,5 @@
-from agents.cooperative_late import CooperativeLate
-from agents.uncooperative import Uncooperative
+from game_files.agents.cooperative_late import CooperativeLate
+from game_files.agents.uncooperative import Uncooperative
 
 class Switch(Uncooperative):
     def __init__(self):

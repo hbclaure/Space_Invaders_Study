@@ -17,6 +17,7 @@ game_data/*
 practice_game_data/*
 space_invaders/db/create_database_old.sql
 space_invaders/db/game_logs*.db
+venv_game
 # analysis
 *.ipynb_checkpoints
 collected_data

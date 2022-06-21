@@ -1,4 +1,4 @@
-from agents.uncooperative import Uncooperative
+from game_files.agents.uncooperative import Uncooperative
 
 class CooperativeLate(Uncooperative):
     def __init__(self):

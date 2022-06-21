@@ -1,6 +1,6 @@
-from agents.uncooperative import Uncooperative
-from agents.cooperative_early import CooperativeEarly
-from agents.cooperative_late import CooperativeLate
+from game_files.agents.uncooperative import Uncooperative
+from game_files.agents.cooperative_early import CooperativeEarly
+from game_files.agents.cooperative_late import CooperativeLate
 
 class Apology(CooperativeLate):
     def __init__(self):
