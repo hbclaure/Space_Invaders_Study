@@ -26,9 +26,10 @@
     let game_port = 8668;
     let mode = 1;
     let game_num = 2;
+    let condition = findGetParameter('condition') ? findGetParameter('condition') : 'Z';
     let game_url = "http://localhost:"+game_port+"/";
     let player_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
-    let full_url = game_url+"?id="+player_id+"&mode="+mode+"&game="+game_num
+    let full_url = game_url+"?id="+player_id+"&mode="+mode+"&game="+game_num+"&condition="+condition
     
     let myIframe = document.getElementById("myIframe")
     myIframe.src = full_url
