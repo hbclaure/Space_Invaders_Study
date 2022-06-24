@@ -2,7 +2,9 @@
 <html>
   <head>
     <title>Space Invaders Study!</title>
+    <script src="robot_socket.js"></script>
   </head>
+  
   <body>
     <h1>Game 1</h1>
     <p>The researcher will now explain the first round of Space Invaders.</p>
@@ -25,16 +27,8 @@
     }
     </script>
 
+<script> console.log("hiya");</script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script>
-    function goPython(){
-        $.ajax({
-            url:"test.py",
-            context: document.body
-        }).done(function() {
-            alert('finished python script');
-        });
-    }
-</script>
+
 
 </html>
