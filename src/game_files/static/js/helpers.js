@@ -56,6 +56,7 @@ var date;                               //!< date
 var player_id;                          //!< unique ID
 var game_num;                           //!< game number
 var display_vid;
+var game_condition;
 
 var max_player_frequency = 600;
 var max_ai_frequency = max_player_frequency * 0.6;
@@ -84,6 +85,7 @@ player_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
 mode = findGetParameter('mode'); 
 mode = (mode && !isNaN(mode) && parseInt(mode, 10) >= 0 && parseInt(mode, 10) <= 7) ? parseInt(mode, 10) : COOPERATIVE_EARLY;
 game_num = findGetParameter('game') ? findGetParameter('game') : 0;
+game_condition = findGetParameter('condition') ? findGetParameter('condition') : 'Z';
 display_vid = findGetParameter('v') ? findGetParameter('v') :'off';
 
 /**

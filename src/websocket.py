@@ -107,6 +107,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
 
         # Publisher
         self.game_state_pub = rospy.Publisher('space_invaders/game/game_state',String,queue_size=5)
+        self.game_condition_pub = rospy.Publisher('space_invaders/game/game_condition',String,queue_size=5)
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -146,6 +147,9 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                   
                 self.current_agent = agents[self.mode]()
                 print("Current Agent: ", self.current_agent)
+
+                # publish game condition
+                self.game_condition_pub.publish(state['game_condition'])
             except Exception as e:
                 print(f"{e} Mode or agent error")
                 sentry_sdk.capture_exception(e)

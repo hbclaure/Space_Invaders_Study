@@ -18,6 +18,7 @@ practice_game_data/*
 space_invaders/db/create_database_old.sql
 space_invaders/db/game_logs*.db
 venv_game
+__pycache__
 # analysis
 *.ipynb_checkpoints
 collected_data

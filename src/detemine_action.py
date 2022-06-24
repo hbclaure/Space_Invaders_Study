@@ -7,14 +7,7 @@ from std_msgs.msg import String
 # other imports
 import json
 
-def action_from_game_state(game_state):
-    ai_position = game_state["ai_position"]
-    if ai_position < 400:
-        robot_action = "hi"
-    else:
-        robot_action = "right"
 
-    return robot_action
 
 class DetermineAction():
     '''
@@ -27,23 +20,64 @@ class DetermineAction():
         
         # Subscribers
         rospy.Subscriber('space_invaders/game/game_state', String, self.determine_action_cb)
+        rospy.Subscriber('space_invaders/game/game_condition', String, self.game_condition_cb)
 
         # Publishers 
         self.robot_action_pub = rospy.Publisher('space_invaders/game/robot_action',String,queue_size=5)
 
+        # Attributes
+        self.game_condition = None
+        self.asked_feedback = False
+        self.condition_met = False
+
     def determine_action_cb(self,game_state):
-        ## To do
-        ## Read game state
-        ## Do logic to figure out move
-        ## Publish move
-        
         game_state_dict = json.loads(game_state.data)
-        robot_action = action_from_game_state(game_state_dict)
+        robot_action = self.action_from_game_state(game_state_dict)
         self.robot_action_pub.publish(robot_action)
+
+    def game_condition_cb(self,msg):
+        self.game_condition = msg.data
+        self.asked_feedback = False
+        self.condition_met = False
+        print("new game")
 
     def run(self):
         pass
 
+    def action_from_game_state(self,game_state):
+        enemies_left_positions = game_state['enemies_left_positions']
+        enemies_right_positions = game_state['enemies_right_positions']
+        num_left_enemies = len(enemies_left_positions)
+        num_right_enemies = len(enemies_right_positions)
+
+        if self.game_condition in ['A','B'] and not(self.asked_feedback):
+            # asking for feedback before crossing to help
+            if num_left_enemies <= 25 or num_right_enemies <=25:
+                robot_action = "ask_for_feedback"
+                self.asked_feedback = True
+                print("Ask for feedback: ", self.game_condition)
+                return robot_action
+        elif self.game_condition in ['C','D'] and not(self.asked_feedback): 
+            # after for feedback after crossing to help
+            if num_left_enemies <= 15 and game_state["ai_position"]>400:
+                robot_action = "ask_for_feedback"
+                self.asked_feedback = True
+                print("Ask for feedback: ", self.game_condition)
+                return robot_action
+        else:
+            if not(self.condition_met):
+                print("Unrecognized condition or already asked for feedback")
+                self.condition_met = True
+            return ""
+        
+        '''ai_position = game_state["ai_position"]
+        if ai_position < 400:
+            robot_action = "hi"
+        else:
+            robot_action = "right"
+
+        return robot_action
+        '''
 if __name__ == '__main__':
     try:
         determine_action = DetermineAction()

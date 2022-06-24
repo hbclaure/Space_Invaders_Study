@@ -60,8 +60,8 @@ function socket_start_image() {
 }
 
 function socket_start() {
-    sockets.image.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
-    sockets.game.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
+    sockets.image.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,game_condition:game_condition,display_vid:display_vid}));
+    sockets.game.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,game_condition:game_condition,display_vid:display_vid}));
     console.log('starting to record');
     save_image_loop(stage=0);
 }
@@ -73,7 +73,7 @@ start_scene.update = function() {
         if (mode == PRACTICE) {
             waitForSocketConnection(sockets.control, function(){
                 console.log("control open");
-                sockets.control.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
+                sockets.control.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,game_condition:game_condition,display_vid:display_vid}));
             });
             //sockets.control.send(JSON.stringify(mode))
             // this.scene.start('practice_scene');
@@ -90,7 +90,7 @@ start_scene.update = function() {
         else {
             waitForSocketConnection(sockets.control, function(){
                 console.log("control open");
-                sockets.control.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,display_vid:display_vid}));
+                sockets.control.send(JSON.stringify({player_id:player_id,mode:mode,game_num:game_num,game_condition:game_condition,display_vid:display_vid}));
             });
             //sockets.control.send(JSON.stringify(mode))
             this.scene.start('game_scene');
