@@ -81,7 +81,7 @@ function update ()
             player_ship.sprite.props.message.visible = true;
 
             ai_ship.sprite.props.message.text = 'Yay';
-            ai_ship.sprite.props.message.visible = true;
+            ai_ship.sprite.props.message.visible = false;
 
             //player_ship.sprite.props.emote.setFillStyle(0x00FF00)
             last_msg_frame = frame_number;
@@ -101,7 +101,7 @@ function update ()
             //player_ship.sprite.props.emote.setFillStyle(0xFF0000)
             ai_ship.sprite.props.message.text = "Sorry!";
             // console.log(mode)
-            ai_ship.sprite.props.message.visible = true;
+            ai_ship.sprite.props.message.visible = false;
             ai_ship.sprite.props.message.align = 1;
             last_msg_frame = frame_number;
 
