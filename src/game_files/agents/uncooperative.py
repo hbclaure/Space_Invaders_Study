@@ -30,6 +30,7 @@ class Uncooperative:
         s = state
 
         ship_x = s['ai_position']
+        ship_y = self.SHIP_Y
 
         enemies_left_positions = s['enemies_left_positions']
         enemies_right_positions = s['enemies_right_positions']
@@ -77,9 +78,12 @@ class Uncooperative:
                     nearest_bullet = bullet
                     x_diff_prev = x_diff
 
-        # find nearest enemy
+        # find nearest enemy by Y
         nearest_enemy = [0,0]
         nearest_x_diff = self.CANVAS
+        nearest_y_diff = self.VERTICAL_BUFFER
+
+        closest_x_diff = self.CANVAS
 
         if self.attack_left:
             enemies_to_search = enemies_left_positions
@@ -87,10 +91,18 @@ class Uncooperative:
             enemies_to_search = enemies_right_positions
 
         for enemy in enemies_to_search:
-            check_distance = abs(enemy[0] - ship_x)
-            if check_distance < nearest_x_diff:
+            check_distance_x = abs(enemy[0] - ship_x)
+            check_distance_y = abs(enemy[1] - ship_y)
+            if check_distance_y < nearest_y_diff:
                 nearest_enemy = enemy
-                nearest_x_diff = check_distance
+                nearest_x_diff = check_distance_x
+                nearest_y_diff = check_distance_y
+            elif check_distance_y == nearest_y_diff and check_distance_x < nearest_x_diff:
+                nearest_enemy = enemy
+                nearest_x_diff = check_distance_x
+                nearest_y_diff = check_distance_y
+            elif check_distance_y < (nearest_y_diff+50) and check_distance_x < closest_x_diff:
+                closest_x_diff = check_distance_x
 
         # set restriction on frequency based on player's recent average
         if round(time.time() * 1000) - ai_last_shot < player_avg_frequency * self.AI_RELATIVE_SPEED:
@@ -116,7 +128,7 @@ class Uncooperative:
                     right = True
         else:
             #IF AI CAN SHOOT
-            if nearest_x_diff <= self.SHOOTING_RANGE:
+            if closest_x_diff <= self.SHOOTING_RANGE or nearest_x_diff <= self.SHOOTING_RANGE:
                 shoot = True
 
             if nearest_enemy[0] < ship_x:
