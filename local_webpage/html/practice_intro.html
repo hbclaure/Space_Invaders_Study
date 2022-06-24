@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Space Invaders Study!</title>
+  </head>
+  <body>
+    <h1>Practice</h1>
+    <p>The researcher will now explain the tutorial.</p>
+    <p>Add image...</p>
+
+    
+
+    <a href="practice.html"> Click here to start tutorial </a>
+  </body>
+
+  <script>
+    var all_params = window.location.href.split('?')[1];
+    var a = document.getElementsByTagName('a');
+    for (var i=0; i < a.length; i++){
+        a[i].href+="?";
+        a[i].href+=all_params;
+        console.log(a[i].href);
+    }
+    </script>
+</html>

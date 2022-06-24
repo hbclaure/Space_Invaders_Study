@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Space Invaders Study!</title>
+  </head>
+  <body>
+    <h1> Game 1</h1>
+    <iframe id="myIframe" allow="camera" width=1100 height=600></iframe>
+    <p> </p>
+    <p>Please get the researcher when you are done with this round. </p>
+    <p> </p>
+    <a href="g2i.html"> Next </a> 
+</body>
+
+<script>
+    function findGetParameter(parameterName) {
+        var result = null,
+            tmp = [];
+        var items = location.search.substr(1).split("&");
+        for (var index = 0; index < items.length; index++) {
+            tmp = items[index].split("=");
+            if (tmp[0] === parameterName) result = tmp[1];
+        }
+        return result;
+    }
+    let game_port = 8668;
+    let mode = 3;
+    let game_num = 1;
+    let game_url = "http://localhost:"+game_port+"/";
+    let player_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
+    let full_url = game_url+"?id="+player_id+"&mode="+mode+"&game="+game_num
+    
+    let myIframe = document.getElementById("myIframe")
+    myIframe.src = full_url
+</script>
+
+    <script>
+    var all_params = window.location.href.split('?')[1];
+    var a = document.getElementsByTagName('a');
+    for (var i=0; i < a.length; i++){
+        a[i].href+="?";
+        a[i].href+=all_params;
+        console.log(a[i].href);
+    }
+    </script>
+</html>

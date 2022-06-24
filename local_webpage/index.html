@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Space Invaders Study!</title>
+  </head>
+  <body>
+    <h1>Setup</h1>
+    <p>We will begin by checking that we are able to recognize your face in our video recording.</p>
+
+    
+
+    <a href="html/check_webcam.html"> Click here to check recording </a>
+  </body>
+
+  <script>
+    var all_params = window.location.href.split('?')[1];
+    var a = document.getElementsByTagName('a');
+    for (var i=0; i < a.length; i++){
+        a[i].href+="?";
+        a[i].href+=all_params;
+        console.log(a[i].href);
+    }
+    </script>
+    
+</html>
