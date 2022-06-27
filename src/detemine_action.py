@@ -31,15 +31,21 @@ class DetermineAction():
         self.condition_met = False
 
     def determine_action_cb(self,game_state):
-        game_state_dict = json.loads(game_state.data)
-        robot_action = self.action_from_game_state(game_state_dict)
-        self.robot_action_pub.publish(robot_action)
+        try:
+            game_state_dict = json.loads(game_state.data)
+            robot_action = self.action_from_game_state(game_state_dict)
+            self.robot_action_pub.publish(robot_action)
+            self.robot_action_pub.publish(robot_action)
+        except ValueError:
+            game_state = game_state.data
+            if game_state == "game_over":
+                self.robot_action_pub.publish("sleep")
+        
 
     def game_condition_cb(self,msg):
         self.game_condition = msg.data
         self.asked_feedback = False
         self.condition_met = False
-        print("new game")
 
     def run(self):
         pass
@@ -70,14 +76,7 @@ class DetermineAction():
                 self.condition_met = True
             return ""
         
-        '''ai_position = game_state["ai_position"]
-        if ai_position < 400:
-            robot_action = "hi"
-        else:
-            robot_action = "right"
 
-        return robot_action
-        '''
 if __name__ == '__main__':
     try:
         determine_action = DetermineAction()

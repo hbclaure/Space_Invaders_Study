@@ -108,6 +108,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
         # Publisher
         self.game_state_pub = rospy.Publisher('space_invaders/game/game_state',String,queue_size=5)
         self.game_condition_pub = rospy.Publisher('space_invaders/game/game_condition',String,queue_size=5)
+        self.game_mode_pub = rospy.Publisher('space_invaders/game/game_mode',String,queue_size=5)
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -148,7 +149,8 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 self.current_agent = agents[self.mode]()
                 print("Current Agent: ", self.current_agent)
 
-                # publish game condition
+                # publish game mode and condition
+                self.game_mode_pub.publish(str(state['mode']))
                 self.game_condition_pub.publish(state['game_condition'])
             except Exception as e:
                 print(f"{e} Mode or agent error")
@@ -180,6 +182,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 self.write_message(json.dumps(action))
             else:
                 print(f"events received: {self.player_id}")
+                
 
                 try:
                     if self.mode == 0:
@@ -196,6 +199,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                             self.logged = True
                             self.write_message("saved")
                     else:
+                        self.game_state_pub.publish("game_over")
                         path_to_json = f"{self.dirname}/game_logs/P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
                         if not os.path.exists(os.path.dirname(path_to_json)):
                             os.makedirs(os.path.dirname(path_to_json))
