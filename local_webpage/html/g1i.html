@@ -2,7 +2,8 @@
 <html>
   <head>
     <title>Space Invaders Study!</title>
-    <script src="robot_socket.js"></script>
+    <script src="robot_wake.js"></script>
+    <script src="robot_introduction.js"></script>
   </head>
   
   <body>
@@ -11,10 +12,10 @@
     <p>Add image...</p>
     <p> </p>
 
-    <input type="button" id="script" name="scriptbutton" value="Turn on robot" onclick="goPython()">
+    <input type="button" id="script" name="scriptbutton" value="Turn on robot" onclick="robotIntro()">
     <p> </p>
 
-    <a href="g1.html"> Click here to start next round of Space Invaders</a>
+    <a href="g1.html" onclick="robotWake()"> Click here to start next round of Space Invaders</a>
   </body>
 
   <script>

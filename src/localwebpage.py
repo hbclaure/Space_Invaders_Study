@@ -39,11 +39,13 @@ class Application(tornado.web.Application):
         rospy.init_node('localwebpage')
 
         handlers = [
-            (r"/robot", RobotHandler)
+            (r"/robot_wake", RobotWakeHandler),
+            (r"/robot_introduction", RobotIntroHandler),
+            (r"/robot_sleep",RobotSleepHandler)
         ]
         super().__init__(handlers)
 
-class RobotHandler(tornado.websocket.WebSocketHandler):
+class RobotWakeHandler(tornado.websocket.WebSocketHandler):
     # put in __init__
     def __init__(
         self,
@@ -51,20 +53,46 @@ class RobotHandler(tornado.websocket.WebSocketHandler):
         request: tornado.httputil.HTTPServerRequest,
         **kwargs: Any
     ) -> None:
-        super().__init__(application, request, **kwargs)
-        
+        super().__init__(application, request, **kwargs)        
 
         # Publisher
         self.robot_action_pub = rospy.Publisher('space_invaders/game/robot_action',String,queue_size=5)
-
-
+    
     def get(self):
         self.robot_action_pub.publish("wake")
-        print("get")
 
-    def on_message(self, msg):
-        self.robot_action_pub.publish("wake")
-        print("hmmm")
+class RobotIntroHandler(tornado.websocket.WebSocketHandler):
+    # put in __init__
+    def __init__(
+        self,
+        application: tornado.web.Application,
+        request: tornado.httputil.HTTPServerRequest,
+        **kwargs: Any
+    ) -> None:
+        super().__init__(application, request, **kwargs)        
+
+        # Publisher
+        self.robot_action_pub = rospy.Publisher('space_invaders/game/robot_action',String,queue_size=5)
+    
+    def get(self):
+        self.robot_action_pub.publish("introduction")
+
+class RobotSleepHandler(tornado.websocket.WebSocketHandler):
+    # put in __init__
+    def __init__(
+        self,
+        application: tornado.web.Application,
+        request: tornado.httputil.HTTPServerRequest,
+        **kwargs: Any
+    ) -> None:
+        super().__init__(application, request, **kwargs)        
+
+        # Publisher
+        self.robot_action_pub = rospy.Publisher('space_invaders/game/robot_action',String,queue_size=5)
+    
+    def get(self):
+        self.robot_action_pub.publish("sleep")
+
 
 def main():
     app = Application()
