@@ -29,7 +29,7 @@ function create_practice_scene() {
     this.custom_sounds.fire_ship = this.sound.add("audio_fire_ship", {volume: 0.05});
 
 
-    ai_ship = this.create_ship("avery", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", 0, 30);
+    ai_ship = this.create_ship("jordan", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", 0, 30);
     player_ship = this.create_ship("ship", 0, this.sys.canvas.width / 4, 540);
 
     instruction_num = 1
@@ -389,6 +389,7 @@ practice_over_scene.preload = function () {
     this.load.bitmapFont('PressStart2P_Green', 'assets/fonts/PressStart2P_Green/font.png', 'assets/fonts/PressStart2P_Green/font.fnt');
     this.load.bitmapFont('PressStart2P_Purple', 'assets/fonts/PressStart2P_Purple/font.png', 'assets/fonts/PressStart2P_Purple/font.fnt');
     this.load.bitmapFont('PressStart2P_Gray', 'assets/fonts/PressStart2P_Gray/font.png', 'assets/fonts/PressStart2P_Gray/font.fnt');
+    this.load.bitmapFont('PressStart2P_Blue', 'assets/fonts/PressStart2P_Blue/font.png', 'assets/fonts/PressStart2P_Blue/font.fnt');
 }
 
 // display Game Over and final scores

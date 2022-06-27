@@ -221,7 +221,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props.speed = speed;
     sprite.props.dead = false;
     sprite.props.score = 0;
-    var font_type = (image_id == 'ship') ? 'PressStart2P_Purple' : (image_id == 'avery') ? 'PressStart2P_Orange' : 'PressStart2P_Gray';
+    var font_type = (image_id == 'ship') ? 'PressStart2P_Purple' : (image_id == 'avery') ? 'PressStart2P_Orange' : (image_id == 'blue') ? 'PressStart2P_Blue' :'PressStart2P_Gray';
     // sprite.props.scoreText = this.add.bitmapText(x, 3, font_type, 'SCORE 0', 20);
     // sprite.props.lives = 3;
     //sprite.props.scoreText = this.add.bitmapText(x+22, 3, font_type, 'SCORE 0', 18);
@@ -243,7 +243,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props.message.visible = false;
 
     // animation for the player/ai explosions
-    var explosion = (image_id == 'ship') ? 'shipexplosion' : (image_id == 'avery') ? 'averyexplosion' : 'jordanexplosion';
+    var explosion = (image_id == 'ship') ? 'shipexplosion' : (image_id == 'avery') ? 'averyexplosion' : (image_id == 'blue') ? 'blueexplosion' :'jordanexplosion';
 
 
     if (!(this.anims.get(image_id + '_exp'))) { 

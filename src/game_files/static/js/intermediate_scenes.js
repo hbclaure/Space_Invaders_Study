@@ -7,6 +7,7 @@ start_scene.preload = function() {
     this.load.bitmapFont('PressStart2P_Orange', 'assets/fonts/PressStart2P_Orange/font.png', 'assets/fonts/PressStart2P_Orange/font.fnt');
     this.load.bitmapFont('PressStart2P_White', 'assets/fonts/PressStart2P_White/font.png', 'assets/fonts/PressStart2P_White/font.fnt');
     this.load.bitmapFont('PressStart2P_Green', 'assets/fonts/PressStart2P_Green/font.png', 'assets/fonts/PressStart2P_Green/font.fnt');
+    this.load.bitmapFont('PressStart2P_Blue', 'assets/fonts/PressStart2P_Blue/font.png', 'assets/fonts/PressStart2P_Blue/font.fnt');
 }
 
 start_scene.create = function() {
@@ -118,6 +119,7 @@ intermediate_scene.preload = function() {
     this.load.bitmapFont('PressStart2P_Green', 'assets/fonts/PressStart2P_Green/font.png', 'assets/fonts/PressStart2P_Green/font.fnt');
     this.load.bitmapFont('PressStart2P_Purple', 'assets/fonts/PressStart2P_Purple/font.png', 'assets/fonts/PressStart2P_Purple/font.fnt');
     this.load.bitmapFont('PressStart2P_Gray', 'assets/fonts/PressStart2P_Gray/font.png', 'assets/fonts/PressStart2P_Gray/font.fnt');
+    this.load.bitmapFont('PressStart2P_Blue', 'assets/fonts/PressStart2P_Blue/font.png', 'assets/fonts/PressStart2P_Blue/font.fnt');
 }
 
 intermediate_scene.create = function() {
@@ -151,6 +153,7 @@ gameover_scene.preload = function () {
     this.load.bitmapFont('PressStart2P_Green', 'assets/fonts/PressStart2P_Green/font.png', 'assets/fonts/PressStart2P_Green/font.fnt');
     this.load.bitmapFont('PressStart2P_Purple', 'assets/fonts/PressStart2P_Purple/font.png', 'assets/fonts/PressStart2P_Purple/font.fnt');
     this.load.bitmapFont('PressStart2P_Gray', 'assets/fonts/PressStart2P_Gray/font.png', 'assets/fonts/PressStart2P_Gray/font.fnt');
+    this.load.bitmapFont('PressStart2P_Blue', 'assets/fonts/PressStart2P_Blue/font.png', 'assets/fonts/PressStart2P_Blue/font.fnt');
 }
 
 // display Game Over and final scores
