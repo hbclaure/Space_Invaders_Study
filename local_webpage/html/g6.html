@@ -4,12 +4,12 @@
     <title>Space Invaders Study!</title>
   </head>
   <body>
-    <h1> Game 4</h1>
+    <h1> Game 6</h1>
     <iframe id="myIframe" allow="camera" width=1100 height=600></iframe>
     <p> </p>
     <p>Please get the researcher when you are done with this round. </p>
     <p> </p>
-    <a href="g5i.html"> Next </a> 
+    <a href="final.html"> Done </a> 
 </body>
 
 <script>
@@ -24,12 +24,11 @@
         return result;
     }
     let game_port = 8668;
-    let mode = 1;
-    let game_num = 4;
-    let condition = findGetParameter('condition') ? findGetParameter('condition') : 'Z';
+    let mode = 2;
+    let game_num = 6;
     let game_url = "http://localhost:"+game_port+"/";
     let player_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
-    let full_url = game_url+"?id="+player_id+"&mode="+mode+"&game="+game_num+"&condition="+condition
+    let full_url = game_url+"?id="+player_id+"&mode="+mode+"&game="+game_num
     
     let myIframe = document.getElementById("myIframe")
     myIframe.src = full_url
