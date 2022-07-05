@@ -27,16 +27,23 @@ function create ()
     this.custom_sounds.player_explosion = this.sound.add("audio_explosion", {volume: 0.1});
     this.custom_sounds.fire_ship = this.sound.add("audio_fire_ship", {volume: 0.05});
 
+    //creating the enemies on the left and right
+    var enemy_rows = 5;
+    enemies_left = this.create_enemies(9, 20, -400, "a", 5, 10, "enemylaser", min_x = 0, max_x = this.sys.canvas.width / 2 - 10); //// DEBUG FEWER 3rd val 0 was -600
+    enemies_right = this.create_enemies(9, this.sys.canvas.width / 2 + 20, -400, "b", 5, 10, "enemylaser", min_x = this.sys.canvas.width / 2 + 10, max_x = this.sys.canvas.width); //// DEBUG FEWER 3rd val 0 was -600
+
+    this.add.rectangle(this.sys.canvas.width / 2, 10, this.sys.canvas.width, 40, 0x000000);
+
     //setting the left wall for the AI depending on what kind of agent it is
     console.log(mode);
     if (mode == COOPERATIVE_EARLY){
-        ai_ship = this.create_ship("avery", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", 0, 30);
+        ai_ship = this.create_ship("white", 1, this.sys.canvas.width / 4 + this.sys.canvas.width / 2, 640, 5, "laser", 5, 30);
     } else if (mode == COOPERATIVE_LATE){
-        ai_ship = this.create_ship("blue", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", 0, 30);
+        ai_ship = this.create_ship("lightgray", 1, this.sys.canvas.width / 4 + this.sys.canvas.width / 2, 640, 5, "laser", 5, 30);
     } else {
-        ai_ship = this.create_ship("jordan", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", 0, 30);
+        ai_ship = this.create_ship("jordan", 1, this.sys.canvas.width / 4 + this.sys.canvas.width / 2, 640, 5, "laser", 5, 30);
     }
-    player_ship = this.create_ship("ship", 0, this.sys.canvas.width / 4, 540);
+    player_ship = this.create_ship("ship", 0, this.sys.canvas.width / 4, 640);
 
 
     // var minX = 0;
@@ -47,11 +54,6 @@ function create ()
     // else  {
     //     ai_ship = this.create_ship("jordan", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", minX);
     // }
-
-    //creating the enemies on the left and right
-    var enemy_rows = 5;
-    enemies_left = this.create_enemies(6, 30, 0, "a", 5, 10, "enemylaser", min_x = 0, max_x = 390);
-    enemies_right = this.create_enemies(6, 430, 0, "b", 5, 10, "enemylaser", min_x = 410, max_x = 800);
 
     // --> COLLIDERS <--
     // --> enemies hit by player_ship bullets 
@@ -217,7 +219,9 @@ function create ()
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.dead = true;
             ship_sprite.props.lives -= 1;
-            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+            if (ship_sprite.props.lives == 0){
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+            }
             player_over = true;
         }
     });
@@ -249,7 +253,9 @@ function create ()
             this.custom_sounds.player_explosion.play();
             ship_sprite.props.dead = true;
             ship_sprite.props.lives -= 1;
-            ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+            if (ship_sprite.props.lives == 0){
+                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+            }
             player_over = true;
         }
     });
@@ -287,7 +293,9 @@ function create ()
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
                 ship_sprite.props.lives -= 1;
-                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                if (ship_sprite.props.lives == 0){
+                    ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                }
                 ship_sprite.props.dead = true;
             });
             ai_over = true;
@@ -326,7 +334,9 @@ function create ()
                 ship_sprite.setTexture(ship_sprite.props.image_id);
                 ship_sprite.props.exploding = false;
                 ship_sprite.props.lives -= 1;
-                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                if (ship_sprite.props.lives == 0){
+                    ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                }
                 ship_sprite.props.dead = true;
             });
             ai_over = true;
@@ -355,7 +365,9 @@ function create ()
             else {
                 ship_sprite.props.dead = true;
                 ship_sprite.props.lives -= 1;
-                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                if (ship_sprite.props.lives == 0){
+                    ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                }
                 player_over = true;
             }
             ship_sprite.play(ship_sprite.explote_anim, true);
@@ -392,7 +404,9 @@ function create ()
             else {
                 ship_sprite.props.dead = true;
                 ship_sprite.props.lives -= 1;
-                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                if (ship_sprite.props.lives == 0){
+                    ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                }
                 player_over = true;
             }
             ship_sprite.play(ship_sprite.explote_anim, true);
@@ -432,7 +446,9 @@ function create ()
             else {
                 ship_sprite.props.dead = true;
                 ship_sprite.props.lives -= 1;
-                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                if (ship_sprite.props.lives == 0){
+                    ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                }
                 ai_over = true;
             }
             ship_sprite.play(ship_sprite.explote_anim, true);
@@ -470,7 +486,9 @@ function create ()
             else {
                 ship_sprite.props.dead = true;
                 ship_sprite.props.lives -= 1;
-                ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                if (ship_sprite.props.lives == 0){
+                    ship_sprite.lives[ship_sprite.props.lives].setVisible(false);
+                }
                 ai_over = true;
             }
             ship_sprite.play(ship_sprite.explote_anim, true);

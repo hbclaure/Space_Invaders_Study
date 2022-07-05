@@ -81,7 +81,7 @@ class Uncooperative:
         # find nearest enemy by Y
         nearest_enemy = [0,0]
         nearest_x_diff = self.CANVAS
-        nearest_y_diff = self.VERTICAL_BUFFER
+        nearest_y_diff = 3000
 
         closest_x_diff = self.CANVAS
 

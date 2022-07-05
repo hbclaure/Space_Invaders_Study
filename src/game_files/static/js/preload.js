@@ -9,6 +9,8 @@ function preload ()
     this.load.image('avery', 'assets/images/avery.png');
     this.load.image('jordan', 'assets/images/jordan.png');
     this.load.image('blue', 'assets/images/blue.png');
+    this.load.image('white', 'assets/images/white.png');
+    this.load.image('lightgray', 'assets/images/lightgray.png');
     this.load.image('mystery', 'assets/images/mystery.png');
 
     this.load.image('enemy1a_1', 'assets/images/enemy1_1.png');
@@ -39,6 +41,8 @@ function preload ()
     this.load.image('averyexplosion', 'assets/images/averyexplosion.png');
     this.load.image('jordanexplosion', 'assets/images/jordanexplosion.png');
     this.load.image('bluexplosion', 'assets/images/blueexplosion.png');
+    this.load.image('explosionwhite', 'assets/images/explosionwhite.png');
+    this.load.image('explosionlightgray', 'assets/images/explosionlightgray.png');
     this.load.image('laser', 'assets/images/laser.png');
     this.load.image('enemylaser', 'assets/images/enemylaser.png');
 
@@ -52,4 +56,5 @@ function preload ()
     this.load.bitmapFont('PressStart2P_Purple', 'assets/fonts/PressStart2P_Purple/font.png', 'assets/fonts/PressStart2P_Purple/font.fnt');
     this.load.bitmapFont('PressStart2P_Green', 'assets/fonts/PressStart2P_Green/font.png', 'assets/fonts/PressStart2P_Green/font.fnt');
     this.load.bitmapFont('PressStart2P_Blue', 'assets/fonts/PressStart2P_Blue/font.png', 'assets/fonts/PressStart2P_Blue/font.fnt');
+    this.load.bitmapFont('PressStart2P_White', 'assets/fonts/PressStart2P_White/font.png', 'assets/fonts/PressStart2P_White/font.fnt');
 }

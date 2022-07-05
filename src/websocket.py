@@ -151,7 +151,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
 
                 # publish game mode and condition
                 self.game_mode_pub.publish(str(state['mode']))
-                self.game_condition_pub.publish(state['game_condition'])
+                self.game_condition_pub.publish(str(state['game_condition']))
             except Exception as e:
                 print(f"{e} Mode or agent error")
                 sentry_sdk.capture_exception(e)
@@ -199,7 +199,8 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                             self.logged = True
                             self.write_message("saved")
                     else:
-                        self.game_state_pub.publish("game_over")
+                        if self.game_num[-1] in ['2','4','6']:
+                            self.game_state_pub.publish("game_over")
                         path_to_json = f"{self.dirname}/game_logs/P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
                         if not os.path.exists(os.path.dirname(path_to_json)):
                             os.makedirs(os.path.dirname(path_to_json))

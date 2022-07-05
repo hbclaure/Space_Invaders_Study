@@ -58,14 +58,14 @@ class DetermineAction():
 
         if self.game_condition in ['A','B'] and not(self.asked_feedback):
             # asking for feedback before crossing to help
-            if num_left_enemies <= 25 or num_right_enemies <=25:
+            if num_left_enemies <= 75 or num_right_enemies <= 75:
                 robot_action = "ask_for_feedback"
                 self.asked_feedback = True
                 print("Ask for feedback: ", self.game_condition)
                 return robot_action
         elif self.game_condition in ['C','D'] and not(self.asked_feedback): 
             # after for feedback after crossing to help
-            if num_left_enemies <= 15 and game_state["ai_position"]>400:
+            if num_left_enemies <= 50 and game_state["ai_position"] > 400:
                 robot_action = "ask_for_feedback"
                 self.asked_feedback = True
                 print("Ask for feedback: ", self.game_condition)

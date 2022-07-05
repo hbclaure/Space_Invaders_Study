@@ -11,9 +11,9 @@ start_scene.preload = function() {
 }
 
 start_scene.create = function() {
-    var game_name = this.add.bitmapText(400, 175, 'PressStart2P_Orange', 'SPACE INVADERS', 50).setOrigin(0.5);
-    var instructions = this.add.bitmapText(400, 300, 'PressStart2P_White', 'left/right arrow keys to move, \nspacebar to fire \n \n up/down arrow keys to give\npositive/negative feedback \nto teammate', 23).setOrigin(0.5).setCenterAlign();
-    var start = this.add.bitmapText(400, 400, 'PressStart2P_Green', 'Press spacebar to begin', 20).setOrigin(0.5);
+    var game_name = this.add.bitmapText(this.sys.canvas.width / 2, 175, 'PressStart2P_Orange', 'SPACE INVADERS', 50).setOrigin(0.5);
+    var instructions = this.add.bitmapText(this.sys.canvas.width / 2, 300, 'PressStart2P_White', 'left/right arrow keys to move, \nspacebar to fire \n \n up/down arrow keys to give\npositive/negative feedback \nto teammate', 23).setOrigin(0.5).setCenterAlign();
+    var start = this.add.bitmapText(this.sys.canvas.width / 2, 400, 'PressStart2P_Green', 'Press spacebar to begin', 20).setOrigin(0.5);
 
     if (mode == PRACTICE) {
         start.setText('Press spacebar to begin tutorial');
@@ -126,11 +126,11 @@ intermediate_scene.create = function() {
     player_score = player_ship.sprite.props.score;
     ai_score = ai_ship.sprite.props.score;
 
-    var gameover_text = this.add.bitmapText(400, 175, 'PressStart2P_Gray', 'ROUND ENDED', 50).setOrigin(0.5);
-    var player_text = this.add.bitmapText(400, 300, 'PressStart2P_Purple', 'Player Score: ' + player_score, 20).setOrigin(0.5).setCenterAlign();
+    var gameover_text = this.add.bitmapText(this.sys.canvas.width / 2, 175, 'PressStart2P_Gray', 'ROUND ENDED', 50).setOrigin(0.5);
+    var player_text = this.add.bitmapText(this.sys.canvas.width / 2, 300, 'PressStart2P_Purple', 'Player Score: ' + player_score, 20).setOrigin(0.5).setCenterAlign();
     var font_type = (mode == UNCOOPERATIVE) ? 'PressStart2P_Orange' : 'PressStart2P_Gray';
-    var ai_text = this.add.bitmapText(400, 400, 'PressStart2P_Orange', 'Co-Player Score: ' + ai_score, 20).setOrigin(0.5).setCenterAlign();
-    var instructions = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Press spacebar to begin second round', 20).setOrigin(0.5);
+    var ai_text = this.add.bitmapText(this.sys.canvas.width / 2, 400, 'PressStart2P_Orange', 'Co-Player Score: ' + ai_score, 20).setOrigin(0.5).setCenterAlign();
+    var instructions = this.add.bitmapText(this.sys.canvas.width / 2, 500, 'PressStart2P_Green', 'Press spacebar to begin second round', 20).setOrigin(0.5);
 
     space_key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 }
@@ -163,6 +163,7 @@ gameover_scene.create = function() {
     ai_score = ai_ship.sprite.props.score;
 
     // 4 digit random number
+    /*
     var completion_code_num = Math.floor(Math.random() * 899) + 100;
     if(mode ==1){
         var completion_code = completion_code_num.toString()+'e'
@@ -172,23 +173,23 @@ gameover_scene.create = function() {
         var completion_code = completion_code_num.toString()+'u'
     } else{
         var completion_code = completion_code_num.toString()+'o'
-    }
+    } */
 
-    var gameover_text = this.add.bitmapText(400, 125, 'PressStart2P_Orange', 'GAME ENDED', 50).setOrigin(0.5);
+    var gameover_text = this.add.bitmapText(this.sys.canvas.width / 2, 125, 'PressStart2P_Orange', 'GAME ENDED', 50).setOrigin(0.5);
     // var player_text = this.add.bitmapText(400, 250, 'PressStart2P_Purple', 'Player Final Score: ' + player_score, 20).setOrigin(0.5).setCenterAlign();
     // var font_type = (mode == UNCOOPERATIVE) ? 'PressStart2P_Orange' : 'PressStart2P_Gray';
     // var ai_text = this.add.bitmapText(400, 350, font_type, 'AI Final Score: ' + ai_score, 20).setOrigin(0.5).setCenterAlign();
     var font_type = 'PressStart2P_Green';
-    var final_score_text = this.add.bitmapText(400, 300, font_type, 'Final Score: ' + total_score, 30).setOrigin(0.5).setCenterAlign();
-    var cc_text = this.add.bitmapText(400, 450, 'PressStart2P_White', 'Completion Code:', 20).setOrigin(0.5).setCenterAlign();
-    var cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
+    var final_score_text = this.add.bitmapText(this.sys.canvas.width / 2, 300, font_type, 'Final Score: ' + total_score, 30).setOrigin(0.5).setCenterAlign();
+    // var cc_text = this.add.bitmapText(400, 450, 'PressStart2P_White', 'Completion Code:', 20).setOrigin(0.5).setCenterAlign();
+    // var cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
     // log this game
     //sockets.log.onmessage = function(event) {
     sockets.control.onmessage = function(event) {
         // if message == "saved", then do this; otherwise do nothing
         if(event.data=="saved"){
             cc.destroy();
-            gameover_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
+            // gameover_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
         }  
     }
     sockets.control.send(JSON.stringify(game_log));

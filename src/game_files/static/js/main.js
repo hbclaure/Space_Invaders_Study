@@ -33,8 +33,8 @@ sockets.control.onmessage = function(event) {
 
 var config = {
     type: Phaser.CANVAS, //Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 700,
     physics: {
         default: 'arcade',
         arcade: {

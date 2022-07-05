@@ -209,7 +209,7 @@ function fire_enemy_bullet(enemies, bullets) {
  * @param {String} bullet_image_id image id for the bullet
  * @returns object with ship image, corresponding bullets group, and update function for handling actions
  */
-function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bullet_image_id = "laser", min_x = 0, message_height = 10) {
+function create_ship(image_id="ship", type = 0, x = 200, y = 640, speed = 5, bullet_image_id = "laser", min_x = 0, message_height = 10) {
             
     var canvas_width = this.sys.canvas.width;
     var canvas_height = this.sys.canvas.height;
@@ -221,7 +221,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props.speed = speed;
     sprite.props.dead = false;
     sprite.props.score = 0;
-    var font_type = (image_id == 'ship') ? 'PressStart2P_Purple' : (image_id == 'avery') ? 'PressStart2P_Orange' : (image_id == 'blue') ? 'PressStart2P_Blue' :'PressStart2P_Gray';
+    var font_type = (image_id == 'ship') ? 'PressStart2P_Purple' : (image_id == 'white') ? 'PressStart2P_White' : (image_id == 'lightgray') ? 'PressStart2P_White' :'PressStart2P_Gray';
     // sprite.props.scoreText = this.add.bitmapText(x, 3, font_type, 'SCORE 0', 20);
     // sprite.props.lives = 3;
     //sprite.props.scoreText = this.add.bitmapText(x+22, 3, font_type, 'SCORE 0', 18);
@@ -243,7 +243,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.props.message.visible = false;
 
     // animation for the player/ai explosions
-    var explosion = (image_id == 'ship') ? 'shipexplosion' : (image_id == 'avery') ? 'averyexplosion' : (image_id == 'blue') ? 'blueexplosion' :'jordanexplosion';
+    var explosion = (image_id == 'ship') ? 'shipexplosion' : (image_id == 'white') ? 'explosionwhite' : (image_id == 'lightgray') ? 'explosionlightgray' :'jordanexplosion';
 
 
     if (!(this.anims.get(image_id + '_exp'))) { 
@@ -259,7 +259,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
     sprite.lives = [] // add sprites to display lives
     // var life_x = x - 200;
     var life_x = x - 200
-    if (x > 400) {
+    if (x > this.sys.canvas.width / 2) {
         life_x = x - 22
     }
     this.add.bitmapText(life_x, 3, font_type, 'LIVES', 20);
@@ -287,7 +287,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
             if (this.sprite.props.dead) {
                 this.sprite.setVisible(false);
                 //this.sprite.props.emote.setVisible(false);
-                this.sprite.x = 0;
+                this.sprite.x = -50;
                 this.sprite.y = 0;
                 return;
             }
@@ -342,7 +342,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 540, speed = 5, bul
  * @param {Array} num_rows number of rows per enemy (1, 2, and 3). Must be an array with 3 ints.
  */
 function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizontal_speed = 10, 
-                        bullet_image_id = "enemylaser", min_x = 0, max_x = 400, num_rows = [1, 2, 2])
+                        bullet_image_id = "enemylaser", min_x = 0, max_x = 400, num_rows = [4, 4, 4])   //// DEBUG FEWER
 {
     var canvas_width = this.sys.canvas.width                                    //!< width of the canvas
     var explosions = ['explosionpurple', 'explosionblue', 'explosiongreen'];    //!< name of explosion for each enemy (from 1 to 3)
@@ -389,7 +389,7 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
     }
     // align group enemies in a grid
     Phaser.Actions.GridAlign(enemies.getChildren(), 
-    { width: num_horizontal, height: 5, cellWidth: 60, cellHeight: 50, position: Phaser.Display.Align.CENTER, x: x, y: y });
+    { width: num_horizontal, height: 12, cellWidth: 60, cellHeight: 50, position: Phaser.Display.Align.CENTER, x: x, y: y }); //// DEBUG FEWER, was 15
     // set initial velocity for group
     Phaser.Actions.Call(enemies.getChildren(), function(e) {
         e.setVelocityX(-horizontal_speed);
@@ -406,7 +406,7 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
     var sound = this.custom_sounds.fire_enemy;
 
     // create timer to fire enemy bullets
-    enemies.fire_timer = this.time.addEvent({ delay: Phaser.Math.Between(700, 1000), loop: true, 
+    enemies.fire_timer = this.time.addEvent({ delay: Phaser.Math.Between(900, 1200), loop: true, 
                                               callback: () => { 
                                                     fire_enemy_bullet(enemies, bullets);
                                               } });
@@ -439,7 +439,7 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
             // change timer depending on how many valid columns are left
             if (this.enemies_group.num_valid_columns <= 0.6 * enemy_shoot_timer_level &&
                 this.enemies_group.timer_changes == 0) {
-                this.enemies_group.fire_timer.reset({ delay: Phaser.Math.Between(1000, 1500), loop: true, 
+                this.enemies_group.fire_timer.reset({ delay: Phaser.Math.Between(1200, 1700), loop: true, 
                                               callback: () => { 
                                                     fire_enemy_bullet(enemies, bullets);
                                               } });
@@ -447,7 +447,7 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
             }
             else if (this.enemies_group.num_valid_columns <= 0.2 * enemy_shoot_timer_level &&
                 this.enemies_group.timer_changes == 1) {
-                this.enemies_group.fire_timer.reset({ delay: Phaser.Math.Between(1500, 2000), loop: true, 
+                this.enemies_group.fire_timer.reset({ delay: Phaser.Math.Between(1700, 2200), loop: true, 
                                               callback: () => { 
                                                     fire_enemy_bullet(enemies, bullets);
                                               } });

@@ -69,14 +69,12 @@ class NaoAction():
         self.said = False
         self.tts_proxy.setVolume(1.5)
         print("Game mode",self.game_mode)
-        if self.game_mode >0:
+        if self.game_mode > 0:
             self.tts_proxy.say("\\style=default\\ Let's play!")
             #self.posture_proxy.goToPosture("Sit",0.8)  
 
     def ask_for_feedback(self):
         self.motion_proxy.setAngles("HeadYaw", 1.0,0.3)
-        #time.sleep(0.5)
-        #self.wave()
 
         if self.game_condition in ['A','C']:
             self.tts_proxy.setVolume(1.5)
@@ -98,7 +96,7 @@ class NaoAction():
         self.motion_proxy.angleInterpolation(names, angles, times, True)
     
         names = ["RShoulderPitch", "RShoulderRoll", "RElbowRoll", "RElbowYaw", "RWristYaw"]
-        angles = [-1.0, -1.2, 1.0, 0.5, 0]
+        angles = [-0.25, -0.25, 1.0, 0.5, 0.75]
         times = [0.5, 0.5, 1.0, 1.0, 1.0]
         self.motion_proxy.angleInterpolation(names, angles, times, True)
 
@@ -118,13 +116,16 @@ class NaoAction():
     
     def introduction(self):
         self.wake_movement_lights()
+        self.motion_proxy.setAngles("HeadYaw", 1.0,0.25)
         self.tts_proxy.setVolume(1.5)
-        self.tts_proxy.say("Hi I'm NAO! It's nice to meet you. I'm excited to play Space Invaders together!")
         self.wave()
+        self.tts_proxy.say("Hi I'm NAO! It's nice to meet you. I'm excited to play Space Invaders together!")
+        time.sleep(0.5)
+        self.motion_proxy.setAngles("HeadYaw", 0.0,0.25)
 
     def sleep(self):
         self.tts_proxy.setVolume(1.5)
-        self.tts_proxy.say("That was a good game. I'm going to sleep now!")
+        self.tts_proxy.say("That was fun. I'm going to take a nap now while you answer some questions!")
         self.sleep_no_speech()
 
     def sleep_no_speech(self):

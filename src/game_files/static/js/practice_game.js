@@ -33,9 +33,9 @@ function create_practice_scene() {
     this.custom_sounds.fire_ship = this.sound.add("audio_fire_ship", {volume: 0.05});
 
 
-    player_ship = this.create_ship("ship", 0, this.sys.canvas.width / 2, 540);
+    player_ship = this.create_ship("ship", 0, this.sys.canvas.width / 2, 640);
 
-    enemies_practice = this.create_enemies(5, 235, 0, "p", 5, 10, "enemylaser", min_x = 205, max_x = 595, [1, 1, 1]);
+    enemies_practice = this.create_enemies(5, 235, 0, "p", 5, 10, "enemylaser", min_x = 405, max_x = 895, [1, 1, 1]);
     
 
     // --> COLLIDERS <--

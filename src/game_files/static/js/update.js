@@ -11,6 +11,7 @@ var feedback_enabled = true;
 
 function update ()
 {
+    console.log("X",player_ship.sprite.x," ,Y",player_ship.sprite.y)
     // --- player shooting logic ---
     var player_tried_to_shoot = false;
     var player_shoots = false;
@@ -159,6 +160,12 @@ function update ()
             player_bullets_positions.push([current_bullet.x, current_bullet.y]);
 
         }
+        if (current_bullet.y < 50) {
+            current_bullet.setActive(false);
+            current_bullet.body.x = this.sys.canvas.width;
+            current_bullet.body.y = this.sys.canvas.height;
+            console.log("upper");
+        }
     }
 
     // ai bullets
@@ -170,6 +177,12 @@ function update ()
         if (current_bullet.active) {
             ai_bullets_positions.push([current_bullet.x, current_bullet.y]);
 
+        }
+        if (current_bullet.y < 50) {
+            current_bullet.setActive(false);
+            current_bullet.body.x = this.sys.canvas.width;
+            current_bullet.body.y = this.sys.canvas.height;
+            console.log("upper");
         }
     }
 
@@ -208,7 +221,7 @@ function update ()
 
         enemies_right_positions.push([current_enemy.x, current_enemy.y]);
         // end game if enemies reach bottom
-        if (current_enemy.y > 540) {
+        if (current_enemy.y > 640) {
             ai_over = true;
             player_over = true;
         }
@@ -222,7 +235,7 @@ function update ()
 
         enemies_left_positions.push([current_enemy.x, current_enemy.y]);
         // end game if enemies reach bottom
-        if (current_enemy.y > 540) {
+        if (current_enemy.y > 640) {
             player_over = true;
             ai_over = true;
         }
@@ -295,7 +308,7 @@ function update ()
 
     // switch to game over screen
     if (player_over && ai_over) {
-        game_log = {player_id: player_id, date: date, mode: mode, events: events, frames: frames};
+        game_log = {player_id: player_id, date: date, mode: mode, events: events}; //, frames: frames};
         // clearInterval(recording);
         //sockets.control.send(JSON.stringify({player_id: player_id, date: date, events: events}))
         this.scene.start('gameover_scene');

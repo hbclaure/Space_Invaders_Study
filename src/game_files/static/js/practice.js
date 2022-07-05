@@ -29,20 +29,20 @@ function create_practice_scene() {
     this.custom_sounds.fire_ship = this.sound.add("audio_fire_ship", {volume: 0.05});
 
 
-    ai_ship = this.create_ship("jordan", 1, this.sys.canvas.width / 4 + 400, 540, 5, "laser", 0, 30);
-    player_ship = this.create_ship("ship", 0, this.sys.canvas.width / 4, 540);
+    ai_ship = this.create_ship("jordan", 1, this.sys.canvas.width / 4 + 400, 640, 5, "laser", 0, 30);
+    player_ship = this.create_ship("ship", 0, this.sys.canvas.width / 4, 640);
 
     instruction_num = 1
     instructions = {
         1: "Press left and right to move \n and space bar to shoot",
-        2: "Try pressing the up key to say\nthe orange teammate is doing\na good job",
-        3: "Try pressing the down key to say\nthe orange teammate is doing\na bad job",
+        2: "Try pressing the up key to say\nthe gray teammate is doing\na good job",
+        3: "Try pressing the down key to say\nthe gray teammate is doing\na bad job",
         4: "When you are ready,\npress P to practice with a few enemies.\n\nThe tutorial will end afterwards.",
         5: "",
         6: "When you are done\npracticing the controls,\nclick Q",
     }
 
-    instruction_text = this.add.bitmapText(400, 175, 'PressStart2P_Orange', 'Try pressing up ', 20).setOrigin(0.5);
+    instruction_text = this.add.bitmapText(this.sys.canvas.width / 2, 175, 'PressStart2P_Orange', 'Try pressing up ', 20).setOrigin(0.5);
     instruction_text.align = 1;
 
     left_pressed = false;
@@ -167,7 +167,7 @@ function update_practice_scene() {
             var current_enemy = enemies_practice_sprites[i];
             console.log(current_enemy);
             // end game if enemies reach bottom
-            if (current_enemy.y > 540) {
+            if (current_enemy.y > 640) {
                 gameover = true;
             }
         }
@@ -397,6 +397,7 @@ practice_over_scene.create = function() {
     save_image_loop(2);
 
     // 4 digit random number
+    /*
     var completion_code_num = Math.floor(Math.random() * 899) + 100;
     if(mode ==1){
         var completion_code = completion_code_num.toString()+'e'
@@ -406,16 +407,16 @@ practice_over_scene.create = function() {
         var completion_code = completion_code_num.toString()+'u'
     } else{
         var completion_code = completion_code_num.toString()+'o'
-    }
+    } */
 
-    var gameover_text = this.add.bitmapText(400, 125, 'PressStart2P_Orange', 'Tutorial Ended', 50).setOrigin(0.5);
+    var gameover_text = this.add.bitmapText(this.sys.canvas.width / 2, 125, 'PressStart2P_Orange', 'Tutorial Ended', 50).setOrigin(0.5);
     // var player_text = this.add.bitmapText(400, 250, 'PressStart2P_Purple', 'Player Final Score: ' + player_score, 20).setOrigin(0.5).setCenterAlign();
     // var font_type = (mode == UNCOOPERATIVE) ? 'PressStart2P_Orange' : 'PressStart2P_Gray';
     // var ai_text = this.add.bitmapText(400, 350, font_type, 'AI Final Score: ' + ai_score, 20).setOrigin(0.5).setCenterAlign();
     var font_type = 'PressStart2P_Green';
     // var final_score_text = this.add.bitmapText(400, 300, font_type, 'Final Score: ' + total_score, 30).setOrigin(0.5).setCenterAlign();
-    var cc_text = this.add.bitmapText(400, 450, 'PressStart2P_White', 'Completion Code:', 20).setOrigin(0.5).setCenterAlign();
-    var cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
+    // var cc_text = this.add.bitmapText(400, 450, 'PressStart2P_White', 'Completion Code:', 20).setOrigin(0.5).setCenterAlign();
+    // var cc = this.add.bitmapText(400, 500, 'PressStart2P_Green', 'Loading...', 20).setOrigin(0.5).setCenterAlign();
     // log this game
     //sockets.log.onmessage = function(event) {
     sockets.control.onmessage = function(event) {
@@ -423,7 +424,7 @@ practice_over_scene.create = function() {
         console.log('message received');
         if(event.data=="saved"){
             cc.destroy();
-            practice_over_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
+            // practice_over_scene.add.bitmapText(400, 500, 'PressStart2P_Green', completion_code, 40).setOrigin(0.5).setCenterAlign();
         }  
     }
     sockets.control.send(JSON.stringify(game_log));

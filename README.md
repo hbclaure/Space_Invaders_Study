@@ -36,7 +36,7 @@ space_invaders_web/
         |   index.html          # main website
 ```
 
-NGINX notes 
+## NGINX notes 
 
 sudo ln -sf /home/si_app/implicit_feedback_si/nginx_config/nginx.conf /etc/nginx/sites-enabled/space_invaders
 
@@ -44,3 +44,25 @@ sudo service nginx restart
 sudo service nginx status
 
 sudo ln -sf /home/si_app/implicit_feedback_si/nginx_config/space_invaders.service /etc/systemd/system/space_invaders.service
+
+## Local Webpage
+Launch Webpage
+```bash
+cd error_recovery_si_nao/local_webpage
+python3 -m http.server <port number>
+rosrun error_recovery_si_nao localwebpage.py
+```
+
+Launch Game
+```bash
+source ../../devel/setup.bash
+source venv_game/bin/activate
+rosrun error_recovery_si_nao websocket.py
+```
+
+Launch Robot controls
+
+Launch Webcam check
+```bash
+python3 webcam_check/webcam_check.py
+```
