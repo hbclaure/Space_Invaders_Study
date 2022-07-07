@@ -28,6 +28,7 @@ class DetermineAction():
         # Attributes
         self.game_condition = None
         self.asked_feedback = False
+        self.said_strategy = False
         self.condition_met = False
 
     def determine_action_cb(self,game_state):
@@ -38,13 +39,16 @@ class DetermineAction():
             self.robot_action_pub.publish(robot_action)
         except ValueError:
             game_state = game_state.data
-            if game_state == "game_over":
+            if game_state == "game_over_message":
+                self.robot_action_pub.publish("good_game")
+            elif game_state == "game_over":
                 self.robot_action_pub.publish("sleep")
         
 
     def game_condition_cb(self,msg):
         self.game_condition = msg.data
         self.asked_feedback = False
+        self.said_strategy = False
         self.condition_met = False
 
     def run(self):
@@ -58,14 +62,14 @@ class DetermineAction():
 
         if self.game_condition in ['A','B'] and not(self.asked_feedback):
             # asking for feedback before crossing to help
-            if num_left_enemies <= 75 or num_right_enemies <= 75:
+            if num_left_enemies <= 83 or num_right_enemies <= 83:
                 robot_action = "ask_for_feedback"
                 self.asked_feedback = True
                 print("Ask for feedback: ", self.game_condition)
                 return robot_action
         elif self.game_condition in ['C','D'] and not(self.asked_feedback): 
             # after for feedback after crossing to help
-            if num_left_enemies <= 50 and game_state["ai_position"] > 400:
+            if num_left_enemies <= 50 and game_state["ai_position"] > this.sys.canvas.width / 2:
                 robot_action = "ask_for_feedback"
                 self.asked_feedback = True
                 print("Ask for feedback: ", self.game_condition)
