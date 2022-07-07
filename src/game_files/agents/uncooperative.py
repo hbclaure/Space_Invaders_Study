@@ -2,16 +2,16 @@ import time
 
 class Uncooperative:
     def __init__(self):
-        self.min_x = 425
+        self.min_x = 625
         self.strategy = self.active
         
-        self.CANVAS = 800 # width of canvas
-        self.MIDDLE = 400 # middle of x axis
-        self.SHOOTING_RANGE = 24 # hit enemy if within range
-        self.HIT_RANGE = 35 # range for dodging bullets
+        self.CANVAS = 1200 # width of canvas
+        self.MIDDLE = 600 # middle of x axis
+        self.SHOOTING_RANGE = 25 # hit enemy if within range
+        self.HIT_RANGE = 45 # range for dodging bullets
         self.SECOND_HIT_RANGE = 50 # range check for moving towards enemies
 
-        self.SHIP_Y = 540 # y value of ai_ship
+        self.SHIP_Y = 640 # y value of ai_ship
         self.VERTICAL_BUFFER = 440 # vertical buffer for bullets (higher numbers means closer to ship)
 
         self.AI_RELATIVE_SPEED = 0.6 # relatively how much shorter time between bullets is for ai_agent
@@ -64,7 +64,7 @@ class Uncooperative:
         else:
             bullets_to_search = bullets_left_positions
         
-        if ship_x >= self.MIDDLE - 25 and ship_x <= self.MIDDLE +25:
+        if ship_x >= self.MIDDLE - 25 and ship_x <= self.MIDDLE + 25:
             bullets_to_search = bullets_left_positions + bullets_right_positions
 
         problem_bullets = []

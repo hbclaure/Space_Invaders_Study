@@ -180,7 +180,7 @@ function fire_enemy_bullet(enemies, bullets) {
         if (valid_columns[i] == 1)
             valid_index.push(i);
     }
-    // sample a colum
+    // sample a column
     var chosen_index = Math.floor(Math.random() * num_valid);
     var col = valid_index[chosen_index];
     // find lowest row with an enemy for the chosen column
@@ -406,7 +406,7 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
     var sound = this.custom_sounds.fire_enemy;
 
     // create timer to fire enemy bullets
-    enemies.fire_timer = this.time.addEvent({ delay: Phaser.Math.Between(900, 1200), loop: true, 
+    enemies.fire_timer = this.time.addEvent({ delay: Phaser.Math.Between(1500, 1700), loop: true, 
                                               callback: () => { 
                                                     fire_enemy_bullet(enemies, bullets);
                                               } });

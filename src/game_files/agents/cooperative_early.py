@@ -12,9 +12,9 @@ class CooperativeEarly(Uncooperative):
         num_left_enemies = len(enemies_left_positions)
         num_right_enemies = len(enemies_right_positions)
 
-        if num_right_enemies > 75 and num_left_enemies > 75:
+        if num_right_enemies > 72 and num_left_enemies > 72:
             attack_left = False
-        elif num_left_enemies > 65:
+        elif num_left_enemies > 62:
             attack_left = True
         elif num_right_enemies > 50 and num_left_enemies > 45:
             attack_left = False
