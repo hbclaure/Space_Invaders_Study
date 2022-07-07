@@ -12,7 +12,7 @@ start_scene.preload = function() {
 
 start_scene.create = function() {
     var game_name = this.add.bitmapText(this.sys.canvas.width / 2, 175, 'PressStart2P_Orange', 'SPACE INVADERS', 50).setOrigin(0.5);
-    var instructions = this.add.bitmapText(this.sys.canvas.width / 2, 300, 'PressStart2P_White', 'left/right arrow keys to move, \nspacebar to fire \n \n up/down arrow keys to give\npositive/negative feedback \nto teammate', 23).setOrigin(0.5).setCenterAlign();
+    var instructions = this.add.bitmapText(this.sys.canvas.width / 2, 300, 'PressStart2P_White', 'left/right arrow keys to move, \nspacebar to fire \n \n up/down arrow keys to give\npositive/negative feedback \nto the robot', 23).setOrigin(0.5).setCenterAlign();
     var start = this.add.bitmapText(this.sys.canvas.width / 2, 400, 'PressStart2P_Green', 'Press spacebar to begin', 20).setOrigin(0.5);
 
     if (mode == PRACTICE) {
