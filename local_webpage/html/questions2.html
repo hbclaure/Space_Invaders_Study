@@ -8,11 +8,17 @@
     <p>Please complete a section of questions on the tablet. The survey will instruct you when to come back to the game.</p>
 
     
-
-    <a href="g5i.html"> Click here when instructed to return to the game </a>
+    <div id="Next" style="display:none">
+      <a href="g5i.html"> Click here when instructed to return to the game </a>
+    </div>
   </body>
 
   <script>
+    function showNext() { 
+        document.getElementById("Next").style.display = "inline"; 
+    }
+    setTimeout("showNext()", 10000);
+
     var all_params = window.location.href.split('?')[1];
     var a = document.getElementsByTagName('a');
     for (var i=0; i < a.length; i++){
