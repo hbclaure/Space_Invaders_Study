@@ -15,6 +15,7 @@ control_logs
 control_logs*
 game_data/*
 practice_game_data/*
+participant_data/*
 space_invaders/db/create_database_old.sql
 space_invaders/db/game_logs*.db
 venv_game
