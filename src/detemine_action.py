@@ -51,7 +51,6 @@ class DetermineAction():
                     self.robot_action_pub.publish(robot_action)
                     self.robot_action_pub.publish(robot_action)
             else:
-                #game over
                 pass
         except ValueError:
             print(game_state)
