@@ -19,11 +19,11 @@ class CooperativeEarly(Uncooperative):
             attack_left = False
         elif total_enemies > GAME_ENEMIES*.65: #num_left_enemies > 62:
             attack_left = True
-        elif num_left_enemies > (GAME_ENEMIES/2)*(4.0/12):#num_right_enemies > 50 and num_left_enemies > 45:
+        elif num_left_enemies > (GAME_ENEMIES/2)*(4.0/12) and num_right_enemies > (GAME_ENEMIES/2)*(3.0/12):#num_right_enemies > 50 and num_left_enemies > 45:
             attack_left = False
-        elif num_left_enemies > (GAME_ENEMIES/2)*(2.0/12): #num_left_enemies > 35:
+        elif num_left_enemies > (GAME_ENEMIES/2)*(2.0/12) and num_right_enemies > (GAME_ENEMIES/2)*(1.5/12): #num_left_enemies > 35:
             attack_left = True
-        elif num_left_enemies > (GAME_ENEMIES/2)*(1.0/12): #num_right_enemies > 15 and num_left_enemies > 15:
+        elif num_left_enemies > (GAME_ENEMIES/2)*(1.0/12) and num_right_enemies > (GAME_ENEMIES/2)*(.5/12): #num_right_enemies > 15 and num_left_enemies > 15:
             attack_left = False
         elif num_left_enemies > 0:
             attack_left = True

@@ -299,7 +299,7 @@ function update ()
     tried_signal_up = false;
 
     // --- check game over conditions ---
-    if (enemies_left_sprites.length == 0) {
+    if (enemies_left_sprites.length == 0 && enemies_right_sprites.length == 0) {
         player_over = true;
     }
     if (enemies_right_sprites.length == 0 && (mode == 3|| enemies_left_sprites.length == 0)) {
