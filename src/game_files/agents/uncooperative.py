@@ -7,12 +7,12 @@ class Uncooperative:
         
         self.CANVAS = 1200 # width of canvas
         self.MIDDLE = 600 # middle of x axis
-        self.SHOOTING_RANGE = 25 # hit enemy if within range
+        self.SHOOTING_RANGE = 20 # hit enemy if within range
         self.HIT_RANGE = 45 # range for dodging bullets
         self.SECOND_HIT_RANGE = 50 # range check for moving towards enemies
 
         self.SHIP_Y = 640 # y value of ai_ship
-        self.VERTICAL_BUFFER = 440 # vertical buffer for bullets (higher numbers means closer to ship)
+        self.VERTICAL_BUFFER = self.SHIP_Y-100 # vertical buffer for bullets (higher numbers means closer to ship)
 
         self.AI_RELATIVE_SPEED = 0.6 # relatively how much shorter time between bullets is for ai_agent
         self.FREQUENCY_BOUND = 1000 # ai max time between shots
@@ -81,7 +81,7 @@ class Uncooperative:
         # find nearest enemy by Y
         nearest_enemy = [0,0]
         nearest_x_diff = self.CANVAS
-        nearest_y_diff = 3000
+        nearest_y_diff = 10000
 
         closest_x_diff = self.CANVAS
 
