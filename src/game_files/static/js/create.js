@@ -29,8 +29,8 @@ function create ()
 
     //creating the enemies on the left and right
     var enemy_rows = 5;
-    enemies_left = this.create_enemies(9, 20, -400, "a", 5, 10, "enemylaser", min_x = 0, max_x = this.sys.canvas.width / 2 - 10); //// DEBUG FEWER 3rd val 0 was -600
-    enemies_right = this.create_enemies(9, this.sys.canvas.width / 2 + 20, -400, "b", 5, 10, "enemylaser", min_x = this.sys.canvas.width / 2 + 10, max_x = this.sys.canvas.width); //// DEBUG FEWER 3rd val 0 was -600
+    enemies_left = this.create_enemies(9, 20, -300, "a", 5, 10, "enemylaser", min_x = 0, max_x = this.sys.canvas.width / 2 - 10); 
+    enemies_right = this.create_enemies(9, this.sys.canvas.width / 2 + 30, -300, "b", 5, 10, "enemylaser", min_x = this.sys.canvas.width / 2 + 10, max_x = this.sys.canvas.width); 
 
     this.add.rectangle(this.sys.canvas.width / 2, 10, this.sys.canvas.width, 40, 0x000000);
 
