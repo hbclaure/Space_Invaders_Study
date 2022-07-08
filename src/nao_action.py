@@ -8,6 +8,12 @@ from std_msgs.msg import String
 import qi
 import time
 
+WE_CONDITIONS = ['A','C']
+I_CONDITIONS = ['B','D']
+
+BEFORE_CONDITIONS = ['A','B']
+AFTER_CONDITIONS = ['C','D']
+
 class NaoAction():
     '''
     ROS node
@@ -33,13 +39,17 @@ class NaoAction():
         self.posture_proxy = self.nao_app.session.service("ALRobotPosture")
         self.light_proxy = self.nao_app.session.service("ALLeds")
         
-        # self.motion_proxy.moveInit()
         # starting position
         self.motion_proxy.wakeUp()
         self.posture_proxy.goToPosture("Sit",0.8)
         self.sleep_no_speech()
 
         self.tts_proxy.setVolume(1.5)
+        
+
+        # Attributes
+        self.game_condition = None
+        self.announced = False
         self.said = False
     
     def game_mode_cb(self,msg):
@@ -48,20 +58,17 @@ class NaoAction():
     def nao_action_cb(self,msg):
         robot_action = msg.data
         if robot_action == "ask_for_feedback" and not(self.said):
-            print("ask for feedback")
             self.ask_for_feedback()
             self.said = True
+        elif robot_action == "highlight_change" and not(self.announced):
+            self.highlight_new_behavior()
+            self.announced = True
         elif robot_action == "introduction":
             self.introduction()
-        elif robot_action == "sleep":
+        elif robot_action == "game_over_nap":
             self.sleep()
-        elif robot_action == "good_game":
-            if self.game_condition in ['A','C']:
-                self.tts_proxy.say("We're done! Good game!")
-            elif self.game_condition in ['B','D']:
-                self.tts_proxy.say("I'm done! Good game!")
-            else:
-                print("Unrecognized condition")
+        elif robot_action == "game_over_no_nap":
+            self.no_nap()
         elif robot_action == "wake":
             self.wake()
         elif robot_action == "":
@@ -74,13 +81,14 @@ class NaoAction():
     def game_condition_cb(self,msg):
         self.game_condition = msg.data
         self.said = False
+        self.announced = False
         self.tts_proxy.setVolume(1.5)
         print("Game mode",self.game_mode)
         if self.game_mode > 0:
             self.tts_proxy.setVolume(1.5)
-        if self.game_condition in ['A','C']:
+        if self.game_condition in WE_CONDITIONS:
             self.tts_proxy.say("We're ready to play!")
-        elif self.game_condition in ['B','D']:
+        elif self.game_condition in I_CONDITIONS:
             self.tts_proxy.say("I'm ready to play!")
         else:
             print("Unrecognized condition")
@@ -91,18 +99,32 @@ class NaoAction():
         self.motion_proxy.setAngles("HeadYaw", 1.0,0.3)
         self.tts_proxy.setVolume(1.5)
 
-        if self.game_condition in ['A','C']:
-            self.tts_proxy.say("\\rspd=115\\ Remember to give feedback so \\emph=5\\ we're \\pau=50\\ a better team!")
-            time.sleep(6)
-            self.tts_proxy.say("\\rspd=115\\ Look, \\emph=5\\ we're \\pau=50\\ destroying enemies on the left side of the screen!")
-        elif self.game_condition in ['B','D']:
-            self.tts_proxy.say("\\rspd=115\\ Remember to give feedback so \\emph=5\\ I'm \\pau=50\\ a better player!")
-            time.sleep(6)
-            self.tts_proxy.say("\\rspd=115\\ Look, \\emph=5\\ I'm \\pau=50\\ destroying enemies on the left side of the screen!")
+        if self.game_condition in WE_CONDITIONS:
+            self.tts_proxy.say("\\rspd=115\\ Remember to give feedback so \\emph=5\\ we are \\pau=50\\ a better team!")
+            print("a")
+        elif self.game_condition in I_CONDITIONS:
+            self.tts_proxy.say("\\rspd=115\\ Remember to give feedback so \\emph=5\\ I am \\pau=50\\ a better player!")
+            print("b")
         else:
             print("Unrecognized condition")
-            time.sleep(6)
 
+        time.sleep(0.5)
+        self.motion_proxy.setAngles("HeadYaw", 0.0,0.5)
+
+    def highlight_new_behavior(self):
+        self.motion_proxy.setAngles("HeadYaw", 1.0,0.3)
+        
+        self.tts_proxy.setVolume(1.5)
+
+        if self.game_condition in WE_CONDITIONS:
+            print("um")
+            self.tts_proxy.say("\\rspd=115\\ Look, \\emph=5\\ we are \\pau=50\\ destroying enemies on the left side of the screen!")
+        elif self.game_condition in I_CONDITIONS:
+            print("uh")
+            self.tts_proxy.say("\\rspd=115\\ Look, \\emph=5\\ I am \\pau=50\\ destroying enemies on the left side of the screen!")
+        else:
+            print(f"Unknown condition: {self.game_condition}")
+        
         time.sleep(0.5)
         self.motion_proxy.setAngles("HeadYaw", 0.0,0.5)
 
@@ -141,12 +163,20 @@ class NaoAction():
         time.sleep(0.5)
         self.motion_proxy.setAngles("HeadYaw", 0.0,0.25)
 
+    def no_nap(self):
+        if self.game_condition in WE_CONDITIONS:
+            self.tts_proxy.say("We're done with that game!")
+        elif self.game_condition in I_CONDITIONS:
+            self.tts_proxy.say("I'm done with that game!")
+        else:
+            print("Unrecognized condition")
+    
     def sleep(self):
         self.tts_proxy.setVolume(1.5)
-        if self.game_condition in ['A','C']:
-            self.tts_proxy.say("We're done! Good game! That was fun. I'm going to take a nap now while you answer some questions!")
-        elif self.game_condition in ['B','D']:
-            self.tts_proxy.say("I'm done! Good game! That was fun. I'm going to take a nap now while you answer some questions!")
+        if self.game_condition in WE_CONDITIONS:
+            self.tts_proxy.say("We're done with that game! I'm going to take a nap now while you answer some questions!")
+        elif self.game_condition in I_CONDITIONS:
+            self.tts_proxy.say("I'm done with that game! I'm going to take a nap now while you answer some questions!")
         else:
             print("Unrecognized condition")
         self.sleep_no_speech()

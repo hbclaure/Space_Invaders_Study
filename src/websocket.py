@@ -109,6 +109,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
         self.game_state_pub = rospy.Publisher('space_invaders/game/game_state',String,queue_size=5)
         self.game_condition_pub = rospy.Publisher('space_invaders/game/game_condition',String,queue_size=5)
         self.game_mode_pub = rospy.Publisher('space_invaders/game/game_mode',String,queue_size=5)
+        self.robot_action_pub = rospy.Publisher('space_invaders/game/robot_action',String,queue_size=5)
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -200,9 +201,9 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                             self.write_message("saved")
                     else:
                         if self.game_num[-1] in ['2','4','6']:
-                            self.game_state_pub.publish("game_over")
+                            self.robot_action_pub.publish("game_over_nap")
                         else:
-                            self.game_state_pub.publish("game_over_message")
+                            self.robot_action_pub.publish("game_over_no_nap")
                         path_to_json = f"participant_data/P{self.player_id}/{self.dirname}/game_logs/P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
                         if not os.path.exists(os.path.dirname(path_to_json)):
                             os.makedirs(os.path.dirname(path_to_json))

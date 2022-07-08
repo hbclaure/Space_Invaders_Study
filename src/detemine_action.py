@@ -7,7 +7,14 @@ from std_msgs.msg import String
 # other imports
 import json
 
+WE_CONDITIONS = ['A','C']
+I_CONDITIONS = ['B','D']
 
+BEFORE_CONDITIONS = ['A','B']
+AFTER_CONDITIONS = ['C','D']
+
+GAME_ENEMIES = 9*4*3*2 # across * row per color * color * sides
+MIDDLE = 600 # middle of x axis
 
 class DetermineAction():
     '''
@@ -21,6 +28,7 @@ class DetermineAction():
         # Subscribers
         rospy.Subscriber('space_invaders/game/game_state', String, self.determine_action_cb)
         rospy.Subscriber('space_invaders/game/game_condition', String, self.game_condition_cb)
+        rospy.Subscriber('space_invaders/game/game_mode', String, self.game_mode_cb)
 
         # Publishers 
         self.robot_action_pub = rospy.Publisher('space_invaders/game/robot_action',String,queue_size=5)
@@ -31,19 +39,23 @@ class DetermineAction():
         self.said_strategy = False
         self.condition_met = False
 
+    def game_mode_cb(self,msg):
+        self.game_mode = int(msg.data)
+    
     def determine_action_cb(self,game_state):
         try:
-            game_state_dict = json.loads(game_state.data)
-            robot_action = self.action_from_game_state(game_state_dict)
-            self.robot_action_pub.publish(robot_action)
-            self.robot_action_pub.publish(robot_action)
+            if self.game_mode == 1:
+                game_state_dict = json.loads(game_state.data)
+                if 'enemies_left_positions' in game_state_dict.keys():
+                    robot_action = self.action_from_game_state(game_state_dict)
+                    self.robot_action_pub.publish(robot_action)
+                    self.robot_action_pub.publish(robot_action)
+            else:
+                #game over
+                pass
         except ValueError:
-            game_state = game_state.data
-            if game_state == "game_over_message":
-                self.robot_action_pub.publish("good_game")
-            elif game_state == "game_over":
-                self.robot_action_pub.publish("sleep")
-        
+            print(game_state)
+
 
     def game_condition_cb(self,msg):
         self.game_condition = msg.data
@@ -60,24 +72,31 @@ class DetermineAction():
         num_left_enemies = len(enemies_left_positions)
         num_right_enemies = len(enemies_right_positions)
 
-        if self.game_condition in ['A','B'] and not(self.asked_feedback):
+        total_enemies = num_left_enemies+num_right_enemies
+
+        if not(self.said_strategy) and total_enemies < GAME_ENEMIES*.75 and game_state['ai_position']<MIDDLE*.75:
+                robot_action = "highlight_change"
+                print("HIGHLIGHT")
+                print(self.said_strategy)
+                self.said_strategy = True
+                print(self.said_strategy)
+                return robot_action
+
+        if self.game_condition in BEFORE_CONDITIONS and not(self.asked_feedback):
             # asking for feedback before crossing to help
-            if num_left_enemies <= 83 or num_right_enemies <= 83:
+            if total_enemies < GAME_ENEMIES*.875:
                 robot_action = "ask_for_feedback"
                 self.asked_feedback = True
                 print("Ask for feedback: ", self.game_condition)
                 return robot_action
-        elif self.game_condition in ['C','D'] and not(self.asked_feedback): 
+        elif self.game_condition in AFTER_CONDITIONS and not(self.asked_feedback): 
             # after for feedback after crossing to help
-            if num_left_enemies <= 50 and game_state["ai_position"] > this.sys.canvas.width / 2:
+            if total_enemies <= GAME_ENEMIES*.65 and game_state["ai_position"] > MIDDLE*1.1:
                 robot_action = "ask_for_feedback"
                 self.asked_feedback = True
                 print("Ask for feedback: ", self.game_condition)
                 return robot_action
         else:
-            if not(self.condition_met):
-                print("Unrecognized condition or already asked for feedback")
-                self.condition_met = True
             return ""
         
 
