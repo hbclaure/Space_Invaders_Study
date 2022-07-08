@@ -66,3 +66,17 @@ Launch Webcam check
 ```bash
 python3 webcam_check/webcam_check.py
 ```
+
+
+
+///
+Topics:
+/audio/audio /audio/audio_info /body_tracking_data /rgb/camera_info /rgb/image_raw/compressed /space_invaders/game/game_condition /space_invaders/game/game_mode /space_invaders/game/game_state /space_invaders/game/nao_action /space_invaders/game/robot_action /tf /tf_static
+
+
+
+roslaunch audio_play play.launch
+rosrun image_view image_view image:=/rgb/image_raw _image_transport:=compressed
+
+
+rosbag record /audio/audio /audio/audio_info /body_tracking_data /rgb/camera_info /rgb/image_raw/compressed /space_invaders/game/game_condition /space_invaders/game/game_mode /space_invaders/game/nao_action /space_invaders/game/robot_action /tf /tf_static -O pilot_ah.bag
