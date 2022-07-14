@@ -13,6 +13,7 @@ var practice_scene = {
 
 function create_practice_scene() {
     frames = [];
+    frames_not_sent = [];
     events = [];
     frame_number = 0;
     last_frame = -1;

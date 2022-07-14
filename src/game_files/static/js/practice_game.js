@@ -14,6 +14,7 @@ var practice_scene = {
 function create_practice_scene() {
     // a log of all of the frames of the game
     frames = [];
+    frames_not_sent = [];
     frame_number = 0;
     date = new Date();
     events = [];

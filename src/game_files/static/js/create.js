@@ -7,6 +7,7 @@ function create ()
 {	
     // a log of all of the frames of the game
     frames = [];
+    frames_not_sent = [];
     frame_number = 0;
     last_frame = -1;
     date = new Date();
