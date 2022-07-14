@@ -9,10 +9,17 @@
     <p> </p>
     <p>Please click Next below once the GAME OVER screen appears. </p>
     <p> </p>
-    <a href="questions1.html"> Next </a> 
+    <div id="Next" style="display:none">
+        <a href="questions1.html"> Next </a> 
+    </div>
 </body>
 
 <script>
+    function showNext() { 
+        document.getElementById("Next").style.display = "inline"; 
+    }
+    setTimeout("showNext()", 30000);
+
     function findGetParameter(parameterName) {
         var result = null,
             tmp = [];
