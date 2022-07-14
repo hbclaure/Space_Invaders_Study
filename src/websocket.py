@@ -110,6 +110,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
         self.game_condition_pub = rospy.Publisher('space_invaders/game/game_condition',String,queue_size=5)
         self.game_mode_pub = rospy.Publisher('space_invaders/game/game_mode',String,queue_size=5)
         self.robot_action_pub = rospy.Publisher('space_invaders/game/robot_action',String,queue_size=5)
+        self.frame_number_pub = rospy.Publisher('space_invaders/game/frame_number',String,queue_size=5)
 
     def check_origin(self, origin):
         '''Allow from all origins'''
@@ -165,6 +166,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
             self.control_msgs +=1
 
             if "frame_number" in state.keys():
+                self.frame_number_pub.publish(str(state["frame_number"]))
                 if self.mode == 0:
                     # for practice mode, send empty action (do nothing)
                     action = {'left': False, 'right': False, 'shoot': False}
@@ -176,9 +178,9 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                     os.makedirs(os.path.dirname(path_to_control))
                 with open(path_to_control,"a") as f:
                     f.write(msg)
-                    f.write("\n")
+                    f.write(",\n")
                     json.dump(action,f)
-                    f.write("\n")
+                    f.write(",\n")
                 # send action
                 self.write_message(json.dumps(action))
             else:
