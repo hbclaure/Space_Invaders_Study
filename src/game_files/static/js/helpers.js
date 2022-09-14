@@ -45,6 +45,7 @@ var debug_text;
 var game_log = [];                      //!< a log of all the information from this game
 var events;
 var frames;                             //!< the frames of this game
+var frames_not_sent;
 var frame_number = 0;                       //!< the number of the current frame
 var last_frame;                         //
 var previous_shots_time = [];                //!< the times of the last 5 shots the player fired

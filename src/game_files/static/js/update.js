@@ -287,6 +287,9 @@ function update ()
     if (frame_sent){
         sockets.control.send(JSON.stringify(log_frame));
         ai_ready = false;
+    } else{
+        // --- save frames not sent
+        frames_not_sent.push(log_frame);
     }
 
     // --- log frame of game
@@ -308,7 +311,7 @@ function update ()
 
     // switch to game over screen
     if (player_over && ai_over) {
-        game_log = {player_id: player_id, date: date, mode: mode, events: events}; //, frames: frames};
+        game_log = {player_id: player_id, date: date, mode: mode, events: events, frames_not_sent: frames_not_sent}; //, frames: frames};
         // clearInterval(recording);
         //sockets.control.send(JSON.stringify({player_id: player_id, date: date, events: events}))
         this.scene.start('gameover_scene');
