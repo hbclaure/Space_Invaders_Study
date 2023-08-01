@@ -1,0 +1,57 @@
+
+// Add an event listener for the `gamepadconnected` event.
+window.addEventListener("gamepadconnected", function(e) {
+  // Add the gamepad to the list of connected gamepads.
+  
+  controllers.push(e.gamepad);
+  p1xBoxA = gp1.buttons[0].pressed;
+  p1xBoxLeft = gp1.buttons[4].pressed;
+  p1xBoxRight = gp1.buttons[5].pressed;
+  p1xBoxUp = gp1.buttons[2].pressed;
+  p1xBoxDown = gp1.buttons[1].pressed;
+  p1xBoxY = gp1.buttons[3].pressed;
+
+
+  if (e.gamepad.index == 0) {
+    gamepad1 = true;
+    var gp1 = navigator.getGamepads()[e.gamepad.index];
+    console.log("This is controller 1", gp1)
+
+    setInterval(function(){
+      p1xBoxA = gp1.buttons[0].pressed;
+      p1xBoxLeft = gp1.buttons[4].pressed;
+      p1xBoxRight = gp1.buttons[5].pressed;
+      p1xBoxUp = gp1.buttons[2].pressed;
+      p1xBoxDown = gp1.buttons[1].pressed;
+      p1xBoxY = gp1.buttons[3].pressed;
+      // console.log("is pressed");
+      // document.getElementById("button").innerHTML = isPressed;
+    }, 100)
+  } else if (e.gamepad.index == 1) {
+    gamepad2 = true;
+    var gp2 = navigator.getGamepads()[e.gamepad.index];
+    setInterval(function(){
+      p2xBoxA = gp2.buttons[0].pressed;
+      p2xBoxLeft = gp2.buttons[4].pressed;
+      p2xBoxRight = gp2.buttons[5].pressed;
+      p2xBoxUp = gp2.buttons[6].pressed;
+      p2xBoxDown = gp2.buttons[1].pressed;
+      p2xBoxY = gp2.buttons[3].pressed;
+      // console.log("is pressed");
+      // document.getElementById("button").innerHTML = isPressed;
+    }, 100)
+  }
+});
+
+
+// Add an event listener for the `gamepaddisconnected` event.
+window.addEventListener("gamepaddisconnected", function(e) {
+  // Remove the gamepad from the list of connected gamepads.
+  if (e.gamepad.index == 0) {
+    gamepad1 = false;
+  } else if (e.gamepad.index == 1) {
+    gamepad2 = false;
+  }
+  // gamepad1 = false;
+  delete controllers[e.gamepad.index];
+})

@@ -36,26 +36,41 @@ sentry_sdk.init(
 from game_files.agents.uncooperative import Uncooperative
 from game_files.agents.cooperative_early import CooperativeEarly
 from game_files.agents.cooperative_late import CooperativeLate
+from game_files.agents.alternating_support import AlternatingSupport
+from game_files.agents.sporadic_assistance import SporadicAssistance
+from game_files.agents.targeted_assistance import TargetedAssistance
+
+from game_files.agents.sporatic_early_fast import SporaticEarlyFast
+from game_files.agents.sporatic_early_slow import SporaticEarlySlow
+from game_files.agents.help_human_early import UnfairSupportHumanEarly
+from game_files.agents.help_human_late import UnfairSupportHumanLate
+from game_files.agents.help_shutter_early import UnfairSupportShutterEarly
+from game_files.agents.help_shutter_late import UnfairSupportShutterLate
+
+from game_files.agents.equal_support import EqualSupport
+from game_files.agents.training import Training
+from game_files.agents.robot_only_practice import ShutterPractice
+from game_files.agents.nao_only_training import NaoTrain
+
 from game_files.agents.apology import Apology
 
 from tornado.options import define, options
-define("port",default = 8668, help="run on the given port", type=int)
+define("port",default = 8667, help="run on the given port", type=int)
 define("machine",default='anna',help="run on machine",type=str)
 
 WEBROOT = os.path.dirname(os.path.realpath(__file__))
 SSL_ROOT = "/home/si_app/ssl"
 
 agents = {
-    0: CooperativeEarly,
-    1: CooperativeEarly,
-    2: CooperativeLate,
-    3: Uncooperative,
-    4: Apology,
-    5: Apology,
+    0: NaoTrain,
+    1: Training,
+    2: EqualSupport,
+    3: UnfairSupportShutterLate,
+    4: UnfairSupportShutterEarly,
+    5: EqualSupport,
     6: Apology, 
     7: Apology
 }
-
 machines = {
     'anna': ("anna.cs.yale.edu.crt","anna.cs.yale.edu.key"),
     'xpm': ("apache.crt","apache.key")
@@ -122,7 +137,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
     def on_close(self):
         #log player id, timestamp
         close_time = datetime.utcnow()
-        path_to_socket = f"participant_data/P{self.player_id}/{self.dirname}/socket_logs/P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}/control_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+        path_to_socket = f"{self.dirname}/socket_logs/P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}/control_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
         msg = {'player_id': self.player_id, 'mode': self.mode, 'game_num': self.game_num, 'display_vid': self.display_vid, 'open_time': self.open_time, 'close_time': close_time, 'logged': self.logged, 'control_msgs': self.control_msgs, 'code':self.close_code, 'reason':self.close_reason}
         if not os.path.exists(os.path.dirname(path_to_socket)):
             os.makedirs(os.path.dirname(path_to_socket))
@@ -133,6 +148,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
         if not self.mode and self.mode != 0:
             try:
                 state = json.loads(msg)
+                print("these are the messages", state)
                 self.player_id = state['player_id']
                 self.mode = state['mode']
                 if self.mode == 0:
@@ -142,7 +158,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 time = datetime.utcnow()
                 self.time_label = f"{str(time.year)}_{str(time.month)}_{str(time.day)}_{str(time.hour)}_{str(time.minute)}"
                 gn = state['game_num']
-                while(os.path.exists(f"participant_data/P{self.player_id}/{self.dirname}/control_logs/ingame_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{str(gn)}_t{self.time_label}.json")):
+                while(os.path.exists(f"{self.dirname}/control_logs/ingame_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{str(gn)}_t{self.time_label}.json")):
                     gn = int(gn)+100
                     print("increment Control")
                 self.game_num = str(gn)
@@ -150,6 +166,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                   
                 self.current_agent = agents[self.mode]()
                 print("Current Agent: ", self.current_agent)
+ 
 
                 # publish game mode and condition
                 self.game_mode_pub.publish(str(state['mode']))
@@ -168,12 +185,18 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
             if "frame_number" in state.keys():
                 self.frame_number_pub.publish(str(state["frame_number"]))
                 if self.mode == 0:
+                    print('her')
                     # for practice mode, send empty action (do nothing)
-                    action = {'left': False, 'right': False, 'shoot': False}
+                    #action = {'left': False, 'right': False, 'shoot': False,'support':1}
+                    action = self.current_agent.update(state)
+                    print('this is action', action)
+                # elif self.mode == 4:
+                #     action = {'left': False, 'right': False, 'shoot': False, 'support': 0}
                 else:
                     action = self.current_agent.update(state)
+                    #print('action',action)
                     
-                path_to_control = f"participant_data/P{self.player_id}/{self.dirname}/control_logs/ingame_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
+                path_to_control = f"{self.dirname}/control_logs/ingame_P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}.json"
                 if not os.path.exists(os.path.dirname(path_to_control)):
                     os.makedirs(os.path.dirname(path_to_control))
                 with open(path_to_control,"a") as f:
@@ -190,7 +213,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                 try:
                     if self.mode == 0:
                         p_stage = state['practice_stage']
-                        path_to_json = f"participant_data/P{self.player_id}/{self.dirname}/game_logs/P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}_stage{p_stage}.json"
+                        path_to_json = f"{self.dirname}/game_logs/P{self.player_id}_v{self.display_vid}_m{self.mode}_g{self.game_num}_t{self.time_label}_stage{p_stage}.json"
                         if not os.path.exists(os.path.dirname(path_to_json)):
                             os.makedirs(os.path.dirname(path_to_json))
                         
@@ -202,7 +225,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                             self.logged = True
                             self.write_message("saved")
                     else:
-                        if self.game_num[-1] in ['2','4','6']:
+                        if self.game_num[-1] in ['2','3','4','6']:
                             self.robot_action_pub.publish("game_over_nap")
                         else:
                             self.robot_action_pub.publish("game_over_no_nap")

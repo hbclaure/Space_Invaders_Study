@@ -1,31 +1,133 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 20px;
+      }
+  
+      h1 {
+        font-size: 36px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+  
+      p {
+        font-size: 18px;
+        line-height: 1.6;
+        margin-bottom: 10px;
+      }
+  
+      a {
+        font-size: 20px;
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.3s;
+      }
+  
+      a:hover {
+        background-color: #0056b3;
+      }
+  
+      /* Media query for large screens (e.g., TV) */
+      @media screen and (min-width: 1200px) {
+        body {
+          margin: 50px;
+        }
+  
+        h1 {
+          font-size: 60px;
+        }
+  
+        p {
+          font-size: 50px;
+        }
+  
+        a {
+          font-size: 40px;
+          padding: 15px 30px;
+        }
+      }
+    </style>
     <title>Space Invaders Study!</title>
+    <script src="robot_sleep.js"></script>
+    <script src="robot_introduction.js"></script>
   </head>
   <body>
     <h1>Survey </h1>
-    <p>Please complete a section of questions on the tablet. The survey will instruct you when to come back to the game.</p>
 
+    <p>First, press Y once on your controller to put Nao to sleep.</p>
+    <p> </p>
+
+    <p>Then, please call the researcher in order to complete a section of questions on the tablet. The survey will instruct you when to come back to the game.</p>
+    <p> </p>
     
-    <div id="Next" style="display:none">
-      <a href="g3i.html"> Click here when instructed to return to the game </a>
-    </div>
+    <!-- <div id="Next" style="display:none">
+      <a href="g3i.html"> Press the required button on the controller that is stated on the survey to continue the game. </a>
+    </div> -->
+    
+    <a id="nextPageLink" href="g4i.html"> Press the required button on the controller that is stated at the end of the survey to continue the game.</a> 
   </body>
 
   <script>
-    function showNext() { 
-        document.getElementById("Next").style.display = "inline"; 
-    }
-    setTimeout("showNext()", 10000);
-    
     var all_params = window.location.href.split('?')[1];
     var a = document.getElementsByTagName('a');
-    for (var i=0; i < a.length; i++){
-        a[i].href+="?";
-        a[i].href+=all_params;
-        console.log(a[i].href);
+    for (var i = 0; i < a.length; i++) {
+      a[i].href += "?";
+      a[i].href += all_params;
+      console.log(a[i].href);
     }
-    </script>
+  </script>
+  <script>
+    var gamepad = false; // This variable will be used to track whether a gamepad is connected
+
+    window.addEventListener("gamepadconnected", function(e) {
+      // Set gamepad to true when any gamepad is connected
+      gamepad = true;
+    });
+
+    window.addEventListener("gamepaddisconnected", function(e) {
+      // Set gamepad to false when any gamepad is disconnected
+      gamepad = false;
+    });
+
+    // This function will check for Y button press and call the robotIntro() function to turn on the robot
+    function checkButtonY() {
+      if (gamepad) {
+        // Get the first connected gamepad
+        var gp = navigator.getGamepads()[0];
+        if (gp && gp.buttons[3].pressed) {
+          // Call the robotIntro() function to turn on the robot
+          robotSleep();
+        }
+      }
+    }
+
+    // This function will check for B button press and simulate a click on the link to navigate to the next page
+    function checkButtonB() {
+      if (gamepad) {
+        // Get the first connected gamepad
+        var gp = navigator.getGamepads()[0];
+        if (gp && gp.buttons[1].pressed) {
+          // Simulate a click on the link with ID "nextPageLink" to navigate to the next page
+          var nextPageLink = document.getElementById("nextPageLink");
+          if (nextPageLink) {
+            nextPageLink.click();
+          }
+        }
+      }
+    }
+
+    // Call the checkButtonY and checkButtonB functions every 100ms to continuously check for button presses
+    setInterval(function() {
+      checkButtonY();
+      checkButtonB();
+    }, 100);
+  </script>
     
 </html>

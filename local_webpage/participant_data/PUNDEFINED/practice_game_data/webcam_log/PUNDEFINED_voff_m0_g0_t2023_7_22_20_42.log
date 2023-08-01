@@ -1,0 +1,4 @@
+Log file created
+EVENT: webcam suspended
+error saving images: UNDEFINED at 2023-07-22 20:42:39.767374
+, invalid literal for int() with base 10: 'player_id":"UNDEFINED","mode":0,"game_num":"0","display_vid":"off","game_condition":"Z"'

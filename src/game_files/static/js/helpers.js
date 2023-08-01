@@ -33,38 +33,75 @@ const UNCOOPERATIVE = 3;
 const static_url = '';
 
 var mode;                               //!< game mode
+var ai_supporting = 0;
 var cursors;                            //!< keyboard access
 var space_key;                          //!< space key
 var enter_key;                          //!< enter key
+var keyA;
+var keyS;
+var keyD;
+var keyW;
+var keyG;
+var keyF;
+var p1xBoxLeft;
+var p1xBoxDown;
+var p1xBoxRight;
+var p1xBoxUp;
+var p1xBoxA;
+var p1xBoxY;
+var p2xBoxLeft;
+var p2xBoxDown;
+var p2xBoxRight;
+var p2xBoxUp;
+var p2xBoxA;
+var p2xBoxY;
+var p1_connected = false;
+var p2_connected = false;
+var p1_connected_text;
+var p2_connected_text;
+var gamepad1;
+var gamepad2;
 var player_ship;                        //!< player_ship
+var player_ship2;
+var players = [];
 var ai_ship;                            //!< ai_ship
 var enemies_left;                       //!< enemies
+var timer = 240;
+var time;
+var respawn_timer = 7000;
+var repeat_mult_5 = false;
 var enemies_right;
+var enemies_middle;
 var enemies_practice;
 var debug_text;
 var game_log = [];                      //!< a log of all the information from this game
 var events;
 var frames;                             //!< the frames of this game
-var frames_not_sent;
 var frame_number = 0;                       //!< the number of the current frame
 var last_frame;                         //
 var previous_shots_time = [];                //!< the times of the last 5 shots the player fired
 var rounds_played = 0;                  //!< number of rounds that they have played
 var player_score;                       //!< total player score (accumulated over multiple rounds)
 var ai_score;                           //!< total ai score (accumulated over multiple rounds)
-
+var icon;
 var date;                               //!< date
 var player_id;                          //!< unique ID
 var game_num;                           //!< game number
 var display_vid;
 var game_condition;
-
 var max_player_frequency = 600;
 var max_ai_frequency = max_player_frequency * 0.6;
 
 var frames_per_message = 100;
 
 var enemy_shoot_timer_level = 6;
+var timer_interval;
+var num_enemies_shot = 0;
+var ai_over;
+var player_over;
+var timer_interval;
+var num_enemies_shot = 0;
+
 
 
 /**
@@ -86,7 +123,7 @@ player_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
 mode = findGetParameter('mode'); 
 mode = (mode && !isNaN(mode) && parseInt(mode, 10) >= 0 && parseInt(mode, 10) <= 7) ? parseInt(mode, 10) : COOPERATIVE_EARLY;
 game_num = findGetParameter('game') ? findGetParameter('game') : 0;
-game_condition = findGetParameter('condition') ? findGetParameter('condition') : 'Z';
+game_condition = findGetParameter('condition') ? findGetParameter('condition') : 'C';
 display_vid = findGetParameter('v') ? findGetParameter('v') :'off';
 
 /**
@@ -181,7 +218,7 @@ function fire_enemy_bullet(enemies, bullets) {
         if (valid_columns[i] == 1)
             valid_index.push(i);
     }
-    // sample a column
+    // sample a colum
     var chosen_index = Math.floor(Math.random() * num_valid);
     var col = valid_index[chosen_index];
     // find lowest row with an enemy for the chosen column
@@ -192,7 +229,7 @@ function fire_enemy_bullet(enemies, bullets) {
         }
     }
     // fire bullet for that enemy
-    if (enemy != null) {
+    if (enemy != null && enemy.is_hit == false) {
         fire_bullet(bullets, enemy.body.x + enemy.body.width * 0.5, enemy.body.y + 50, 1, 100);
     }
 }
@@ -210,7 +247,7 @@ function fire_enemy_bullet(enemies, bullets) {
  * @param {String} bullet_image_id image id for the bullet
  * @returns object with ship image, corresponding bullets group, and update function for handling actions
  */
-function create_ship(image_id="ship", type = 0, x = 200, y = 640, speed = 5, bullet_image_id = "laser", min_x = 0, message_height = 10) {
+function create_ship(num = 0, image_id="ship", type = 0, x = 200, y = 540, speed = 5, bullet_image_id = "laser", min_x = 0, message_height = 10) {
             
     var canvas_width = this.sys.canvas.width;
     var canvas_height = this.sys.canvas.height;
@@ -222,7 +259,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 640, speed = 5, bul
     sprite.props.speed = speed;
     sprite.props.dead = false;
     sprite.props.score = 0;
-    var font_type = (image_id == 'ship') ? 'PressStart2P_Purple' : (image_id == 'white') ? 'PressStart2P_White' : (image_id == 'lightgray') ? 'PressStart2P_White' :'PressStart2P_Gray';
+    var font_type = (image_id == 'ship' || image_id == 'ship2') ? 'PressStart2P_Purple' : (image_id == 'avery') ? 'PressStart2P_Orange' : 'PressStart2P_White';
     // sprite.props.scoreText = this.add.bitmapText(x, 3, font_type, 'SCORE 0', 20);
     // sprite.props.lives = 3;
     //sprite.props.scoreText = this.add.bitmapText(x+22, 3, font_type, 'SCORE 0', 18);
@@ -244,7 +281,7 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 640, speed = 5, bul
     sprite.props.message.visible = false;
 
     // animation for the player/ai explosions
-    var explosion = (image_id == 'ship') ? 'shipexplosion' : (image_id == 'white') ? 'explosionwhite' : (image_id == 'lightgray') ? 'explosionlightgray' :'jordanexplosion';
+    var explosion = (image_id == 'ship' || image_id == 'ship2') ? 'shipexplosion' : (image_id == 'avery') ? 'averyexplosion' : 'jordanexplosion';
 
 
     if (!(this.anims.get(image_id + '_exp'))) { 
@@ -258,37 +295,105 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 640, speed = 5, bul
 
     
     sprite.lives = [] // add sprites to display lives
+    // console.log(sprite.lives);
+    // console.log("^ this should be empty");
     // var life_x = x - 200;
-    var life_x = x - 200
-    if (x > this.sys.canvas.width / 2) {
-        life_x = x - 22
+    // var life_x;
+    // if (num == 1) {
+    //     life_x = x - 200
+    //     if (x > 400) {
+    //         life_x = x - 22
+    //     }
+    // } else if (num == 2) {
+    //     life_x = x
+    //     if (x > 400) {
+    //         life_x = x - 22
+    //     }
+    // }
+    // var life_x = x - 200
+    // if (x > 400) {
+    //     life_x = x - 22
+    // }
+    // this.add.bitmapText(life_x, 3, font_type, 'LIVES', 20);
+    // for (i = 0; i < sprite.props.lives; i++) {
+    //     var life = this.physics.add.sprite(life_x + 125 + 25 * i, 25, image_id).setOrigin(0.5, 1.0);
+    //     life.body.setImmovable(true);
+    //     life.body.setAllowGravity(false);
+    //     life.body.setSize(life.width * 0.4 , life.height * 0.5, true);
+    //     life.setScale(0.5);
+    //     sprite.lives.push(life);
+    // }
+
+    if (num == 1) {
+        var life_x = 0 //x - (canvas_width / 4) - 200
+        // if (x > 400) {
+        //     life_x = x - (canvas_width / 4) - 22
+        // }
+        this.add.bitmapText(life_x, 3, font_type, 'LIVES', 20);
+        for (i = 0; i < sprite.props.lives; i++) {
+            var life = this.physics.add.sprite(life_x + 125 + 25 * i, 25, image_id).setOrigin(0.5, 1.0);
+            life.body.setImmovable(true);
+            life.body.setAllowGravity(false);
+            life.body.setSize(life.width * 0.4 , life.height * 0.5, true);
+            life.setScale(0.5);
+            sprite.lives.push(life);
+        }
+    } else if (num == 2) {
+        var life_x = 0 // - 200
+        // if (x > 400) {
+        //     life_x = x - 22
+        // }
+        this.add.bitmapText(life_x, 30, font_type, 'LIVES', 20);
+        for (i = 0; i < sprite.props.lives; i++) {
+            var life = this.physics.add.sprite(life_x + 125 + 25 * i, 50, image_id).setOrigin(0.5, 1.0);
+            life.body.setImmovable(true);
+            life.body.setAllowGravity(false);
+            life.body.setSize(life.width * 0.4 , life.height * 0.5, true);
+            life.setScale(0.5);
+            sprite.lives.push(life);
+        }
+    } else {
+        var life_x = x + 187
+        // if (x > 400) {
+        //     life_x = x - 22
+        // }
+        this.add.bitmapText(life_x, 30, font_type, 'LIVES', 20);
+        for (i = 0; i < sprite.props.lives; i++) {
+            var life = this.physics.add.sprite(life_x + 125 + 25 * i, 50, image_id).setOrigin(0.5, 1.0);
+            life.body.setImmovable(true);
+            life.body.setAllowGravity(false);
+            life.body.setSize(life.width * 0.4 , life.height * 0.5, true);
+            life.setScale(0.5);
+            sprite.lives.push(life);
+        }
     }
-    this.add.bitmapText(life_x, 3, font_type, 'LIVES', 20);
-    for (i = 0; i < sprite.props.lives; i++) {
-        var life = this.physics.add.sprite(life_x + 125 + 25 * i, 25, image_id).setOrigin(0.5, 1.0);
-        life.body.setImmovable(true);
-        life.body.setAllowGravity(false);
-        life.body.setSize(life.width * 0.4 , life.height * 0.5, true);
-        life.setScale(0.5);
-        sprite.lives.push(life);
-    }
+    // for (i = 0; i < sprite.props.lives; i++) {
+    //     console.log("for loop");
+    //     var life = this.physics.add.sprite(life_x + 125 + 25 * i, 25, image_id).setOrigin(0.5, 1.0);
+    //     life.body.setImmovable(true);
+    //     life.body.setAllowGravity(false);
+    //     life.body.setSize(life.width * 0.4 , life.height * 0.5, true);
+    //     life.setScale(0.5);
+    //     sprite.lives.push(life);
+    // }
 
     var obj_width = sprite.displayWidth;     
 
     var bullets = this.create_bullets_pool(8, bullet_image_id);
     var sound = this.custom_sounds.fire_ship;
 
+
     return {
         sprite: sprite,                                         //!< image object for the ship
         bullets_group: bullets,                                 //!< bullets shot by the ship
         min_x: min_x,
-        update(move_left, move_right, shoot)                    //!< update the ship state based on requested actions   
+        update(move_left, move_right, shoot, support)                    //!< update the ship state based on requested actions   
         {          
             // do nothing if the ship has been killed!
             if (this.sprite.props.dead) {
                 this.sprite.setVisible(false);
                 //this.sprite.props.emote.setVisible(false);
-                this.sprite.x = -50;
+                this.sprite.x = 0;
                 this.sprite.y = 0;
                 return;
             }
@@ -321,13 +426,25 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 640, speed = 5, bul
                 sound.play();
             }
 
+            // change ship colour if needed
+            if (support == 1) {
+                ai_supporting = 1;
+                this.sprite.setTexture('ai_ship');
+            } else if (support == 2) {
+                ai_supporting = 2;
+                this.sprite.setTexture('ai_ship');
+            } else if (support == 0) {
+                ai_ship.sprite.props.dead = true;
+                ai_over = true;
+                // timer = 60;
+            }
+
             this.sprite.props.message.x = this.sprite.x;
 
             //this.sprite.props.emote.x = this.sprite.x;
         },
     };
 }
-
 
 
 /**
@@ -343,11 +460,12 @@ function create_ship(image_id="ship", type = 0, x = 200, y = 640, speed = 5, bul
  * @param {Array} num_rows number of rows per enemy (1, 2, and 3). Must be an array with 3 ints.
  */
 function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizontal_speed = 10, 
-                        bullet_image_id = "enemylaser", min_x = 0, max_x = 400, num_rows = [4, 4, 4])   //// DEBUG FEWER
+                        bullet_image_id = "enemylaser", min_x = 0, max_x = 400, num_rows = [1, 2, 2])
 {
     var canvas_width = this.sys.canvas.width                                    //!< width of the canvas
     var explosions = ['explosionpurple', 'explosionblue', 'explosiongreen'];    //!< name of explosion for each enemy (from 1 to 3)
-    var enemies = this.physics.add.group();                                     // group of enemies
+    var enemies = this.physics.add.group();   // group of enemies
+    
 
     // create animations for all enemies, animations for explosions, and groups of robots
     for (var e=1; e<4; e++) {
@@ -383,31 +501,46 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
                 enemy.grid_row += num_rows[j];
             }
             enemy.grid_column = i % num_horizontal;
-            enemy.score = 10 + 10 * (num_rows[0] + num_rows[1] + num_rows[2] - 1 - enemy.grid_row);
+            enemy.score = 10 //+ 10 * (num_rows[0] + num_rows[1] + num_rows[2] - 1 - enemy.grid_row);
             enemy.hit = false;
+            enemy.is_hit = false;
             enemies.add(enemy);
+            enemy.time_hit = -1;
+            enemy.e = e;
+            enemy.g = g;
+            enemy.i = i;
+            enemy.max_vel = max_vel;
+            enemy.num_horizontal = num_horizontal;
+            enemy.shot_frame = -99999;
+            // enemy.visible = true;
         }
     }
     // align group enemies in a grid
     Phaser.Actions.GridAlign(enemies.getChildren(), 
-    { width: num_horizontal, height: 12, cellWidth: 60, cellHeight: 50, position: Phaser.Display.Align.CENTER, x: x, y: y }); //// DEBUG FEWER, was 15
+    { width: num_horizontal, height: 5, cellWidth: 60, cellHeight: 50, position: Phaser.Display.Align.CENTER, x: x, y: y });
     // set initial velocity for group
     Phaser.Actions.Call(enemies.getChildren(), function(e) {
         e.setVelocityX(-horizontal_speed);
-        e.setVelocityY(5);
+        e.setVelocityY(0);
     })
     // store number of columns in the grid
     var children = enemies.getChildren();
     enemies.num_columns = num_horizontal;
     enemies.num_valid_columns = enemies.num_columns;
-    enemies.num_rows = children[children.length - 1].grid_row;
+    // console.log("children", children);
+    if (children.length == 0) {
+        enemies.num_rows = 0;
+    } else {
+        enemies.num_rows = children[children.length - 1].grid_row;
+    }
+    
 
     // create bullets pool
     var bullets = this.create_bullets_pool(30, bullet_image_id, true);
     var sound = this.custom_sounds.fire_enemy;
 
     // create timer to fire enemy bullets
-    enemies.fire_timer = this.time.addEvent({ delay: Phaser.Math.Between(1500, 1700), loop: true, 
+    enemies.fire_timer = this.time.addEvent({ delay: Phaser.Math.Between(700, 1000), loop: true, 
                                               callback: () => { 
                                                     fire_enemy_bullet(enemies, bullets);
                                               } });
@@ -440,7 +573,7 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
             // change timer depending on how many valid columns are left
             if (this.enemies_group.num_valid_columns <= 0.6 * enemy_shoot_timer_level &&
                 this.enemies_group.timer_changes == 0) {
-                this.enemies_group.fire_timer.reset({ delay: Phaser.Math.Between(1200, 1700), loop: true, 
+                this.enemies_group.fire_timer.reset({ delay: Phaser.Math.Between(1000, 1500), loop: true, 
                                               callback: () => { 
                                                     fire_enemy_bullet(enemies, bullets);
                                               } });
@@ -448,11 +581,23 @@ function create_enemies(num_horizontal = 5, x, y, g = "a", max_vel = 5, horizont
             }
             else if (this.enemies_group.num_valid_columns <= 0.2 * enemy_shoot_timer_level &&
                 this.enemies_group.timer_changes == 1) {
-                this.enemies_group.fire_timer.reset({ delay: Phaser.Math.Between(1700, 2200), loop: true, 
+                this.enemies_group.fire_timer.reset({ delay: Phaser.Math.Between(1500, 2000), loop: true, 
                                               callback: () => { 
                                                     fire_enemy_bullet(enemies, bullets);
                                               } });
                 this.enemies_group.timer_changes += 1;
+            }
+            var enemy_group_children = this.enemies_group.getChildren();
+            // // console.log(enemy_group_children);
+            // // console.log(enemy_group_children.length);
+            for (var i = 0; i < enemy_group_children.length; i++) {
+                // console.log("in for loop");
+                var current_enemy = enemy_group_children[i];
+                if (current_enemy.is_hit == true && frame_number - 300 > current_enemy.shot_frame) {
+                    current_enemy.is_hit = false;
+                    // current_enemy.setTexture('enemy' + enemy.e + enemy.g + '_1');
+                    current_enemy.setVisible(true);
+                }
             }
         },
     };

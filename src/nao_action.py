@@ -75,11 +75,31 @@ class NaoAction():
         if robot_action == "ask_for_feedback" and not(self.said):
             self.ask_for_feedback()
             self.said = True
+        elif robot_action == "midway_comment":
+            self.midway_action()
+
+        elif robot_action == "look_at_support_player_left":
+            print('supporting left')
+            self.look_support_player_left()
+
+        elif robot_action == "look_at_support_player_right":
+            print('supporting right')
+            self.look_support_player_right()
+        
+
+        elif robot_action == "end_comment":
+            self.end_action()
         elif robot_action == "highlight_change" and not(self.announced):
             self.highlight_new_behavior()
             self.announced = True
         elif robot_action == "introduction":
             self.introduction()
+
+        elif robot_action == "sleep":
+            self.sleep()
+
+        elif robot_action == "introduce_nao_skills":
+            self.introduce_skills()
         elif robot_action == "game_over_nap":
             self.sleep()
         elif robot_action == "game_over_no_nap":
@@ -88,6 +108,7 @@ class NaoAction():
             self.wake()
         elif robot_action == "":
             pass
+
         else:
             print("Unrecognized action: ", robot_action)
 
@@ -104,7 +125,7 @@ class NaoAction():
             self.tts_proxy.setVolume(1.5)
             if self.game_condition in WE_CONDITIONS:
                 self.nao_action_pub.publish(f"frame_{self.frame_num} we_ready")
-                self.tts_proxy.say("We're ready to play!")
+                self.tts_proxy.say("We're ready to play! Good luck to both of you!")
             elif self.game_condition in I_CONDITIONS:
                 self.nao_action_pub.publish(f"frame_{self.frame_num} i_play")
                 self.tts_proxy.say("I'm ready to play!")
@@ -144,10 +165,12 @@ class NaoAction():
         self.nao_action_pub.publish(f"frame_{self.frame_num} highlight_look")
         
         self.tts_proxy.setVolume(1.5)
+        self.wave()
+
 
         if self.game_condition in WE_CONDITIONS:
             self.nao_action_pub.publish(f"frame_{self.frame_num} highlight_we")
-            self.tts_proxy.say("\\rspd=115\\ Look, \\emph=5\\ we are \\pau=50\\ destroying enemies on the left side of the screen!")
+            self.tts_proxy.say("\\rspd=115\\ Great, \\emph=5\\ we are \\pau=50\\ we are destroying enemies on the screen!")
         elif self.game_condition in I_CONDITIONS:
             self.nao_action_pub.publish(f"frame_{self.frame_num} highlight_i")
             self.tts_proxy.say("\\rspd=115\\ Look, \\emph=5\\ I am \\pau=50\\ destroying enemies on the left side of the screen!")
@@ -159,6 +182,15 @@ class NaoAction():
         self.nao_action_pub.publish(f"frame_{self.frame_num} highlight_return")
         if self.game_condition in BEFORE_CONDITIONS:
             self.meaningful_action = False
+
+    def midway_action(self):
+        self.nao_action_pub.publish(f"frame_{self.frame_num} midway_comment")
+        self.tts_proxy.say("We are halfway there, let's keep up the good work!")
+
+    def end_action(self):
+        self.nao_action_pub.publish(f"frame_{self.frame_num} end_comment")
+        self.tts_proxy.say("We did a great job!")
+
 
     def wave(self):
         self.nao_action_pub.publish(f"frame_{self.frame_num} wave_start")
@@ -235,6 +267,10 @@ class NaoAction():
 
     def wake(self):
         self.wake_movement_lights()
+        wake_phrase = "I am ready to play another round."
+
+        self.tts_proxy.setVolume(1.5)
+        self.tts_proxy.say(wake_phrase)
     
     def wake_movement_lights(self):
         self.nao_action_pub.publish(f"frame_{self.frame_num} wake_start")
@@ -249,6 +285,8 @@ class NaoAction():
     def run(self):
         #print(not(self.meaningful_action), not(self.game_over), self.game_mode >0)
 
+
+
         if time.time()-self.last_time > self.next_time and not(self.meaningful_action) and not(self.game_over) and self.game_mode >0:
             names = ["HeadYaw","HeadPitch"]
             times = [.5,.5]
@@ -260,6 +298,75 @@ class NaoAction():
             while self.next_angle == this_angle:
                 self.next_angle = random.randint(0,3)
             self.last_time = time.time()
+
+    def introduce_skills(self):
+
+        support_phrase_short = "Look at what I can do. My spaceship can shoot and I can also move to support both sides."
+
+        self.motion_proxy.wakeUp()
+        self.tts_proxy.setVolume(1.5)
+        self.tts_proxy.say(support_phrase_short)
+
+        
+
+    def verbal_support(self):
+        #direction: 1 for right, -1 for left
+
+        phrases = [
+        "Let me lend a hand to the player on my ",
+        "I'll provide my support to the player on my ",
+        "Count on me to help the player on my ",
+        "I'm will now to aid the player on my ",
+        "I will now help the player on my "]
+
+        random_phrase= random.choice(phrases)
+
+        return random_phrase
+
+    def look_support_player_left(self):
+
+        support_phrase_short = "Switching Support"
+        phrase = self.verbal_support()
+        complete_phrase = phrase + "left"
+
+        final_phrase= random.choice([complete_phrase, support_phrase_short])
+        self.motion_proxy.wakeUp()
+        print('in supporting left')
+        self.motion_proxy.setAngles("HeadYaw", 1.0,0.3)
+        self.tts_proxy.setVolume(1.5)
+        self.tts_proxy.say(final_phrase)
+        time.sleep(0.5)
+        self.motion_proxy.setAngles("HeadYaw", 0.0,0.25)
+        self.nao_action_pub.publish(f"frame_{self.frame_num} supporting left")
+
+
+
+    def look_support_player_right(self):
+        support_phrase_short = "Switching Support"
+        phrase = self.verbal_support()
+        complete_phrase = phrase + "right"
+
+        final_phrase= random.choice([complete_phrase, support_phrase_short])
+
+        self.motion_proxy.wakeUp()
+        self.nao_action_pub.publish(f"frame_{self.frame_num} supporting right")
+        self.motion_proxy.setAngles("HeadYaw", -1.0,0.3)
+        self.tts_proxy.setVolume(1.5)
+        self.tts_proxy.say(final_phrase)
+        time.sleep(0.5)
+        self.motion_proxy.setAngles("HeadYaw", 0.0,0.25)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == '__main__':

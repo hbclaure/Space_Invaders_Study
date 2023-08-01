@@ -1,29 +1,109 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Space Invaders Study!</title>
-  </head>
-  <body>
-    <h1>Setup</h1>
-    <p>Thank you for participating in our study!</p>
+<head>
+  <title>Space Invaders Study!</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      margin: 20px;
+    }
 
-    <p> </p>
+    h1 {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
 
-    <p>We will begin by checking that we are able to recognize your face in our video recording.</p>
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
 
-    
+    a {
+      font-size: 20px;
+      background-color: #007bff;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      display: inline-block;
+      transition: background-color 0.3s;
+    }
 
-    <a href="html/check_webcam.html"> Click here to check recording </a>
-  </body>
+    a:hover {
+      background-color: #0056b3;
+    }
 
-  <script>
-    var all_params = window.location.href.split('?')[1];
-    var a = document.getElementsByTagName('a');
-    for (var i=0; i < a.length; i++){
+    /* Media query for large screens (e.g., TV) */
+    @media screen and (min-width: 1200px) {
+      body {
+        margin: 50px;
+      }
+
+      h1 {
+        font-size: 60px;
+      }
+
+      p {
+        font-size: 50px;
+      }
+
+      a {
+        font-size: 40px;
+        padding: 15px 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Introduction</h1>
+  <p>Thank you for participating in our study!</p>
+
+  <p>We will begin by introducing you to Nao and Shutter.</p>
+
+  <a id="nextPageLink" href="html/practice_intro.html">Press 'B' to continue to the next page.</a>
+</body>
+    <script>
+      var all_params = window.location.href.split('?')[1];
+      var a = document.getElementsByTagName('a');
+      for (var i=0; i < a.length; i++){
         a[i].href+="?";
         a[i].href+=all_params;
         console.log(a[i].href);
-    }
+      }
+
+      var gamepad = false; // This variable will be used to track whether a gamepad is connected
+
+      window.addEventListener("gamepadconnected", function(e) {
+        // Set gamepad to true when any gamepad is connected
+        gamepad = true;
+      });
+
+      window.addEventListener("gamepaddisconnected", function(e) {
+        // Set gamepad to false when any gamepad is disconnected
+        gamepad = false;
+      });
+
+      // This function will check for button B press and simulate a click on the link
+      function checkButtonB() {
+        if (gamepad) {
+          // Get the first connected gamepad
+          var gp = navigator.getGamepads()[0];
+          if (gp && gp.buttons[1].pressed) {
+            // Simulate a click on the link with ID "nextPageLink"
+            var nextPageLink = document.getElementById("nextPageLink");
+            if (nextPageLink) {
+              nextPageLink.click();
+            }
+          }
+        }
+      }
+
+      // Call the checkButtonB function every 100ms to continuously check for button B press
+      setInterval(checkButtonB, 100);
     </script>
-    
+
+  </body>
 </html>

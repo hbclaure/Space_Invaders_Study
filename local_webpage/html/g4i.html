@@ -1,26 +1,134 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 20px;
+      }
+  
+      h1 {
+        font-size: 36px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+  
+      p {
+        font-size: 18px;
+        line-height: 1.6;
+        margin-bottom: 10px;
+      }
+  
+      a {
+        font-size: 20px;
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.3s;
+      }
+  
+      a:hover {
+        background-color: #0056b3;
+      }
+  
+      /* Media query for large screens (e.g., TV) */
+      @media screen and (min-width: 1200px) {
+        body {
+          margin: 50px;
+        }
+  
+        h1 {
+          font-size: 60px;
+        }
+  
+        p {
+          font-size: 50px;
+        }
+  
+        a {
+          font-size: 40px;
+          padding: 15px 30px;
+        }
+      }
+    </style>
     <title>Space Invaders Study!</title>
     <script src="robot_wake.js"></script>
     <script src="robot_introduction.js"></script>
   </head>
   <body>
-    <h1>Game 4</h1>
-    <p>You'll next play another round of Space Invaders. Please call the researcher if you have any questions. Otherwise, click the link below to start the next round of Space Invaders.</p>
-    <img src="GameInstructionsWhite.png" alt="Game34 instructions" width="1050" height="482">
+    <h1>Round 2</h1>
+    <p>You'll now play another round of Space Invaders with Shutter and Nao. 
+      <p> </p>
+      <p>First, press 'Y' to turn on Nao.</p>
+      <p> </p>
+    <img src="Full_team_instructions.jpeg" alt="Game34 instructions" width="1050" height="482">
     <p> </p>
 
-    <a href="g4.html"> Click here to start next round of Space Invaders</a>
+    <!-- <a href="g3.html" onclick="robotWake()"> Press 'Y' To </a> -->
+    <a id="nextPageLink" href="g4.html"> When you are ready, click the 'B' to start the second round of Space Invaders. </a>  </body>
+
   </body>
+
 
   <script>
     var all_params = window.location.href.split('?')[1];
     var a = document.getElementsByTagName('a');
-    for (var i=0; i < a.length; i++){
-        a[i].href+="?";
-        a[i].href+=all_params;
-        console.log(a[i].href);
+    for (var i = 0; i < a.length; i++) {
+      a[i].href += "?";
+      a[i].href += all_params;
+      console.log(a[i].href);
     }
-    </script>
+  </script>
+  <script src="../../src/game_files/static/js/gamepad.js"></script>
+
+  <script>
+    var gamepad = false; // This variable will be used to track whether a gamepad is connected
+
+    window.addEventListener("gamepadconnected", function(e) {
+      // Set gamepad to true when any gamepad is connected
+      gamepad = true;
+    });
+
+    window.addEventListener("gamepaddisconnected", function(e) {
+      // Set gamepad to false when any gamepad is disconnected
+      gamepad = false;
+    });
+
+    // This function will check for Y button press and call the robotIntro() function to turn on the robot
+    function checkButtonY() {
+      if (gamepad) {
+        // Get the first connected gamepad
+        var gp = navigator.getGamepads()[0];
+        if (gp && gp.buttons[3].pressed) {
+          // Call the robotIntro() function to turn on the robot
+          robotWake();
+        }
+      }
+    }
+
+    // This function will check for B button press and simulate a click on the link to navigate to the next page
+    function checkButtonB() {
+      if (gamepad) {
+        // Get the first connected gamepad
+        var gp = navigator.getGamepads()[0];
+        if (gp && gp.buttons[1].pressed) {
+          // Simulate a click on the link with ID "nextPageLink" to navigate to the next page
+          var nextPageLink = document.getElementById("nextPageLink");
+          if (nextPageLink) {
+            nextPageLink.click();
+          }
+        }
+      }
+    }
+
+    // Call the checkButtonY and checkButtonB functions every 100ms to continuously check for button presses
+    setInterval(function() {
+      checkButtonY();
+      checkButtonB();
+    }, 100);
+  </script>
+     
 </html>

@@ -73,6 +73,7 @@ class RobotIntroHandler(tornado.websocket.WebSocketHandler):
 
         # Publisher
         self.robot_action_pub = rospy.Publisher('space_invaders/game/robot_action',String,queue_size=5)
+        print('herenow')
     
     def get(self):
         self.robot_action_pub.publish("introduction")
@@ -86,6 +87,7 @@ class RobotSleepHandler(tornado.websocket.WebSocketHandler):
         **kwargs: Any
     ) -> None:
         super().__init__(application, request, **kwargs)        
+        print('sleep handler')
 
         # Publisher
         self.robot_action_pub = rospy.Publisher('space_invaders/game/robot_action',String,queue_size=5)

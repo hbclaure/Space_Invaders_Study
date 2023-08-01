@@ -4,14 +4,14 @@
     <title>Space Invaders Study!</title>
   </head>
   <body>
-    <h1> Game 5</h1>
+    <h1> Round 3</h1>
     <iframe id="myIframe" allow="camera" width=1300 height=800></iframe>
-    <p> </p>
-    <p>Please click Next below once the GAME OVER screen appears. </p>
-    <p> </p>
-    <div id="Next" style="display:none">
-        <a href="g6i.html"> Next </a>
-    </div> 
+
+    <!-- <div id="Next" style="display:none">
+        <a href="questions3.html"> Next </a> 
+    </div> -->
+    <a id="nextPageLink" href="questions3.html">  </a>  
+
 </body>
 
 <script>
@@ -30,10 +30,10 @@
         }
         return result;
     }
-    let game_port = 8668;
-    let mode = 2;
-    let game_num = 5;
-    let condition = findGetParameter('condition') ? findGetParameter('condition') : 'Z';
+    let game_port = 8667;
+    let mode = 3;
+    let game_num = 3;
+    let condition = findGetParameter('condition') ? findGetParameter('condition') : 'C';
     let game_url = "http://localhost:"+game_port+"/";
     let player_id = findGetParameter('id') ? findGetParameter('id') : 'UNDEFINED';
     let full_url = game_url+"?id="+player_id+"&mode="+mode+"&game="+game_num+"&condition="+condition
@@ -50,5 +50,45 @@
         a[i].href+=all_params;
         console.log(a[i].href);
     }
+    </script>
+    <script src="../../src/game_files/static/js/gamepad.js"></script>
+    <script>
+     var all_params = window.location.href.split('?')[1];
+     var a = document.getElementsByTagName('a');
+     for (var i=0; i < a.length; i++){
+       a[i].href+="?";
+       a[i].href+=all_params;
+       console.log(a[i].href);
+     }
+    
+     var gamepad = false; // This variable will be used to track whether a gamepad is connected
+    
+     window.addEventListener("gamepadconnected", function(e) {
+       // Set gamepad to true when any gamepad is connected
+       gamepad = true;
+     });
+    
+     window.addEventListener("gamepaddisconnected", function(e) {
+       // Set gamepad to false when any gamepad is disconnected
+       gamepad = false;
+     });
+    
+     // This function will check for button B press and simulate a click on the link
+     function checkButtonB() {
+       if (gamepad) {
+         // Get the first connected gamepad
+         var gp = navigator.getGamepads()[0];
+         if (gp && gp.buttons[1].pressed) {
+           // Simulate a click on the link with ID "nextPageLink"
+           var nextPageLink = document.getElementById("nextPageLink");
+           if (nextPageLink) {
+             nextPageLink.click();
+           }
+         }
+       }
+     }
+    
+     // Call the checkButtonB function every 100ms to continuously check for button B press
+     setInterval(checkButtonB, 100);
     </script>
 </html>

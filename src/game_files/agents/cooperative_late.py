@@ -12,5 +12,10 @@ class CooperativeLate(Uncooperative):
         num_left_enemies = len(enemies_left_positions)
         num_right_enemies = len(enemies_right_positions)
 
+        print('state',s)
+        print('number of enemies left', enemies_left_positions)
+
+
+
         attack_left = num_right_enemies == 0
         return attack_left
